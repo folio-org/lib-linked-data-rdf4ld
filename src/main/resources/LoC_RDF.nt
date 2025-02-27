@@ -1,0 +1,163 @@
+<http://id.loc.gov/resources/instances/20572081> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Instance> .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/issuance> <http://id.loc.gov/vocabulary/issuance/mono> .
+<http://id.loc.gov/vocabulary/issuance/mono> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Issuance> .
+<http://id.loc.gov/vocabulary/issuance/mono> <http://www.w3.org/2000/01/rdf-schema#label> "single unit" .
+<http://id.loc.gov/vocabulary/issuance/mono> <http://id.loc.gov/ontologies/bibframe/code> "mono" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/provisionActivity> _:b10iddOtlocdOtgovresourcesinstances20572081 .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/ProvisionActivity> .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Publication> .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/date> "2018"^^<http://id.loc.gov/datatypes/edtf> .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/place> <http://id.loc.gov/vocabulary/countries/ru> .
+<http://id.loc.gov/vocabulary/countries/ru> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Place> .
+<http://id.loc.gov/vocabulary/countries/ru> <http://www.w3.org/2000/01/rdf-schema#label> "Russia (Federation)"@en .
+<http://id.loc.gov/vocabulary/countries/ru> <http://id.loc.gov/ontologies/bibframe/code> "ru"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simplePlace> "[Ekaterinburg?]" .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simplePlace> "[Екатеринбург?]" .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simpleAgent> "Izdatelʹskie reshenii︠a︡ po lit︠s︡enzii Ridero" .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simpleAgent> "Издательские решения по лицензии Ridero" .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simpleDate> "2018" .
+_:b10iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/simpleDate> "2018" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/publicationStatement> "[Ekaterinburg?]; [Екатеринбург?]: Izdatelʹskie reshenii︠a︡ po lit︠s︡enzii Ridero, Издательские решения по лицензии Ridero, 2018, 2018" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/identifiedBy> _:b35iddOtlocdOtgovresourcesinstances20572081 .
+_:b35iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Lccn> .
+_:b35iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> " 2018414032" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/identifiedBy> _:b39iddOtlocdOtgovresourcesinstances20572081 .
+_:b39iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Isbn> .
+_:b39iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "9785449079091" .
+_:b39iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/qualifier> "pbk" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/identifiedBy> _:b45iddOtlocdOtgovresourcesinstances20572081 .
+_:b45iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Isbn> .
+_:b45iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "5449079095" .
+_:b45iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/qualifier> "pbk" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/identifiedBy> _:b51iddOtlocdOtgovresourcesinstances20572081 .
+_:b51iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/OclcNumber> .
+_:b51iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "on1080940267" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/responsibilityStatement> "Bratʹi︠a︡ Shvalʹnery" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/responsibilityStatement> "Братья Швальнеры" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/title> _:b59iddOtlocdOtgovresourcesinstances20572081 .
+_:b59iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Title> .
+_:b59iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/mainTitle> "Gogolʹ, Viĭ" .
+_:b59iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/subtitle> "ne vykhodi iz kruga" .
+_:b59iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/mainTitle> "Гоголь, Вий" .
+_:b59iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/subtitle> "не выходи из круга" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/extent> _:b69iddOtlocdOtgovresourcesinstances20572081 .
+_:b69iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Extent> .
+_:b69iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/2000/01/rdf-schema#label> "268 pages" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/note> _:b73iddOtlocdOtgovresourcesinstances20572081 .
+_:b73iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Note> .
+_:b73iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/vocabulary/mnotetype/physical> .
+_:b73iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/2000/01/rdf-schema#label> "illustrations" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/dimensions> "21 cm" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/media> <http://id.loc.gov/vocabulary/mediaTypes/n> .
+<http://id.loc.gov/vocabulary/mediaTypes/n> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Media> .
+<http://id.loc.gov/vocabulary/mediaTypes/n> <http://www.w3.org/2000/01/rdf-schema#label> "unmediated" .
+<http://id.loc.gov/vocabulary/mediaTypes/n> <http://id.loc.gov/ontologies/bibframe/code> "n" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/carrier> <http://id.loc.gov/vocabulary/carriers/nc> .
+<http://id.loc.gov/vocabulary/carriers/nc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Carrier> .
+<http://id.loc.gov/vocabulary/carriers/nc> <http://www.w3.org/2000/01/rdf-schema#label> "volume" .
+<http://id.loc.gov/vocabulary/carriers/nc> <http://id.loc.gov/ontologies/bibframe/code> "nc" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/supplementaryContent> _:b92iddOtlocdOtgovresourcesinstances20572081 .
+_:b92iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/SupplementaryContent> .
+_:b92iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/2000/01/rdf-schema#label> "Includes bibliographical references (pages 264-268)" .
+<http://id.loc.gov/resources/instances/20572081> <http://purl.org/dc/terms/isPartOf> <http://id.loc.gov/resources/instances> .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/instanceOf> <http://id.loc.gov/resources/works/20572081> .
+<http://id.loc.gov/resources/works/20572081> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Work> .
+<http://id.loc.gov/resources/works/20572081> <http://www.w3.org/2000/01/rdf-schema#label> "Bratʹi︠a︡ Shvalʹnery Gogolʹ, Viĭ" .
+<http://id.loc.gov/resources/works/20572081> <http://id.loc.gov/ontologies/bibframe/contribution> _:b101iddOtlocdOtgovresourcesinstances20572081 .
+_:b101iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Contribution> .
+_:b101iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/PrimaryContribution> .
+_:b101iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/agent> <http://id.loc.gov/rwo/agents/n2021004098> .
+<http://id.loc.gov/rwo/agents/n2021004098> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Agent> .
+<http://id.loc.gov/rwo/agents/n2021004098> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Person> .
+<http://id.loc.gov/rwo/agents/n2021004098> <http://www.w3.org/2000/01/rdf-schema#label> "Bratʹi︠a︡ Shvalʹnery" .
+<http://id.loc.gov/rwo/agents/n2021004098> <http://id.loc.gov/ontologies/bflc/marcKey> "1000 $aBratʹi︠a︡ Shvalʹnery" .
+_:b101iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/role> <http://id.loc.gov/vocabulary/relators/aut> .
+<http://id.loc.gov/vocabulary/relators/aut> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Role> .
+<http://id.loc.gov/vocabulary/relators/aut> <http://www.w3.org/2000/01/rdf-schema#label> "author" .
+<http://id.loc.gov/vocabulary/relators/aut> <http://id.loc.gov/ontologies/bibframe/code> "aut" .
+<http://id.loc.gov/resources/works/20572081> <http://id.loc.gov/ontologies/bibframe/title> _:b117iddOtlocdOtgovresourcesinstances20572081 .
+_:b117iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Title> .
+_:b117iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/mainTitle> "Gogolʹ, Viĭ" .
+_:b117iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/mainTitle> "Гоголь, Вий" .
+<http://id.loc.gov/resources/works/20572081> <http://id.loc.gov/ontologies/bibframe/title> _:b123iddOtlocdOtgovresourcesinstances20572081 .
+_:b123iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/VariantTitle> .
+_:b123iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/variantType> "portion" .
+_:b123iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/mainTitle> "Вий" .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/adminMetadata> _:b129iddOtlocdOtgovresourcesinstances20572081 .
+_:b129iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/AdminMetadata> .
+_:b129iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/status> <http://id.loc.gov/vocabulary/mstatus/n> .
+<http://id.loc.gov/vocabulary/mstatus/n> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Status> .
+<http://id.loc.gov/vocabulary/mstatus/n> <http://www.w3.org/2000/01/rdf-schema#label> "new" .
+<http://id.loc.gov/vocabulary/mstatus/n> <http://id.loc.gov/ontologies/bibframe/code> "n" .
+_:b129iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/date> "2018-06-21"^^<http://www.w3.org/2001/XMLSchema#date> .
+_:b129iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/agent> <http://id.loc.gov/vocabulary/organizations/clu> .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Agent> .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Organization> .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://www.w3.org/2000/01/rdf-schema#label> "University of California, Los Angeles, Main Library" .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://id.loc.gov/ontologies/bibframe/code> "CLU"^^<http://id.loc.gov/datatypes/orgs/code> .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://id.loc.gov/ontologies/bibframe/code> "clu"^^<http://id.loc.gov/datatypes/orgs/normalized> .
+<http://id.loc.gov/vocabulary/organizations/clu> <http://id.loc.gov/ontologies/bibframe/code> "US-clu"^^<http://id.loc.gov/datatypes/orgs/iso15511> .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/adminMetadata> _:b150iddOtlocdOtgovresourcesinstances20572081 .
+_:b150iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/AdminMetadata> .
+_:b150iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/status> <http://id.loc.gov/vocabulary/mstatus/c> .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Status> .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://www.w3.org/2000/01/rdf-schema#label> "changed" .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://id.loc.gov/ontologies/bibframe/code> "c" .
+_:b150iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/date> "2021-03-03T09:27:12"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+_:b150iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionModifier> <http://id.loc.gov/vocabulary/organizations/dlc> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Organization> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://www.w3.org/2000/01/rdf-schema#label> "United States, Library of Congress" .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "DLC"^^<http://id.loc.gov/datatypes/orgs/code> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "dlc"^^<http://id.loc.gov/datatypes/orgs/normalized> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "US-dlc"^^<http://id.loc.gov/datatypes/orgs/iso15511> .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/adminMetadata> _:b170iddOtlocdOtgovresourcesinstances20572081 .
+_:b170iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/AdminMetadata> .
+_:b170iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/status> <http://id.loc.gov/vocabulary/mstatus/c> .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Status> .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://www.w3.org/2000/01/rdf-schema#label> "changed" .
+<http://id.loc.gov/vocabulary/mstatus/c> <http://id.loc.gov/ontologies/bibframe/code> "c" .
+_:b170iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/agent> <http://id.loc.gov/vocabulary/organizations/dlcmrc> .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Agent> .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Organization> .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://www.w3.org/2000/01/rdf-schema#label> "United States, Library of Congress, Network Development and MARC Standards Office" .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://id.loc.gov/ontologies/bibframe/code> "DLC-MRC"^^<http://id.loc.gov/datatypes/orgs/code> .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://id.loc.gov/ontologies/bibframe/code> "dlcmrc"^^<http://id.loc.gov/datatypes/orgs/normalized> .
+<http://id.loc.gov/vocabulary/organizations/dlcmrc> <http://id.loc.gov/ontologies/bibframe/code> "US-dlcmrc"^^<http://id.loc.gov/datatypes/orgs/iso15511> .
+_:b170iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/generationProcess> <https://github.com/lcnetdev/marc2bibframe2/releases/tag/v2.7.0> .
+_:b170iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/date> "2024-08-02T20:04:37.687156-04:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://id.loc.gov/resources/instances/20572081> <http://id.loc.gov/ontologies/bibframe/adminMetadata> _:b192iddOtlocdOtgovresourcesinstances20572081 .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/AdminMetadata> .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionLevel> <http://id.loc.gov/ontologies/bibframe-2-3-0/> .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bflc/encodingLevel> <http://id.loc.gov/vocabulary/menclvl/f> .
+<http://id.loc.gov/vocabulary/menclvl/f> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bflc/EncodingLevel> .
+<http://id.loc.gov/vocabulary/menclvl/f> <http://www.w3.org/2000/01/rdf-schema#label> "full" .
+<http://id.loc.gov/vocabulary/menclvl/f> <http://id.loc.gov/ontologies/bibframe/code> "f" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionConventions> <http://id.loc.gov/vocabulary/descriptionConventions/isbd> .
+<http://id.loc.gov/vocabulary/descriptionConventions/isbd> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/DescriptionConventions> .
+<http://id.loc.gov/vocabulary/descriptionConventions/isbd> <http://www.w3.org/2000/01/rdf-schema#label> "ISBD: International standard bibliographic description" .
+<http://id.loc.gov/vocabulary/descriptionConventions/isbd> <http://id.loc.gov/ontologies/bibframe/code> "isbd" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/identifiedBy> _:b207iddOtlocdOtgovresourcesinstances20572081 .
+_:b207iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Local> .
+_:b207iddOtlocdOtgovresourcesinstances20572081 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "20572081" .
+_:b207iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/assigner> <http://id.loc.gov/vocabulary/organizations/dlc> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Organization> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://www.w3.org/2000/01/rdf-schema#label> "United States, Library of Congress" .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "DLC"^^<http://id.loc.gov/datatypes/orgs/code> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "dlc"^^<http://id.loc.gov/datatypes/orgs/normalized> .
+<http://id.loc.gov/vocabulary/organizations/dlc> <http://id.loc.gov/ontologies/bibframe/code> "US-dlc"^^<http://id.loc.gov/datatypes/orgs/iso15511> .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/lclocal/d906> "=906 $a 7 $b cbc $c copycat $d 3 $e ncip $f 20 $g y-nonroman" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/lclocal/d925> "=925 0 $a acquire $b 1 shelf copy $x policy default" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/lclocal/d955> "=955 $a ve16 $b fc69 2018-08-17 telework to cat. $a fe00 2018-09-12 to GS/RUS $b fe21 2021-01-07 TW Situational z-processor JACKPHY $r fe08 2021-01-25 telework to PresSrvs" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionLanguage> <http://id.loc.gov/vocabulary/languages/eng> .
+<http://id.loc.gov/vocabulary/languages/eng> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/Language> .
+<http://id.loc.gov/vocabulary/languages/eng> <http://www.w3.org/2000/01/rdf-schema#label> "English"@en .
+<http://id.loc.gov/vocabulary/languages/eng> <http://id.loc.gov/ontologies/bibframe/code> "eng"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionConventions> <http://id.loc.gov/vocabulary/descriptionConventions/rda> .
+<http://id.loc.gov/vocabulary/descriptionConventions/rda> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/DescriptionConventions> .
+<http://id.loc.gov/vocabulary/descriptionConventions/rda> <http://www.w3.org/2000/01/rdf-schema#label> "Resource description and access" .
+<http://id.loc.gov/vocabulary/descriptionConventions/rda> <http://id.loc.gov/ontologies/bibframe/code> "rda" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/bibframe/descriptionAuthentication> <http://id.loc.gov/vocabulary/marcauthen/lccopycat> .
+<http://id.loc.gov/vocabulary/marcauthen/lccopycat> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.loc.gov/ontologies/bibframe/DescriptionAuthentication> .
+<http://id.loc.gov/vocabulary/marcauthen/lccopycat> <http://www.w3.org/2000/01/rdf-schema#label> "LC Copy Cataloging" .
+<http://id.loc.gov/vocabulary/marcauthen/lccopycat> <http://id.loc.gov/ontologies/bibframe/code> "lccopycat" .
+_:b192iddOtlocdOtgovresourcesinstances20572081 <http://id.loc.gov/ontologies/lclocal/d985> "=985 $e VENDOR LOAD" .
