@@ -1,0 +1,6 @@
+{
+  "typeIri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+  "ldTypeSet": ["INSTANCE"],
+  "bfTypeSet": ["http://id.loc.gov/ontologies/bibframe/Instance"],
+  "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/instances/"
+}
