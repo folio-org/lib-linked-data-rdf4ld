@@ -33,7 +33,7 @@
 
         <rdf4j.version>5.1.2</rdf4j.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.21.4</checkstyle.version>
+        <checkstyle.version>10.23.0</checkstyle.version>
     </properties>
 
     <dependencies>
