@@ -31,7 +31,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <rdf4j.version>5.1.2</rdf4j.version>
+        <rdf4j.version>5.1.3</rdf4j.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>10.23.0</checkstyle.version>
     </properties>
