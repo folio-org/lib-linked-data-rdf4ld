@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InstanceMapperUnit implements MapperUnit {
+public class WorkMapperUnit implements MapperUnit {
 
   private final String typeIri = MappingProvider.getTopMapping().typeIri();
-  private final ResourceMapping instanceMapping = MappingProvider.getInstanceMapping();
+  private final ResourceMapping workMapping = MappingProvider.getWorkMapping();
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
 
@@ -29,25 +29,21 @@ public class InstanceMapperUnit implements MapperUnit {
   public Resource mapToLd(Model model, Statement statement, boolean fetchRemote) {
     var result = new Resource();
     result.setCreatedDate(new Date());
-    result.setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
-    result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, instanceMapping.properties()));
-    var outEdges = coreRdf2LdMapper.mapEdges(instanceMapping.outgoingEdges(), model, result, true, typeIri);
-    var inEdges = coreRdf2LdMapper.mapEdges(instanceMapping.incomingEdges(), model, result, false, typeIri);
+    result.setTypes(Set.of(ResourceTypeDictionary.WORK));
+    result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, workMapping.properties()));
+    var outEdges = coreRdf2LdMapper.mapEdges(workMapping.outgoingEdges(), model, result, true, typeIri);
+    var inEdges = coreRdf2LdMapper.mapEdges(workMapping.incomingEdges(), model, result, false, typeIri);
     result.setOutgoingEdges(outEdges);
     result.setIncomingEdges(inEdges);
     return result;
   }
 
   @Override
-  public void mapToBibframe(Resource instance, ModelBuilder modelBuilder, String nameSpace, Set<String> bfTypeSet) {
-    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(nameSpace, String.valueOf(instance.getId())))
+  public void mapToBibframe(Resource work, ModelBuilder modelBuilder, String nameSpace, Set<String> bfTypeSet) {
+    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(nameSpace, String.valueOf(work.getId())))
       .add(RDF.TYPE, bfTypeSet.iterator().next());
-    instanceMapping.properties()
-      .forEach(p -> coreLd2RdfMapper.mapProperty(modelBuilder, p.bfProperty(), instance, p.ldProperty()));
-    instance.getOutgoingEdges()
-      .forEach(oe -> coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, instanceMapping, nameSpace));
-    instance.getIncomingEdges()
-      .forEach(ie -> coreLd2RdfMapper.mapIncomingEdge(modelBuilder, ie, instanceMapping, nameSpace));
-  }
 
+    workMapping.properties()
+      .forEach(p -> coreLd2RdfMapper.mapProperty(modelBuilder, p.bfProperty(), work, p.ldProperty()));
+  }
 }

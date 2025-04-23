@@ -1,7 +1,9 @@
 package org.folio.rdf4ld.mapper.core;
 
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -9,14 +11,15 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
-  private final MapperUnitProvider mapperUnitProvider;
+
+  private final ObjectMapper objectMapper;
+  private final CoreRdf2LdMapper coreRdf2LdMapper;
 
   @Override
   public IRI getResourceIri(String nameSpace, String id) {
@@ -41,17 +44,44 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   @Override
   public void mapOutgoingEdge(ModelBuilder modelBuilder,
                               ResourceEdge edge,
-                              ResourceInternalMapping resourceMapping,
+                              ResourceMapping resourceMapping,
                               String nameSpace) {
-    resourceMapping.getOutgoingEdges().stream()
-      .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
-        && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
-      .forEach(oem -> {
-        var mapper = mapperUnitProvider.getMapper(oem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, resourceMapping, oem.getBfNameSpace(),
-          oem.getBfResourceDef().getTypeSet());
-        linkResources(modelBuilder, edge, nameSpace, oem.getBfNameSpace(), oem.getBfResourceDef().getPredicate());
-      });
+    resourceMapping.outgoingEdges().stream()
+      .filter(oem -> edge.getTarget().getTypes().equals(oem.ldResourceDef().typeSet())
+        && edge.getPredicate().equals(oem.ldResourceDef().predicate()))
+      .findFirst()
+      .ifPresentOrElse(oem -> ofNullable(coreRdf2LdMapper.getMapper(oem.ldResourceDef()))
+        .ifPresentOrElse(mapper -> {
+          mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem.bfNameSpace(), oem.bfResourceDef().typeSet());
+          linkResources(modelBuilder, edge, nameSpace, oem.bfNameSpace(), oem.bfResourceDef().predicate());
+        }, () -> System.out.println("No mapper present for edge from Instance to "
+          + edge.getTarget().getTypes()
+          + " under predicate " + edge.getPredicate())), () -> System.out.println("No mapping present for edge from Instance to "
+        + edge.getTarget().getTypes()
+        + " under predicate " + edge.getPredicate())
+      );
+  }
+
+  @Override
+  public void mapIncomingEdge(ModelBuilder modelBuilder,
+                              ResourceEdge edge,
+                              ResourceMapping resourceMapping,
+                              String nameSpace) {
+    resourceMapping.incomingEdges().stream()
+      .filter(iem -> edge.getSource().getTypes().equals(iem.ldResourceDef().typeSet())
+        && edge.getPredicate().equals(iem.ldResourceDef().predicate()))
+      .findFirst()
+      .ifPresentOrElse(iem -> ofNullable(coreRdf2LdMapper.getMapper(iem.ldResourceDef()))
+          .ifPresentOrElse(mapper -> {
+            mapper.mapToBibframe(edge.getSource(), modelBuilder, iem.bfNameSpace(), iem.bfResourceDef().typeSet());
+            linkResources(modelBuilder, edge, nameSpace,
+              iem.bfNameSpace(), iem.bfResourceDef().predicate());
+          }, () -> System.out.println("No mapper present for edge from "
+            + edge.getSource().getTypes()
+            + " to Instance under predicate " + edge.getPredicate())),
+        () -> System.out.println("No mapping present for edge from " + edge.getSource().getTypes()
+          + " to Instance under predicate " + edge.getPredicate())
+      );
   }
 
   @Override

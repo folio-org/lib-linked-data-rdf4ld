@@ -5,7 +5,7 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 
 public interface CoreLd2RdfMapper {
 
@@ -18,7 +18,12 @@ public interface CoreLd2RdfMapper {
 
   void mapOutgoingEdge(ModelBuilder modelBuilder,
                        ResourceEdge edge,
-                       ResourceInternalMapping resourceMapping,
+                       ResourceMapping resourceMapping,
+                       String nameSpace);
+
+  void mapIncomingEdge(ModelBuilder modelBuilder,
+                       ResourceEdge edge,
+                       ResourceMapping resourceMapping,
                        String nameSpace);
 
   void linkResources(ModelBuilder modelBuilder,
