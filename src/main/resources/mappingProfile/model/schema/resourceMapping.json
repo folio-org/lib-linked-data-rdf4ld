@@ -1,24 +1,28 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Resource mapping definition",
+  "description": "Resource mapping",
   "type": "object",
   "properties": {
-    "resourceMapping": {
-      "$ref": "resourceInternalMapping.json"
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "propertyMapping.json"
+      }
     },
-    "localOnly": {
-      "type": "boolean",
-      "description": "If true, take only resource data presented locally and not fetch remote"
+    "outgoingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "edgeMapping.json"
+      }
     },
-    "bfNameSpace": {
-      "type": "string",
-      "description": "Bibframe resource name space"
-    },
-    "ldResourceDef": {
-      "$ref": "ldResourceDef.json"
-    },
-    "bfResourceDef": {
-      "$ref": "bfResourceDef.json"
+    "incomingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "edgeMapping.json"
+      }
     }
   }
 }

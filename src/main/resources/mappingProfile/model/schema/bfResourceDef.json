@@ -13,7 +13,7 @@
     },
     "predicate": {
       "type": "string",
-      "description": "Bibframe resource predicate"
+      "description": "Linked Data resource predicate"
     }
   }
 }

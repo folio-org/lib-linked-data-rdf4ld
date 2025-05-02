@@ -1,5 +1,7 @@
 package org.folio.rdf4ld.mapper.unit;
 
+import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
+
 import java.util.Date;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
@@ -32,9 +35,10 @@ public class BaseMapperUnit implements MapperUnit {
     var result = new Resource();
     result.setCreatedDate(new Date());
     result.setTypes(ldTypes);
-    result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, resourceMapping.properties()));
-    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.outgoingEdges(), model, result, true, typeIri);
-    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.incomingEdges(), model, result, false, typeIri);
+    result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, resourceMapping.getProperties()));
+    result.setLabel(getPropertiesString(result.getDoc(), PropertyDictionary.LABEL));
+    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, result, true, typeIri);
+    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, result, false, typeIri);
     result.setOutgoingEdges(outEdges);
     result.setIncomingEdges(inEdges);
     result.setId(hashService.hash(result));
@@ -49,8 +53,8 @@ public class BaseMapperUnit implements MapperUnit {
                             Set<String> bfTypeSet) {
     modelBuilder.subject(coreLd2RdfMapper.getResourceIri(nameSpace, String.valueOf(resource.getId())))
       .add(RDF.TYPE, bfTypeSet.iterator().next());
-    resourceMapping.properties()
-      .forEach(p -> coreLd2RdfMapper.mapProperty(modelBuilder, p.bfProperty(), resource, p.ldProperty()));
+    resourceMapping.getProperties()
+      .forEach(p -> coreLd2RdfMapper.mapProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty()));
     resource.getOutgoingEdges()
       .forEach(oe -> coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, resourceMapping, nameSpace));
     resource.getIncomingEdges()

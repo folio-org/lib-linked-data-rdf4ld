@@ -25,10 +25,10 @@ public class TopMapperImpl implements TopMapper {
 
   @Override
   public Set<Resource> mapToLd(Model model, MappingProfile mappingProfile) {
-    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.typeIri(), mappingProfile.topBfTypeSet())
-      .map(st -> mapperUnitProvider.getMapper(mappingProfile.topLdDef())
-        .mapToLd(model, st, mappingProfile.topMapping(), mappingProfile.topLdDef().typeSet(), mappingProfile.typeIri(),
-          false)
+    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.getTypeIri(), mappingProfile.getTopBfTypeSet())
+      .map(st -> mapperUnitProvider.getMapper(mappingProfile.getTopLdDef())
+        .mapToLd(model, st, mappingProfile.getTopMapping(), mappingProfile.getTopLdDef().getTypeSet(),
+          mappingProfile.getTypeIri(), false)
       )
       .collect(Collectors.toSet());
   }
@@ -40,9 +40,9 @@ public class TopMapperImpl implements TopMapper {
 
   @Override
   public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, MappingProfile mappingProfile) {
-    mapperUnitProvider.getMapper(mappingProfile.topLdDef())
-      .mapToBibframe(resource, modelBuilder, mappingProfile.topMapping(), mappingProfile.topBfNameSpace(),
-        mappingProfile.topBfTypeSet());
+    mapperUnitProvider.getMapper(mappingProfile.getTopLdDef())
+      .mapToBibframe(resource, modelBuilder, mappingProfile.getTopMapping(), mappingProfile.getTopBfNameSpace(),
+        mappingProfile.getTopBfTypeSet());
   }
 
 }

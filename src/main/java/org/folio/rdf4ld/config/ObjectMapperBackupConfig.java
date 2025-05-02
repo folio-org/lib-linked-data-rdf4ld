@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnMissingBean
 public class ObjectMapperBackupConfig {
 
   @Bean
+  @ConditionalOnMissingBean
   public ObjectMapper objectMapper() {
     return new ObjectMapper()
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)

@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.rdf4ld.mapper.unit.MapperUnit;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
 
 @UtilityClass
 public class TestUtil {
@@ -26,6 +22,14 @@ public class TestUtil {
     for (int i = 0; i < expected.size(); i++) {
       assertThat(doc.get(property).get(i).asText()).isEqualTo(expected.get(i));
     }
+  }
+
+  public static void validateIncomingEdge(Resource parentResource,
+                                          PredicateDictionary expectedPredicate,
+                                          Set<ResourceTypeDictionary> expectedTypeSet,
+                                          Map<PropertyDictionary, List<String>> expectedProperties,
+                                          String expectedLabel) {
+    validateEdge(parentResource, expectedPredicate, expectedTypeSet, expectedProperties, expectedLabel, false);
   }
 
   public static void validateOutgoingEdge(Resource parentResource,
@@ -58,23 +62,5 @@ public class TestUtil {
     for (Map.Entry<PropertyDictionary, List<String>> entry : expectedProperties.entrySet()) {
       validateProperty(resource.getDoc(), entry.getKey().getValue(), entry.getValue());
     }
-  }
-
-  public static MapperUnit emptyMapper() {
-    return new MapperUnit() {
-      @Override
-      public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
-                              ResourceInternalMapping resourceMapping,
-                              Set<ResourceTypeDictionary> ldTypes, Boolean localOnly) {
-        return new Resource();
-      }
-
-      @Override
-      public void mapToBibframe(Resource resource, ModelBuilder modelBuilder,
-                                ResourceInternalMapping resourceMapping,
-                                String nameSpace, Set<String> bfTypeSet) {
-        modelBuilder.add("http://test_subject.com", "http://test_predicate.com", "test_object");
-      }
-    };
   }
 }

@@ -43,14 +43,14 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                               ResourceEdge edge,
                               ResourceMapping resourceMapping,
                               String nameSpace) {
-    resourceMapping.outgoingEdges().stream()
-      .filter(oem -> edge.getTarget().getTypes().equals(oem.ldResourceDef().typeSet())
-        && edge.getPredicate().equals(oem.ldResourceDef().predicate()))
+    resourceMapping.getOutgoingEdges().stream()
+      .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
+        && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
       .forEach(oem -> {
-        var mapper = mapperUnitProvider.getMapper(oem.ldResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, resourceMapping, oem.bfNameSpace(),
-          oem.bfResourceDef().typeSet());
-        linkResources(modelBuilder, edge, nameSpace, oem.bfNameSpace(), oem.bfResourceDef().predicate());
+        var mapper = mapperUnitProvider.getMapper(oem.getLdResourceDef());
+        mapper.mapToBibframe(edge.getTarget(), modelBuilder, resourceMapping, oem.getBfNameSpace(),
+          oem.getBfResourceDef().getTypeSet());
+        linkResources(modelBuilder, edge, nameSpace, oem.getBfNameSpace(), oem.getBfResourceDef().getPredicate());
       });
   }
 
@@ -59,14 +59,14 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                               ResourceEdge edge,
                               ResourceMapping resourceMapping,
                               String nameSpace) {
-    resourceMapping.incomingEdges().stream()
-      .filter(iem -> edge.getSource().getTypes().equals(iem.ldResourceDef().typeSet())
-        && edge.getPredicate().equals(iem.ldResourceDef().predicate()))
+    resourceMapping.getIncomingEdges().stream()
+      .filter(iem -> edge.getSource().getTypes().equals(iem.getLdResourceDef().getTypeSet())
+        && edge.getPredicate().equals(iem.getLdResourceDef().getPredicate()))
       .forEach(iem -> {
-        var mapper = mapperUnitProvider.getMapper(iem.ldResourceDef());
-        mapper.mapToBibframe(edge.getSource(), modelBuilder, resourceMapping, iem.bfNameSpace(),
-          iem.bfResourceDef().typeSet());
-        linkResources(modelBuilder, edge, nameSpace, iem.bfNameSpace(), iem.bfResourceDef().predicate());
+        var mapper = mapperUnitProvider.getMapper(iem.getLdResourceDef());
+        mapper.mapToBibframe(edge.getSource(), modelBuilder, resourceMapping, iem.getBfNameSpace(),
+          iem.getBfResourceDef().getTypeSet());
+        linkResources(modelBuilder, edge, nameSpace, iem.getBfNameSpace(), iem.getBfResourceDef().getPredicate());
       });
   }
 
