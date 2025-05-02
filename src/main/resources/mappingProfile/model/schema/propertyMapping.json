@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Property mapping",
+  "type": "object",
+  "properties": {
+    "ldProperty": {
+      "$ref": "propertyDictionaryPlaceholder.json",
+      "description": "Linked Data property name"
+    },
+    "bfProperty": {
+      "type": "string",
+      "description": "Bibframe property name"
+    },
+    "outgoingEdgeParentLdDef": {
+      "$ref": "ldResourceDef.json",
+      "description": "Optional Linked Data resource outgoing parent"
+    },
+    "incomingEdgeParentLdDef": {
+      "$ref": "ldResourceDef.json",
+      "description": "Optional Linked Data resource incoming parent"
+    },
+    "edgeParentBfDef": {
+      "$ref": "bfResourceDef.json",
+      "description": "Optional Bibframe resource parent"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource mapping",
+  "type": "object",
+  "properties": {
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "propertyMapping.json"
+      }
+    },
+    "outgoingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "edgeMapping.json"
+      }
+    },
+    "incomingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "edgeMapping.json"
+      }
+    }
+  }
+}

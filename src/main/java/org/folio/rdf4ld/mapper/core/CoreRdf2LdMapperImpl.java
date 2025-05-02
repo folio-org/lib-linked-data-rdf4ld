@@ -36,9 +36,9 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     propertyMappings
       // TODO: look for a property under different subject (resource) if required by mapping profile
       // not needed for Thin Thread
-      .forEach(pm -> model.getStatements(statement.getSubject(), Values.iri(pm.bfProperty()), null)
+      .forEach(pm -> model.getStatements(statement.getSubject(), Values.iri(pm.getBfProperty()), null)
         .forEach(st -> {
-            var props = doc.computeIfAbsent(pm.ldProperty().getValue(), str -> new ArrayList<>());
+            var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
             props.add(st.getObject().stringValue());
           }
         ));
@@ -71,7 +71,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
         .map(r -> new ResourceEdge(
           getSource(parent, outgoingOrIncoming, r),
           getTarget(parent, outgoingOrIncoming, r),
-          oem.ldResourceDef().predicate()))
+          oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
   }
@@ -86,10 +86,10 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private Set<Resource> mapEdgeTargets(Model model, EdgeMapping edgeMapping, String typeIri) {
     // TODO fetch remote resource if edgeMapping.fetchRemote() is true
-    var mapperUnit = mapperUnitProvider.getMapper(edgeMapping.ldResourceDef());
-    return selectStatementsByType(model, typeIri, edgeMapping.bfResourceDef().typeSet())
-      .map(st -> mapperUnit.mapToLd(model, st, edgeMapping.resourceMapping(),
-        edgeMapping.ldResourceDef().typeSet(), typeIri, edgeMapping.fetchRemote()))
+    var mapperUnit = mapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
+    return selectStatementsByType(model, typeIri, edgeMapping.getBfResourceDef().getTypeSet())
+      .map(st -> mapperUnit.mapToLd(model, st, edgeMapping.getResourceMapping(),
+        edgeMapping.getLdResourceDef().getTypeSet(), typeIri, edgeMapping.getFetchRemote()))
       .collect(toSet());
   }
 

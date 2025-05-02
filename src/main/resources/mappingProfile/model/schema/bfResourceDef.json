@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Bibframe resource mapping definition",
+  "type": "object",
+  "properties": {
+    "typeSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Bibframe resource type set",
+      "items": {
+        "type": "string"
+      }
+    },
+    "predicate": {
+      "type": "string",
+      "description": "Linked Data resource predicate"
+    }
+  }
+}

@@ -30,6 +30,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <swagger.yaml.file>${project.basedir}/src/main/resources/mappingProfile/model/rdf4ld.yaml</swagger.yaml.file>
 
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
@@ -38,10 +39,12 @@
     <folio-spring-base.version>9.1.0</folio-spring-base.version>
 
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <maven-openapi-generator-plugin.version>7.13.0</maven-openapi-generator-plugin.version>
     <checkstyle.version>10.23.1</checkstyle.version>
   </properties>
 
   <dependencies>
+    <!-- Main dependencies -->
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-dictionary</artifactId>
@@ -74,6 +77,29 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- OpenAPI generator dependencies -->
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.15</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>folio-spring-testing</artifactId>
@@ -171,6 +197,53 @@
           <reuseForks>false</reuseForks>
           <includes>**/*IT.java</includes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${maven-openapi-generator-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>lib-linked-data-rdf4ld-openapi</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${swagger.yaml.file}</inputSpec>
+              <output>${project.build.directory}/generated-sources</output>
+              <generatorName>spring</generatorName>
+              <modelPackage>${project.groupId}.rdf4ld.model</modelPackage>
+              <generateApis>false</generateApis>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateApiTests>false</generateApiTests>
+              <generateModels>true</generateModels>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <templateDirectory>${project.basedir}/src/main/resources/mappingProfile/model/templates</templateDirectory>
+              <configOptions>
+                <java8>true</java8>
+                <useTags>true</useTags>
+                <dateLibrary>java</dateLibrary>
+                <interfaceOnly>true</interfaceOnly>
+                <useSpringBoot3>true</useSpringBoot3>
+                <renameModelProperties>true</renameModelProperties>
+                <additionalProperties>
+                  <modelPropertyNaming>original</modelPropertyNaming>
+                </additionalProperties>
+              </configOptions>
+              <importMappings>
+                <importMapping>PredicateDictionary=org.folio.ld.dictionary.PredicateDictionary</importMapping>
+                <importMapping>PropertyDictionary=org.folio.ld.dictionary.PropertyDictionary</importMapping>
+                <importMapping>ResourceTypeDictionary=org.folio.ld.dictionary.ResourceTypeDictionary</importMapping>
+              </importMappings>
+              <typeMappings>
+                <typeMapping>object+PredicateDictionary=PredicateDictionary</typeMapping>
+                <typeMapping>object+PropertyDictionary=PropertyDictionary</typeMapping>
+                <typeMapping>object+ResourceTypeDictionary=ResourceTypeDictionary</typeMapping>
+              </typeMappings>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
