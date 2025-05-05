@@ -9,18 +9,19 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
 import org.folio.rdf4ld.model.MappingProfile;
-import org.folio.rdf4ld.util.DefaultMappingProfile;
+import org.folio.rdf4ld.util.DefaultMappingProfileReader;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class TopMapperImpl implements TopMapper {
+  private final DefaultMappingProfileReader defaultMappingProfileReader;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final MapperUnitProvider mapperUnitProvider;
 
   @Override
   public Set<Resource> mapToLd(Model model) {
-    return mapToLd(model, DefaultMappingProfile.get());
+    return mapToLd(model, defaultMappingProfileReader.get());
   }
 
   @Override
@@ -35,7 +36,7 @@ public class TopMapperImpl implements TopMapper {
 
   @Override
   public void mapToBibframe(Resource resource, ModelBuilder modelBuilder) {
-    mapToBibframe(resource, modelBuilder, DefaultMappingProfile.get());
+    mapToBibframe(resource, modelBuilder, defaultMappingProfileReader.get());
   }
 
   @Override

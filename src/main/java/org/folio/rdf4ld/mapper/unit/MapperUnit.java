@@ -15,7 +15,7 @@ public interface MapperUnit {
                    ResourceMapping resourceMapping,
                    Set<ResourceTypeDictionary> ldTypes,
                    String typeIri,
-                   boolean fetchRemote);
+                   Boolean fetchRemote);
 
   void mapToBibframe(Resource resource,
                      ModelBuilder modelBuilder,
