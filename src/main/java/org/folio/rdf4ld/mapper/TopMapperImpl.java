@@ -35,15 +35,17 @@ public class TopMapperImpl implements TopMapper {
   }
 
   @Override
-  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder) {
-    mapToBibframe(resource, modelBuilder, defaultMappingProfileReader.get());
+  public Model mapToBibframeRdf(Resource resource) {
+    return mapToBibframeRdf(resource, defaultMappingProfileReader.get());
   }
 
   @Override
-  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, MappingProfile mappingProfile) {
+  public Model mapToBibframeRdf(Resource resource, MappingProfile mappingProfile) {
+    var modelBuilder = new ModelBuilder();
     mapperUnitProvider.getMapper(mappingProfile.getTopLdDef())
       .mapToBibframe(resource, modelBuilder, mappingProfile.getTopMapping(), mappingProfile.getTopBfNameSpace(),
         mappingProfile.getTopBfTypeSet());
+    return modelBuilder.build();
   }
 
 }

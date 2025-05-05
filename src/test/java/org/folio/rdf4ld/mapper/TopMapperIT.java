@@ -10,6 +10,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBI
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.test.MonographUtil.getSampleInstanceResource;
 import static org.folio.rdf4ld.test.TestUtil.validateIncomingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateProperty;
@@ -74,5 +75,15 @@ public class TopMapperIT {
     );
   }
 
+  @Test
+  public void mapToBibframeRdf_shouldReturnMappedRdf() throws IOException {
+    // given
+    var instance = getSampleInstanceResource();
 
+    // when
+    var model = topMapper.mapToBibframeRdf(instance);
+
+    //then
+    assertThat(model).hasSize(15);
+  }
 }
