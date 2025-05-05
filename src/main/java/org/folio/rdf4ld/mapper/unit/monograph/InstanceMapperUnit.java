@@ -28,7 +28,7 @@ public class InstanceMapperUnit implements MapperUnit {
                           ResourceMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           String typeIri,
-                          boolean fetchRemote) {
+                          Boolean fetchRemote) {
     var instance = baseMapperUnit.mapToLd(model, statement, resourceMapping, ldTypes, typeIri, fetchRemote);
     instance.setLabel(getPrimaryMainTitle(instance));
     return instance;

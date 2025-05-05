@@ -1,5 +1,7 @@
 package org.folio.rdf4ld.mapper.unit;
 
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BaseMapperUnit implements MapperUnit {
+
+  private static final PropertyDictionary[] DEFAULT_LABELS = {LABEL, LABEL_RDF};
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
@@ -31,18 +35,27 @@ public class BaseMapperUnit implements MapperUnit {
                           ResourceMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           String typeIri,
-                          boolean fetchRemote) {
+                          Boolean fetchRemote) {
     var result = new Resource();
     result.setCreatedDate(new Date());
     result.setTypes(ldTypes);
     result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, resourceMapping.getProperties()));
-    result.setLabel(getPropertiesString(result.getDoc(), PropertyDictionary.LABEL));
+    setLabel(result, resourceMapping);
     var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, result, true, typeIri);
     var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, result, false, typeIri);
     result.setOutgoingEdges(outEdges);
     result.setIncomingEdges(inEdges);
     result.setId(hashService.hash(result));
     return result;
+  }
+
+  private void setLabel(Resource resource, ResourceMapping resourceMapping) {
+    if (resourceMapping.getLabel().isEmpty()) {
+      resource.setLabel(getPropertiesString(resource.getDoc(), DEFAULT_LABELS));
+    } else {
+      var labelProperties = resourceMapping.getLabel().toArray(PropertyDictionary[]::new);
+      resource.setLabel(getPropertiesString(resource.getDoc(), labelProperties));
+    }
   }
 
   @Override
