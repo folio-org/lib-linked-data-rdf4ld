@@ -8,10 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.rdf4ld.mapper.unit.MapperUnit;
 
 @UtilityClass
 public class TestUtil {
@@ -62,5 +66,21 @@ public class TestUtil {
     for (Map.Entry<PropertyDictionary, List<String>> entry : expectedProperties.entrySet()) {
       validateProperty(resource.getDoc(), entry.getKey().getValue(), entry.getValue());
     }
+  }
+
+  public static MapperUnit emptyMapper() {
+    return new MapperUnit() {
+      @Override
+      public Resource mapToLd(Model model, Statement statement, org.folio.rdf4ld.model.ResourceMapping resourceMapping,
+                              Set<ResourceTypeDictionary> ldTypes, String typeIri, Boolean fetchRemote) {
+        return new Resource();
+      }
+
+      @Override
+      public void mapToBibframe(Resource resource, ModelBuilder modelBuilder,
+                                org.folio.rdf4ld.model.ResourceMapping resourceMapping,
+                                String nameSpace, Set<String> bfTypeSet) {
+      }
+    };
   }
 }

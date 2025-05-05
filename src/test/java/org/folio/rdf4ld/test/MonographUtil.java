@@ -122,7 +122,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -137,7 +136,6 @@ public class MonographUtil {
     .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-  private static final Random RANDOM = new Random();
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork(null));
@@ -253,9 +251,6 @@ public class MonographUtil {
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
-    if (nonNull(linkedWork)) {
-      pred2OutgoingResources.put(INSTANTIATES, List.of(linkedWork));
-    }
 
     var instance = createResource(
       Map.ofEntries(
@@ -293,6 +288,11 @@ public class MonographUtil {
       instance.setId(id);
     }
     instance.setLabel(primaryTitle.getLabel());
+    if (nonNull(linkedWork)) {
+      var edge = new ResourceEdge(linkedWork, instance, INSTANTIATES);
+      linkedWork.addOutgoingEdge(edge);
+      instance.getIncomingEdges().add(edge);
+    }
     return instance;
   }
 
@@ -791,7 +791,7 @@ public class MonographUtil {
   }
 
   private static long randomLong() {
-    return RANDOM.nextLong();
+    return (long) (Math.random() * Long.MAX_VALUE);
   }
 
   public static JsonNode getJsonNode(Map<String, ?> map) {

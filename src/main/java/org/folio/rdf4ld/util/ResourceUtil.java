@@ -31,7 +31,7 @@ public class ResourceUtil {
       .map(ResourceEdge::getTarget)
       .filter(t -> t.getTypes().contains(ResourceTypeDictionary.TITLE))
       .map(Resource::getDoc)
-      .map(d -> getPropertiesString(d, MAIN_TITLE) + getPropertiesString(d, SUBTITLE))
+      .map(d -> getPropertiesString(d, MAIN_TITLE, SUBTITLE))
       .findFirst()
       .orElse("");
   }
