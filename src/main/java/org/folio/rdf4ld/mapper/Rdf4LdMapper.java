@@ -5,13 +5,13 @@ import org.eclipse.rdf4j.model.Model;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.model.ResourceMapping;
 
-public interface TopMapper {
+public interface Rdf4LdMapper {
 
-  Set<Resource> mapToLd(Model model);
+  Set<Resource> mapToLdInstance(Model model);
 
   Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile);
 
-  Model mapToBibframeRdf(Resource resource);
+  Model mapToBibframeRdfInstance(Resource resource);
 
   Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile);
 }

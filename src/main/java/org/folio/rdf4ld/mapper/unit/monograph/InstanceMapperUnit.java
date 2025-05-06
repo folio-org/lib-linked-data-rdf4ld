@@ -10,15 +10,15 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.rdf4ld.mapper.Mapper;
 import org.folio.rdf4ld.mapper.unit.BaseMapperUnit;
+import org.folio.rdf4ld.mapper.unit.MapperDefinition;
 import org.folio.rdf4ld.mapper.unit.MapperUnit;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Mapper(types = INSTANCE)
+@MapperDefinition(types = INSTANCE)
 public class InstanceMapperUnit implements MapperUnit {
   private final BaseMapperUnit baseMapperUnit;
 

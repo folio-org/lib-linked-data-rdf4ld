@@ -32,19 +32,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class TopMapperIT {
+class Rdf4LdMapperIT {
 
   @Autowired
-  private TopMapper topMapper;
+  private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLd_shouldReturnMappedInstance() throws IOException {
+  void mapToLd_Instance_shouldReturnMappedInstance() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/loc_example.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
-    var result = topMapper.mapToLd(model);
+    var result = rdf4LdMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).isNotEmpty().hasSize(1);
@@ -75,12 +75,12 @@ class TopMapperIT {
   }
 
   @Test
-  void mapToBibframeRdf_shouldReturnMappedRdf() {
+  void mapToBibframeRdf_shouldReturnMappedRdfInstance() {
     // given
     var instance = getSampleInstanceResource();
 
     // when
-    var model = topMapper.mapToBibframeRdf(instance);
+    var model = rdf4LdMapper.mapToBibframeRdfInstance(instance);
 
     //then
     assertThat(model).hasSize(15);

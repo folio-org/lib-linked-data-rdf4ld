@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.mapper.unit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,7 +9,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Mapper {
+public @interface MapperDefinition {
 
   ResourceTypeDictionary[] types();
 

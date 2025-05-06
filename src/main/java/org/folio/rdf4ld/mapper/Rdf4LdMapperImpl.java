@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TopMapperImpl implements TopMapper {
+public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   private final DefaultMappingProfileReader defaultMappingProfileReader;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final MapperUnitProvider mapperUnitProvider;
 
   @Override
-  public Set<Resource> mapToLd(Model model) {
+  public Set<Resource> mapToLdInstance(Model model) {
     return mapToLd(model, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 
@@ -35,7 +35,7 @@ public class TopMapperImpl implements TopMapper {
   }
 
   @Override
-  public Model mapToBibframeRdf(Resource resource) {
+  public Model mapToBibframeRdfInstance(Resource resource) {
     return mapToBibframeRdf(resource, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 

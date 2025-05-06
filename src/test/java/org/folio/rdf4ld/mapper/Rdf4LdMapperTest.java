@@ -26,10 +26,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class TopMapperTest {
+class Rdf4LdMapperTest {
 
   @InjectMocks
-  private TopMapperImpl topMapper;
+  private Rdf4LdMapperImpl topMapper;
   @Mock
   private DefaultMappingProfileReader defaultMappingProfileReader;
   @Mock
@@ -38,7 +38,7 @@ class TopMapperTest {
   private MapperUnitProvider mapperUnitProvider;
 
   @Test
-  void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdMapperReturnsNoStatements() {
+  void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
     // given
     var model = new ModelBuilder().build();
     doReturn(new ResourceMapping()
@@ -48,14 +48,14 @@ class TopMapperTest {
     doReturn(Stream.empty()).when(coreRdf2LdMapper).selectStatementsByType(any(), any());
 
     // when
-    var result = topMapper.mapToLd(model);
+    var result = topMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void mapToLd_shouldReturnSetWithResourcesMappedByAccordingMapper() {
+  void mapToLd_Instance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
     var model = new ModelBuilder().build();
     doReturn(new ResourceMapping()
@@ -70,14 +70,14 @@ class TopMapperTest {
     doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any(), any());
 
     // when
-    var result = topMapper.mapToLd(model);
+    var result = topMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).hasSize(1).contains(expectedResource);
   }
 
   @Test
-  void mapToBibframeRdf_shouldReturnModelEnrichedByAccordingMapper() {
+  void mapToBibframeRdf_Instance_shouldReturnModelEnrichedByAccordingMapper() {
     // given
     doReturn(new ResourceMapping()
       .bfResourceDef(new BfResourceDef())
@@ -86,7 +86,7 @@ class TopMapperTest {
     doReturn(emptyMapper()).when(mapperUnitProvider).getMapper(any());
 
     // when
-    var result = topMapper.mapToBibframeRdf(null);
+    var result = topMapper.mapToBibframeRdfInstance(null);
 
     // then
     assertThat(result).hasSize(1);
