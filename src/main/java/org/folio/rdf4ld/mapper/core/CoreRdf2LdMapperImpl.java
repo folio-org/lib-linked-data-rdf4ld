@@ -20,13 +20,14 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
-import org.folio.rdf4ld.model.EdgeMapping;
 import org.folio.rdf4ld.model.PropertyMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
+  private static final String TYPE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
   private final MapperUnitProvider mapperUnitProvider;
   private final ObjectMapper objectMapper;
 
@@ -34,7 +35,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   public JsonNode mapDoc(Statement statement, Model model, Set<PropertyMapping> propertyMappings) {
     var doc = new HashMap<String, List<String>>();
     propertyMappings
-      // TODO: look for a property under different subject (resource) if required by mapping profile
+      // look for a property under different subject (resource) if required by mapping profile
       // not needed for Thin Thread
       .forEach(pm -> model.getStatements(statement.getSubject(), Values.iri(pm.getBfProperty()), null)
         .forEach(st -> {
@@ -51,23 +52,22 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   }
 
   @Override
-  public Stream<Statement> selectStatementsByType(Model model, String typeIri, Set<String> bfTypeSet) {
+  public Stream<Statement> selectStatementsByType(Model model, Set<String> bfTypeSet) {
     return model.stream()
-      .filter(st -> st.getPredicate().stringValue().equals(typeIri)
+      .filter(st -> st.getPredicate().stringValue().equals(TYPE_IRI)
         && bfTypeSet.contains(st.getObject().stringValue()))
       .map(Statement::getSubject)
       .flatMap(subject -> stream(model.getStatements(subject, null, null).spliterator(), false));
   }
 
-  public Set<ResourceEdge> mapEdges(Set<EdgeMapping> edgeMappings,
+  public Set<ResourceEdge> mapEdges(Set<ResourceMapping> edgeMappings,
                                     Model model,
                                     Resource parent,
-                                    boolean outgoingOrIncoming,
-                                    String typeIri) {
+                                    boolean outgoingOrIncoming) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem, typeIri).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem).stream()
         .map(r -> new ResourceEdge(
           getSource(parent, outgoingOrIncoming, r),
           getTarget(parent, outgoingOrIncoming, r),
@@ -84,12 +84,12 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     return outgoingOrIncoming ? parent : current;
   }
 
-  private Set<Resource> mapEdgeTargets(Model model, EdgeMapping edgeMapping, String typeIri) {
-    // TODO fetch remote resource if edgeMapping.fetchRemote() is true
+  private Set<Resource> mapEdgeTargets(Model model, ResourceMapping edgeMapping) {
+    // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = mapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
-    return selectStatementsByType(model, typeIri, edgeMapping.getBfResourceDef().getTypeSet())
+    return selectStatementsByType(model, edgeMapping.getBfResourceDef().getTypeSet())
       .map(st -> mapperUnit.mapToLd(model, st, edgeMapping.getResourceMapping(),
-        edgeMapping.getLdResourceDef().getTypeSet(), typeIri, edgeMapping.getFetchRemote()))
+        edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
       .collect(toSet());
   }
 

@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
-import org.folio.rdf4ld.model.MappingProfile;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.util.DefaultMappingProfileReader;
 import org.springframework.stereotype.Component;
 
@@ -21,30 +21,30 @@ public class TopMapperImpl implements TopMapper {
 
   @Override
   public Set<Resource> mapToLd(Model model) {
-    return mapToLd(model, defaultMappingProfileReader.get());
+    return mapToLd(model, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 
   @Override
-  public Set<Resource> mapToLd(Model model, MappingProfile mappingProfile) {
-    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.getTypeIri(), mappingProfile.getTopBfTypeSet())
-      .map(st -> mapperUnitProvider.getMapper(mappingProfile.getTopLdDef())
-        .mapToLd(model, st, mappingProfile.getTopMapping(), mappingProfile.getTopLdDef().getTypeSet(),
-          mappingProfile.getTypeIri(), false)
+  public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
+    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.getBfResourceDef().getTypeSet())
+      .map(st -> mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
+        .mapToLd(model, st, mappingProfile.getResourceMapping(), mappingProfile.getLdResourceDef().getTypeSet(),
+                true)
       )
       .collect(Collectors.toSet());
   }
 
   @Override
   public Model mapToBibframeRdf(Resource resource) {
-    return mapToBibframeRdf(resource, defaultMappingProfileReader.get());
+    return mapToBibframeRdf(resource, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 
   @Override
-  public Model mapToBibframeRdf(Resource resource, MappingProfile mappingProfile) {
+  public Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile) {
     var modelBuilder = new ModelBuilder();
-    mapperUnitProvider.getMapper(mappingProfile.getTopLdDef())
-      .mapToBibframe(resource, modelBuilder, mappingProfile.getTopMapping(), mappingProfile.getTopBfNameSpace(),
-        mappingProfile.getTopBfTypeSet());
+    mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
+      .mapToBibframe(resource, modelBuilder, mappingProfile.getResourceMapping(), mappingProfile.getBfNameSpace(),
+        mappingProfile.getBfResourceDef().getTypeSet());
     return modelBuilder.build();
   }
 

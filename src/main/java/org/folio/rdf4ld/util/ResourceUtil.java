@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.util;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 
@@ -48,7 +49,7 @@ public class ResourceUtil {
   }
 
   public static String getPropertiesString(JsonNode doc, PropertyDictionary property) {
-    if (doc.has(property.getValue())) {
+    if (nonNull(doc) && doc.has(property.getValue())) {
       Iterator<JsonNode> elements = doc.get(property.getValue()).elements();
       return StreamSupport.stream(
           Spliterators.spliteratorUnknownSize(elements, Spliterator.ORDERED),

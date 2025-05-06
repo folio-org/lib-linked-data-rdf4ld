@@ -17,6 +17,13 @@
         "$ref": "resourceMapping.json"
       }
     },
+    "incomingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "resourceMapping.json"
+      }
+    },
     "label": {
       "type": "array",
       "uniqueItems": true,
