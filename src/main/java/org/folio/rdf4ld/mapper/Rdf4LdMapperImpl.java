@@ -26,11 +26,11 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
-    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.getBfResourceDef().getTypeSet())
-      .map(st -> mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
-        .mapToLd(model, st, mappingProfile.getResourceMapping(), mappingProfile.getLdResourceDef().getTypeSet(),
-                true)
-      )
+    var mapper = mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
+    var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
+    var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
+    return coreRdf2LdMapper.selectResourcesByTypes(model, bfTypes)
+      .map(resource -> mapper.mapToLd(model, resource, mappingProfile.getResourceMapping(), ldTypes, true))
       .collect(Collectors.toSet());
   }
 

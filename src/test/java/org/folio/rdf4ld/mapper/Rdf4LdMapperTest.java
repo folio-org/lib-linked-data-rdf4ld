@@ -7,7 +7,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.stream.Stream;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
@@ -45,7 +44,7 @@ class Rdf4LdMapperTest {
       .bfResourceDef(new BfResourceDef())
       .ldResourceDef(new LdResourceDef())
     ).when(defaultMappingProfileReader).getInstanceBibframe20Profile();
-    doReturn(Stream.empty()).when(coreRdf2LdMapper).selectStatementsByType(any(), any());
+    doReturn(Stream.empty()).when(coreRdf2LdMapper).selectResourcesByTypes(any(), any());
 
     // when
     var result = topMapper.mapToLdInstance(model);
@@ -62,8 +61,8 @@ class Rdf4LdMapperTest {
       .bfResourceDef(new BfResourceDef())
       .ldResourceDef(new LdResourceDef())
     ).when(defaultMappingProfileReader).getInstanceBibframe20Profile();
-    var statement = mock(Statement.class);
-    doReturn(Stream.of(statement)).when(coreRdf2LdMapper).selectStatementsByType(any(), any());
+    var resource = mock(org.eclipse.rdf4j.model.Resource.class);
+    doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectResourcesByTypes(any(), any());
     var mapper = mock(MapperUnit.class);
     doReturn(mapper).when(mapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
