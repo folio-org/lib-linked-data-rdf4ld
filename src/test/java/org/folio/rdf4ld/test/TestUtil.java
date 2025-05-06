@@ -16,6 +16,7 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.unit.MapperUnit;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 
 @UtilityClass
 public class TestUtil {
@@ -71,15 +72,16 @@ public class TestUtil {
   public static MapperUnit emptyMapper() {
     return new MapperUnit() {
       @Override
-      public Resource mapToLd(Model model, Statement statement, org.folio.rdf4ld.model.ResourceMapping resourceMapping,
-                              Set<ResourceTypeDictionary> ldTypes, String typeIri, Boolean fetchRemote) {
+      public Resource mapToLd(Model model, Statement statement, ResourceInternalMapping resourceMapping,
+                              Set<ResourceTypeDictionary> ldTypes, Boolean localOnly) {
         return new Resource();
       }
 
       @Override
       public void mapToBibframe(Resource resource, ModelBuilder modelBuilder,
-                                org.folio.rdf4ld.model.ResourceMapping resourceMapping,
+                                ResourceInternalMapping resourceMapping,
                                 String nameSpace, Set<String> bfTypeSet) {
+        modelBuilder.add("http://test_subject.com", "http://test_predicate.com", "test_object");
       }
     };
   }

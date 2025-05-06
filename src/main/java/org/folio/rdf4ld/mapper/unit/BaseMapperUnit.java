@@ -17,7 +17,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,24 +32,23 @@ public class BaseMapperUnit implements MapperUnit {
   @Override
   public Resource mapToLd(Model model,
                           Statement statement,
-                          ResourceMapping resourceMapping,
+                          ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          String typeIri,
-                          Boolean fetchRemote) {
+                          Boolean localOnly) {
     var result = new Resource();
     result.setCreatedDate(new Date());
     result.setTypes(ldTypes);
     result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, resourceMapping.getProperties()));
     setLabel(result, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, result, true, typeIri);
-    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, result, false, typeIri);
+    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, result, true);
+    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, result, false);
     result.setOutgoingEdges(outEdges);
     result.setIncomingEdges(inEdges);
     result.setId(hashService.hash(result));
     return result;
   }
 
-  private void setLabel(Resource resource, ResourceMapping resourceMapping) {
+  private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {
     if (resourceMapping.getLabel().isEmpty()) {
       resource.setLabel(getPropertiesString(resource.getDoc(), DEFAULT_LABELS));
     } else {
@@ -61,7 +60,7 @@ public class BaseMapperUnit implements MapperUnit {
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping,
+                            ResourceInternalMapping resourceMapping,
                             String nameSpace,
                             Set<String> bfTypeSet) {
     modelBuilder.subject(coreLd2RdfMapper.getResourceIri(nameSpace, String.valueOf(resource.getId())))

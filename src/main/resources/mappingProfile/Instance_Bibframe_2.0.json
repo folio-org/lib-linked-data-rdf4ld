@@ -1,13 +1,12 @@
 {
-  "typeIri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-  "topBfTypeSet": [
-    "http://id.loc.gov/ontologies/bibframe/Instance"
-  ],
-  "topBfNameSpace": "http://id.loc.gov/ontologies/bibframe/instances/",
-  "topLdDef": {
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
+  },
+  "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/instances/",
+  "ldResourceDef": {
     "typeSet": "INSTANCE"
   },
-  "topMapping": {
+  "resourceMapping": {
     "properties": [
       {
         "ldProperty": "DIMENSIONS",
@@ -78,7 +77,6 @@
             }
           ]
         },
-        "fetchRemote": true,
         "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/works/",
         "ldResourceDef": {
           "typeSet": "WORK",

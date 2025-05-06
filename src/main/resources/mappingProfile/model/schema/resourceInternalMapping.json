@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource internal mapping (properties, edges and label)",
+  "type": "object",
+  "properties": {
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "propertyMapping.json"
+      }
+    },
+    "outgoingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "resourceMapping.json"
+      }
+    },
+    "incomingEdges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "resourceMapping.json"
+      }
+    },
+    "label": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Linked Data properties to be used as Label. LABEL and LABEL_RDF by default.",
+      "items": {
+        "$ref": "propertyDictionaryPlaceholder.json"
+      }
+    }
+  }
+}

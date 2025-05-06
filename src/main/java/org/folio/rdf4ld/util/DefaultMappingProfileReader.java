@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rdf4ld.model.MappingProfile;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -13,12 +13,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DefaultMappingProfileReader {
 
-  public static final String PATH = "src/main/resources/mappingProfile/default.json";
+  public static final String BASE_PATH = "src/main/resources/mappingProfile/";
+  public static final String INSTANCE_BIBFRAME_2_0_JSON = "Instance_Bibframe_2.0.json";
   private final ObjectMapper objectMapper;
 
-  public MappingProfile get() {
+  public ResourceMapping getInstanceBibframe20Profile() {
     try {
-      return objectMapper.readValue(new File(PATH), MappingProfile.class);
+      return objectMapper.readValue(new File(BASE_PATH + INSTANCE_BIBFRAME_2_0_JSON), ResourceMapping.class);
     } catch (IOException e) {
       log.error("Default mapping profile reading issue", e);
       return null;

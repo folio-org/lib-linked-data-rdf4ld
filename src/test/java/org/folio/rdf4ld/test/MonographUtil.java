@@ -122,6 +122,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -136,6 +137,7 @@ public class MonographUtil {
     .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+  private static final Random RANDOM = new Random();
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork(null));
@@ -791,7 +793,7 @@ public class MonographUtil {
   }
 
   private static long randomLong() {
-    return (long) (Math.random() * Long.MAX_VALUE);
+    return RANDOM.nextLong();
   }
 
   public static JsonNode getJsonNode(Map<String, ?> map) {

@@ -13,7 +13,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.Mapper;
 import org.folio.rdf4ld.mapper.unit.BaseMapperUnit;
 import org.folio.rdf4ld.mapper.unit.MapperUnit;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,11 +25,10 @@ public class InstanceMapperUnit implements MapperUnit {
   @Override
   public Resource mapToLd(Model model,
                           Statement statement,
-                          ResourceMapping resourceMapping,
+                          ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          String typeIri,
-                          Boolean fetchRemote) {
-    var instance = baseMapperUnit.mapToLd(model, statement, resourceMapping, ldTypes, typeIri, fetchRemote);
+                          Boolean localOnly) {
+    var instance = baseMapperUnit.mapToLd(model, statement, resourceMapping, ldTypes, localOnly);
     instance.setLabel(getPrimaryMainTitle(instance));
     return instance;
   }
@@ -37,7 +36,7 @@ public class InstanceMapperUnit implements MapperUnit {
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping,
+                            ResourceInternalMapping resourceMapping,
                             String nameSpace,
                             Set<String> bfTypeSet) {
     baseMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, nameSpace, bfTypeSet);

@@ -1,36 +1,24 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Resource mapping",
+  "description": "Resource mapping definition",
   "type": "object",
   "properties": {
-    "properties": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "$ref": "propertyMapping.json"
-      }
+    "resourceMapping": {
+      "$ref": "resourceInternalMapping.json"
     },
-    "outgoingEdges": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "$ref": "edgeMapping.json"
-      }
+    "localOnly": {
+      "type": "boolean",
+      "description": "If true, take only resource data presented locally and not fetch remote"
     },
-    "incomingEdges": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "$ref": "edgeMapping.json"
-      }
+    "bfNameSpace": {
+      "type": "string",
+      "description": "Bibframe resource name space"
     },
-    "label": {
-      "type": "array",
-      "uniqueItems": true,
-      "description": "Linked Data properties to be used as Label. LABEL and LABEL_RDF by default.",
-      "items": {
-        "$ref": "propertyDictionaryPlaceholder.json"
-      }
+    "ldResourceDef": {
+      "$ref": "ldResourceDef.json"
+    },
+    "bfResourceDef": {
+      "$ref": "bfResourceDef.json"
     }
   }
 }
