@@ -9,34 +9,34 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
 import org.folio.rdf4ld.model.ResourceMapping;
-import org.folio.rdf4ld.util.MappingProfileReader;
+import org.folio.rdf4ld.util.DefaultMappingProfileReader;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class Rdf4LdMapperImpl implements Rdf4LdMapper {
-  private final MappingProfileReader mappingProfileReader;
+  private final DefaultMappingProfileReader defaultMappingProfileReader;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final MapperUnitProvider mapperUnitProvider;
 
   @Override
   public Set<Resource> mapToLdInstance(Model model) {
-    return mapToLd(model, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToLd(model, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 
   @Override
   public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
-    var mapper = mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
-    var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
-    var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
-    return coreRdf2LdMapper.selectResources(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, mappingProfile.getResourceMapping(), ldTypes, true))
+    return coreRdf2LdMapper.selectStatementsByType(model, mappingProfile.getBfResourceDef().getTypeSet())
+      .map(st -> mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
+        .mapToLd(model, st, mappingProfile.getResourceMapping(), mappingProfile.getLdResourceDef().getTypeSet(),
+                true)
+      )
       .collect(Collectors.toSet());
   }
 
   @Override
   public Model mapToBibframeRdfInstance(Resource resource) {
-    return mapToBibframeRdf(resource, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToBibframeRdf(resource, defaultMappingProfileReader.getInstanceBibframe20Profile());
   }
 
   @Override

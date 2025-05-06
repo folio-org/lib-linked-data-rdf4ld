@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.getSampleInstanceResource;
+import static org.folio.rdf4ld.test.TestUtil.validateIncomingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateProperty;
 
@@ -55,7 +56,10 @@ class Rdf4LdMapperIT {
       List.of("Bratʹi︠a︡ Shvalʹnery", "Братья Швальнеры")
     );
     assertThat(instance.getLabel()).isEqualTo("Gogolʹ, Viĭ, Гоголь, Вий");
-    assertThat(instance.getOutgoingEdges()).hasSize(4);
+    assertThat(instance.getIncomingEdges()).hasSize(1);
+    var workLabel = "Bratʹi︠a︡ Shvalʹnery Gogolʹ, Viĭ";
+    validateIncomingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(LABEL, List.of(workLabel)), workLabel);
+    assertThat(instance.getOutgoingEdges()).hasSize(3);
     validateOutgoingEdge(instance, TITLE, Set.of(ResourceTypeDictionary.TITLE),
       Map.of(MAIN_TITLE, List.of("Gogolʹ, Viĭ", "Гоголь, Вий")), "Gogolʹ, Viĭ, Гоголь, Вий"
     );
@@ -68,8 +72,6 @@ class Rdf4LdMapperIT {
     validateOutgoingEdge(instance, TITLE, Set.of(VARIANT_TITLE),
       Map.of(MAIN_TITLE, List.of("Вий")), "Вий"
     );
-    var workLabel = "Bratʹi︠a︡ Shvalʹnery Gogolʹ, Viĭ";
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(LABEL, List.of(workLabel)), workLabel);
   }
 
   @Test

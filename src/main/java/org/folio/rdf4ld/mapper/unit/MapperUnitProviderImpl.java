@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.rdf4ld.mapper.Mapper;
 import org.folio.rdf4ld.model.LdResourceDef;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -28,9 +27,9 @@ public class MapperUnitProviderImpl implements MapperUnitProvider {
   @Override
   public MapperUnit getMapper(LdResourceDef ldResourceDef) {
     return mapperUnits.stream()
-      .filter(m -> m.getClass().isAnnotationPresent(Mapper.class))
+      .filter(m -> m.getClass().isAnnotationPresent(MapperDefinition.class))
       .filter(m -> {
-        var annotation = m.getClass().getAnnotation(Mapper.class);
+        var annotation = m.getClass().getAnnotation(MapperDefinition.class);
         return isNull(ldResourceDef.getTypeSet()) || ldResourceDef.getTypeSet().equals(toSet(annotation.types()))
           && isNull(ldResourceDef.getPredicate()) || ldResourceDef.getPredicate() == annotation.predicate();
       })
