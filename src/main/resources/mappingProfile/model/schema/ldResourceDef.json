@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Linked Data resource mapping definition",
+  "type": "object",
+  "properties": {
+    "typeSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Linked Data resource type set",
+      "items": {
+        "$ref": "resourceTypeDictionaryPlaceholder.json"
+      }
+    },
+    "predicate": {
+      "description": "Linked Data resource predicate",
+      "$ref": "predicateDictionaryPlaceholder.json"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource mapping definition",
+  "type": "object",
+  "properties": {
+    "resourceMapping": {
+      "$ref": "resourceInternalMapping.json"
+    },
+    "localOnly": {
+      "type": "boolean",
+      "description": "If true, take only resource data presented locally and not fetch remote"
+    },
+    "bfNameSpace": {
+      "type": "string",
+      "description": "Bibframe resource name space"
+    },
+    "ldResourceDef": {
+      "$ref": "ldResourceDef.json"
+    },
+    "bfResourceDef": {
+      "$ref": "bfResourceDef.json"
+    }
+  }
+}

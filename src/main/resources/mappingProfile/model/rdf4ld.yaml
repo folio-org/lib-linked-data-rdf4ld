@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: Linked Data RDF4LD Library mapping profile definition
+  version: v1
+
+paths: {}
+
+components:
+  schemas:
+    mappingProfile:
+      $ref: schema/resourceMapping.json
