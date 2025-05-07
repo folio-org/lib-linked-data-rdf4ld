@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class DefaultMappingProfileReader {
+public class MappingProfileReader {
 
   public static final String BASE_PATH = "src/main/resources/mappingProfile/";
   public static final String INSTANCE_BIBFRAME_2_0_JSON = "Instance_Bibframe_2.0.json";

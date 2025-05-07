@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -31,21 +30,21 @@ public class BaseMapperUnit implements MapperUnit {
 
   @Override
   public Resource mapToLd(Model model,
-                          Statement statement,
+                          org.eclipse.rdf4j.model.Resource rdfResource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly) {
-    var result = new Resource();
-    result.setCreatedDate(new Date());
-    result.setTypes(ldTypes);
-    result.setDoc(coreRdf2LdMapper.mapDoc(statement, model, resourceMapping.getProperties()));
-    setLabel(result, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, result, true);
-    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, result, false);
-    result.setOutgoingEdges(outEdges);
-    result.setIncomingEdges(inEdges);
-    result.setId(hashService.hash(result));
-    return result;
+    var ldResource = new Resource();
+    ldResource.setCreatedDate(new Date());
+    ldResource.setTypes(ldTypes);
+    ldResource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
+    setLabel(ldResource, resourceMapping);
+    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, ldResource, true);
+    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, ldResource, false);
+    ldResource.setOutgoingEdges(outEdges);
+    ldResource.setIncomingEdges(inEdges);
+    ldResource.setId(hashService.hash(ldResource));
+    return ldResource;
   }
 
   private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {

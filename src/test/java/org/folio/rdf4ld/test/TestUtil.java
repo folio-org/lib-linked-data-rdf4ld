@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -72,7 +71,8 @@ public class TestUtil {
   public static MapperUnit emptyMapper() {
     return new MapperUnit() {
       @Override
-      public Resource mapToLd(Model model, Statement statement, ResourceInternalMapping resourceMapping,
+      public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
+                              ResourceInternalMapping resourceMapping,
                               Set<ResourceTypeDictionary> ldTypes, Boolean localOnly) {
         return new Resource();
       }

@@ -18,10 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class DefaultMappingProfileReaderTest {
+class MappingProfileReaderTest {
 
   @InjectMocks
-  private DefaultMappingProfileReader defaultMappingProfileReader;
+  private MappingProfileReader mappingProfileReader;
   @Mock
   private ObjectMapper objectMapper;
 
@@ -32,7 +32,7 @@ class DefaultMappingProfileReaderTest {
     when(objectMapper.readValue(any(File.class), eq(ResourceMapping.class))).thenReturn(expectedMapping);
 
     // when
-    var result = defaultMappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getInstanceBibframe20Profile();
 
     // then
     assertThat(result).isEqualTo(expectedMapping);
@@ -44,7 +44,7 @@ class DefaultMappingProfileReaderTest {
     when(objectMapper.readValue(any(File.class), eq(ResourceMapping.class))).thenThrow(new IOException());
 
     // when
-    var result = defaultMappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getInstanceBibframe20Profile();
 
     // then
     assertThat(result).isNull();

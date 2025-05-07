@@ -6,7 +6,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
@@ -24,11 +23,11 @@ public class InstanceMapperUnit implements MapperUnit {
 
   @Override
   public Resource mapToLd(Model model,
-                          Statement statement,
+                          org.eclipse.rdf4j.model.Resource resource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly) {
-    var instance = baseMapperUnit.mapToLd(model, statement, resourceMapping, ldTypes, localOnly);
+    var instance = baseMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
     instance.setLabel(getPrimaryMainTitle(instance));
     return instance;
   }
