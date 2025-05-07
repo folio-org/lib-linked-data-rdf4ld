@@ -2,7 +2,6 @@ package org.folio.rdf4ld.mapper.core;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
-import static java.util.stream.StreamSupport.stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,12 +31,13 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private final ObjectMapper objectMapper;
 
   @Override
-  public JsonNode mapDoc(Statement statement, Model model, Set<PropertyMapping> propertyMappings) {
+  public JsonNode mapDoc(org.eclipse.rdf4j.model.Resource resource, Model model,
+                         Set<PropertyMapping> propertyMappings) {
     var doc = new HashMap<String, List<String>>();
     propertyMappings
       // look for a property under different subject (resource) if required by mapping profile
       // not needed for Thin Thread
-      .forEach(pm -> model.getStatements(statement.getSubject(), Values.iri(pm.getBfProperty()), null)
+      .forEach(pm -> model.getStatements(resource, Values.iri(pm.getBfProperty()), null)
         .forEach(st -> {
             var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
             props.add(st.getObject().stringValue());
@@ -52,12 +52,11 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   }
 
   @Override
-  public Stream<Statement> selectStatementsByType(Model model, Set<String> bfTypeSet) {
+  public Stream<org.eclipse.rdf4j.model.Resource> selectResources(Model model, Set<String> bfTypeSet) {
     return model.stream()
-      .filter(st -> st.getPredicate().stringValue().equals(TYPE_IRI)
+      .filter(st -> TYPE_IRI.equals(st.getPredicate().stringValue())
         && bfTypeSet.contains(st.getObject().stringValue()))
-      .map(Statement::getSubject)
-      .flatMap(subject -> stream(model.getStatements(subject, null, null).spliterator(), false));
+      .map(Statement::getSubject);
   }
 
   public Set<ResourceEdge> mapEdges(Set<ResourceMapping> edgeMappings,
@@ -87,8 +86,8 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private Set<Resource> mapEdgeTargets(Model model, ResourceMapping edgeMapping) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = mapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
-    return selectStatementsByType(model, edgeMapping.getBfResourceDef().getTypeSet())
-      .map(st -> mapperUnit.mapToLd(model, st, edgeMapping.getResourceMapping(),
+    return selectResources(model, edgeMapping.getBfResourceDef().getTypeSet())
+      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
         edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
       .collect(toSet());
   }
