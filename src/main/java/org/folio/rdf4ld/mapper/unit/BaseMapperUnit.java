@@ -39,10 +39,8 @@ public class BaseMapperUnit implements MapperUnit {
     ldResource.setTypes(ldTypes);
     ldResource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
     setLabel(ldResource, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getOutgoingEdges(), model, ldResource, true);
-    var inEdges = coreRdf2LdMapper.mapEdges(resourceMapping.getIncomingEdges(), model, ldResource, false);
+    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(), model, ldResource);
     ldResource.setOutgoingEdges(outEdges);
-    ldResource.setIncomingEdges(inEdges);
     ldResource.setId(hashService.hash(ldResource));
     return ldResource;
   }
@@ -68,8 +66,6 @@ public class BaseMapperUnit implements MapperUnit {
       .forEach(p -> coreLd2RdfMapper.mapProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty()));
     resource.getOutgoingEdges()
       .forEach(oe -> coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, resourceMapping, nameSpace));
-    resource.getIncomingEdges()
-      .forEach(ie -> coreLd2RdfMapper.mapIncomingEdge(modelBuilder, ie, resourceMapping, nameSpace));
   }
 
 }

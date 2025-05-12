@@ -55,22 +55,6 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   }
 
   @Override
-  public void mapIncomingEdge(ModelBuilder modelBuilder,
-                              ResourceEdge edge,
-                              ResourceInternalMapping resourceMapping,
-                              String nameSpace) {
-    resourceMapping.getIncomingEdges().stream()
-      .filter(iem -> edge.getSource().getTypes().equals(iem.getLdResourceDef().getTypeSet())
-        && edge.getPredicate().equals(iem.getLdResourceDef().getPredicate()))
-      .forEach(iem -> {
-        var mapper = mapperUnitProvider.getMapper(iem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getSource(), modelBuilder, resourceMapping, iem.getBfNameSpace(),
-          iem.getBfResourceDef().getTypeSet());
-        linkResources(modelBuilder, edge, nameSpace, iem.getBfNameSpace(), iem.getBfResourceDef().getPredicate());
-      });
-  }
-
-  @Override
   public void linkResources(ModelBuilder modelBuilder,
                             ResourceEdge edge,
                             String parentNamesSpace,

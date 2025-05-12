@@ -59,28 +59,17 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .map(Statement::getSubject);
   }
 
-  public Set<ResourceEdge> mapEdges(Set<ResourceMapping> edgeMappings,
-                                    Model model,
-                                    Resource parent,
-                                    boolean outgoingOrIncoming) {
+  @Override
+  public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
+                                            Model model,
+                                            Resource parent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
       .flatMap(oem -> mapEdgeTargets(model, oem).stream()
-        .map(r -> new ResourceEdge(
-          getSource(parent, outgoingOrIncoming, r),
-          getTarget(parent, outgoingOrIncoming, r),
-          oem.getLdResourceDef().getPredicate()))
+        .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
-  }
-
-  private Resource getTarget(Resource parent, boolean outgoingOrIncoming, Resource current) {
-    return outgoingOrIncoming ? current : parent;
-  }
-
-  private Resource getSource(Resource parent, boolean outgoingOrIncoming, Resource current) {
-    return outgoingOrIncoming ? parent : current;
   }
 
   private Set<Resource> mapEdgeTargets(Model model, ResourceMapping edgeMapping) {

@@ -30,7 +30,10 @@
               "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
             }
           ],
-          "label": [ "MAIN_TITLE", "SUBTITLE"]
+          "label": [
+            "MAIN_TITLE",
+            "SUBTITLE"
+          ]
         },
         "bfNameSpace": "http://id.loc.gov/sources/titles/",
         "ldResourceDef": {
@@ -54,7 +57,10 @@
               "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
             }
           ],
-          "label": [ "MAIN_TITLE", "SUBTITLE"]
+          "label": [
+            "MAIN_TITLE",
+            "SUBTITLE"
+          ]
         },
         "bfNameSpace": "http://id.loc.gov/sources/titles/",
         "ldResourceDef": {
@@ -65,9 +71,7 @@
           "typeSet": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
           "predicate": "http://id.loc.gov/ontologies/bibframe/title"
         }
-      }
-    ],
-    "incomingEdges": [
+      },
       {
         "resourceMapping": {
           "properties": [
