@@ -15,8 +15,7 @@ public interface CoreRdf2LdMapper {
 
   Stream<org.eclipse.rdf4j.model.Resource> selectResources(Model model, Set<String> bfTypeSet);
 
-  Set<ResourceEdge> mapEdges(Set<ResourceMapping> edgeMappings,
-                             Model model,
-                             Resource parent,
-                             boolean outgoingOrIncoming);
+  Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
+                                     Model model,
+                                     Resource parent);
 }

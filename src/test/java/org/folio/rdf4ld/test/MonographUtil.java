@@ -253,6 +253,9 @@ public class MonographUtil {
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
+    if (nonNull(linkedWork)) {
+      pred2OutgoingResources.put(INSTANTIATES, List.of(linkedWork));
+    }
 
     var instance = createResource(
       Map.ofEntries(
@@ -290,11 +293,6 @@ public class MonographUtil {
       instance.setId(id);
     }
     instance.setLabel(primaryTitle.getLabel());
-    if (nonNull(linkedWork)) {
-      var edge = new ResourceEdge(linkedWork, instance, INSTANTIATES);
-      linkedWork.addOutgoingEdge(edge);
-      instance.getIncomingEdges().add(edge);
-    }
     return instance;
   }
 

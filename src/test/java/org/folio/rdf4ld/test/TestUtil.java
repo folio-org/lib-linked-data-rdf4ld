@@ -28,14 +28,6 @@ public class TestUtil {
     }
   }
 
-  public static void validateIncomingEdge(Resource parentResource,
-                                          PredicateDictionary expectedPredicate,
-                                          Set<ResourceTypeDictionary> expectedTypeSet,
-                                          Map<PropertyDictionary, List<String>> expectedProperties,
-                                          String expectedLabel) {
-    validateEdge(parentResource, expectedPredicate, expectedTypeSet, expectedProperties, expectedLabel, false);
-  }
-
   public static void validateOutgoingEdge(Resource parentResource,
                                           PredicateDictionary expectedPredicate,
                                           Set<ResourceTypeDictionary> expectedTypeSet,

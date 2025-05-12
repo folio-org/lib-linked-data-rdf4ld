@@ -21,11 +21,6 @@ public interface CoreLd2RdfMapper {
                        ResourceInternalMapping resourceMapping,
                        String nameSpace);
 
-  void mapIncomingEdge(ModelBuilder modelBuilder,
-                       ResourceEdge edge,
-                       ResourceInternalMapping resourceMapping,
-                       String nameSpace);
-
   void linkResources(ModelBuilder modelBuilder,
                      ResourceEdge edge,
                      String parentNamesSpace,
