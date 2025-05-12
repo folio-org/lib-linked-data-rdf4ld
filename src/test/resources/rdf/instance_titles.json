@@ -1,0 +1,181 @@
+[
+  {
+    "@id": "http://id.loc.gov/resources/instances/20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Instance"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/title": [
+      {
+        "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081"
+      },
+      {
+        "@id": "_:b123iddOtlocdOtgovresourcesinstances20572081"
+      },
+      {
+        "@id": "_:b117iddOtlocdOtgovresourcesinstances20572081"
+      }
+    ]
+  },
+  {
+    "@id": "_:b117iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Title"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "Title mainTitle 1"
+      },
+      {
+        "@value": "Title mainTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partNumber": [
+      {
+        "@value": "Title partNumber 1"
+      },
+      {
+        "@value": "Title partNumber 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partName": [
+      {
+        "@value": "Title partName 1"
+      },
+      {
+        "@value": "Title partName 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/subtitle": [
+      {
+        "@value": "Title subTitle 1"
+      },
+      {
+        "@value": "Title subTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bflc/nonSortNum": [
+      {
+        "@value": "Title nonSortNum 1"
+      },
+      {
+        "@value": "Title nonSortNum 2"
+      }
+    ]
+  },
+  {
+    "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/ParallelTitle"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "ParallelTitle mainTitle 1"
+      },
+      {
+        "@value": "ParallelTitle mainTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partNumber": [
+      {
+        "@value": "ParallelTitle partNumber 1"
+      },
+      {
+        "@value": "ParallelTitle partNumber 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partName": [
+      {
+        "@value": "ParallelTitle partName 1"
+      },
+      {
+        "@value": "ParallelTitle partName 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/subtitle": [
+      {
+        "@value": "ParallelTitle subTitle 1"
+      },
+      {
+        "@value": "ParallelTitle subTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/date": [
+      {
+        "@value": "ParallelTitle date 1"
+      },
+      {
+        "@value": "ParallelTitle date 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/note": [
+      {
+        "@value": "ParallelTitle note 1"
+      },
+      {
+        "@value": "ParallelTitle note 2"
+      }
+    ]
+  },
+  {
+    "@id": "_:b123iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/VariantTitle"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "VariantTitle mainTitle 1"
+      },
+      {
+        "@value": "VariantTitle mainTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partNumber": [
+      {
+        "@value": "VariantTitle partNumber 1"
+      },
+      {
+        "@value": "VariantTitle partNumber 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/partName": [
+      {
+        "@value": "VariantTitle partName 1"
+      },
+      {
+        "@value": "VariantTitle partName 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/subtitle": [
+      {
+        "@value": "VariantTitle subTitle 1"
+      },
+      {
+        "@value": "VariantTitle subTitle 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/date": [
+      {
+        "@value": "VariantTitle date 1"
+      },
+      {
+        "@value": "VariantTitle date 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/note": [
+      {
+        "@value": "VariantTitle note 1"
+      },
+      {
+        "@value": "VariantTitle note 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/variantType": [
+      {
+        "@value": "VariantTitle variantType 1"
+      },
+      {
+        "@value": "VariantTitle variantType 2"
+      }
+    ]
+  }
+]
