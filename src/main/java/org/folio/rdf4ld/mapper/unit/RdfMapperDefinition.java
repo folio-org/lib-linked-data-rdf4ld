@@ -9,7 +9,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface MapperDefinition {
+public @interface RdfMapperDefinition {
 
   ResourceTypeDictionary[] types();
 

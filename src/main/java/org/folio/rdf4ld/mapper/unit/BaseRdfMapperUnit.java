@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BaseMapperUnit implements MapperUnit {
+public class BaseRdfMapperUnit implements RdfMapperUnit {
 
   private static final PropertyDictionary[] DEFAULT_LABELS = {LABEL, LABEL_RDF};
   private final CoreRdf2LdMapper coreRdf2LdMapper;

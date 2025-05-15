@@ -7,7 +7,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 
-public interface MapperUnit {
+public interface RdfMapperUnit {
 
   Resource mapToLd(Model model,
                    org.eclipse.rdf4j.model.Resource resource,
