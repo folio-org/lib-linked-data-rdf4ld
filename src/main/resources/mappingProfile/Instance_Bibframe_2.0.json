@@ -19,22 +19,6 @@
     ],
     "outgoingEdges": [
       {
-        "resourceMapping": {
-          "properties": [
-            {
-              "ldProperty": "MAIN_TITLE",
-              "bfProperty": "http://id.loc.gov/ontologies/bibframe/mainTitle"
-            },
-            {
-              "ldProperty": "SUBTITLE",
-              "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
-            }
-          ],
-          "label": [
-            "MAIN_TITLE",
-            "SUBTITLE"
-          ]
-        },
         "bfNameSpace": "http://id.loc.gov/sources/titles/",
         "ldResourceDef": {
           "typeSet": "TITLE",
@@ -43,9 +27,7 @@
         "bfResourceDef": {
           "typeSet": "http://id.loc.gov/ontologies/bibframe/Title",
           "predicate": "http://id.loc.gov/ontologies/bibframe/title"
-        }
-      },
-      {
+        },
         "resourceMapping": {
           "properties": [
             {
@@ -53,15 +35,72 @@
               "bfProperty": "http://id.loc.gov/ontologies/bibframe/mainTitle"
             },
             {
+              "ldProperty": "PART_NAME",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partName"
+            },
+            {
+              "ldProperty": "PART_NUMBER",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partNumber"
+            },
+            {
               "ldProperty": "SUBTITLE",
               "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
+            },
+            {
+              "ldProperty": "NON_SORT_NUM",
+              "bfProperty": "http://id.loc.gov/ontologies/bflc/nonSortNum"
             }
           ],
           "label": [
             "MAIN_TITLE",
             "SUBTITLE"
           ]
+        }
+      },
+      {
+        "bfNameSpace": "http://id.loc.gov/sources/titles/",
+        "ldResourceDef": {
+          "typeSet": "PARALLEL_TITLE",
+          "predicate": "TITLE"
         },
+        "bfResourceDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/ParallelTitle",
+          "predicate": "http://id.loc.gov/ontologies/bibframe/title"
+        },
+        "resourceMapping": {
+          "properties": [
+            {
+              "ldProperty": "MAIN_TITLE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/mainTitle"
+            },
+            {
+              "ldProperty": "PART_NAME",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partName"
+            },
+            {
+              "ldProperty": "PART_NUMBER",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partNumber"
+            },
+            {
+              "ldProperty": "SUBTITLE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
+            },
+            {
+              "ldProperty": "DATE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/date"
+            },
+            {
+              "ldProperty": "NOTE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/note"
+            }
+          ],
+          "label": [
+            "MAIN_TITLE",
+            "SUBTITLE"
+          ]
+        }
+      },
+      {
         "bfNameSpace": "http://id.loc.gov/sources/titles/",
         "ldResourceDef": {
           "typeSet": "VARIANT_TITLE",
@@ -70,17 +109,45 @@
         "bfResourceDef": {
           "typeSet": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
           "predicate": "http://id.loc.gov/ontologies/bibframe/title"
-        }
-      },
-      {
+        },
         "resourceMapping": {
           "properties": [
             {
-              "ldProperty": "LABEL",
-              "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+              "ldProperty": "MAIN_TITLE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/mainTitle"
+            },
+            {
+              "ldProperty": "PART_NAME",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partName"
+            },
+            {
+              "ldProperty": "PART_NUMBER",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/partNumber"
+            },
+            {
+              "ldProperty": "SUBTITLE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/subtitle"
+            },
+            {
+              "ldProperty": "DATE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/date"
+            },
+            {
+              "ldProperty": "NOTE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/note"
+            },
+            {
+              "ldProperty": "VARIANT_TYPE",
+              "bfProperty": "http://id.loc.gov/ontologies/bibframe/variantType"
             }
+          ],
+          "label": [
+            "MAIN_TITLE",
+            "SUBTITLE"
           ]
-        },
+        }
+      },
+      {
         "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/works/",
         "ldResourceDef": {
           "typeSet": "WORK",
@@ -89,6 +156,14 @@
         "bfResourceDef": {
           "typeSet": "http://id.loc.gov/ontologies/bibframe/Work",
           "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf"
+        },
+        "resourceMapping": {
+          "properties": [
+            {
+              "ldProperty": "LABEL",
+              "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+            }
+          ]
         }
       }
     ]
