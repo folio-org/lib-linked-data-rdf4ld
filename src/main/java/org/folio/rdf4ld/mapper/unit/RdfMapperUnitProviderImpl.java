@@ -14,22 +14,22 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-public class MapperUnitProviderImpl implements MapperUnitProvider {
-  private final BaseMapperUnit baseMapperUnit;
-  private final Set<MapperUnit> mapperUnits;
+public class RdfMapperUnitProviderImpl implements RdfMapperUnitProvider {
+  private final BaseRdfMapperUnit baseMapperUnit;
+  private final Set<RdfMapperUnit> rdfMapperUnits;
 
-  public MapperUnitProviderImpl(@Lazy BaseMapperUnit baseMapperUnit,
-                                @Lazy Set<MapperUnit> mapperUnits) {
+  public RdfMapperUnitProviderImpl(@Lazy BaseRdfMapperUnit baseMapperUnit,
+                                   @Lazy Set<RdfMapperUnit> rdfMapperUnits) {
     this.baseMapperUnit = baseMapperUnit;
-    this.mapperUnits = mapperUnits;
+    this.rdfMapperUnits = rdfMapperUnits;
   }
 
   @Override
-  public MapperUnit getMapper(LdResourceDef ldResourceDef) {
-    return mapperUnits.stream()
-      .filter(m -> m.getClass().isAnnotationPresent(MapperDefinition.class))
+  public RdfMapperUnit getMapper(LdResourceDef ldResourceDef) {
+    return rdfMapperUnits.stream()
+      .filter(m -> m.getClass().isAnnotationPresent(RdfMapperDefinition.class))
       .filter(m -> {
-        var annotation = m.getClass().getAnnotation(MapperDefinition.class);
+        var annotation = m.getClass().getAnnotation(RdfMapperDefinition.class);
         return isNull(ldResourceDef.getTypeSet()) || ldResourceDef.getTypeSet().equals(toSet(annotation.types()))
           && isNull(ldResourceDef.getPredicate()) || ldResourceDef.getPredicate() == annotation.predicate();
       })

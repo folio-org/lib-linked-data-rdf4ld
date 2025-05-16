@@ -18,7 +18,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.PropertyMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private static final String TYPE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-  private final MapperUnitProvider mapperUnitProvider;
+  private final RdfMapperUnitProvider rdfMapperUnitProvider;
   private final ObjectMapper objectMapper;
 
   @Override
@@ -74,7 +74,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private Set<Resource> mapEdgeTargets(Model model, ResourceMapping edgeMapping) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
-    var mapperUnit = mapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
+    var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectResources(model, edgeMapping.getBfResourceDef().getTypeSet())
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
         edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))

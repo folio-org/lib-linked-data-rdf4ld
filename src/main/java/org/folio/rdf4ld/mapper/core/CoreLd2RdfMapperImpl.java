@@ -9,14 +9,14 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
-  private final MapperUnitProvider mapperUnitProvider;
+  private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
   public IRI getResourceIri(String nameSpace, String id) {
@@ -47,7 +47,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
       .forEach(oem -> {
-        var mapper = mapperUnitProvider.getMapper(oem.getLdResourceDef());
+        var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
         mapper.mapToBibframe(edge.getTarget(), modelBuilder, resourceMapping, oem.getBfNameSpace(),
           oem.getBfResourceDef().getTypeSet());
         linkResources(modelBuilder, edge, nameSpace, oem.getBfNameSpace(), oem.getBfResourceDef().getPredicate());

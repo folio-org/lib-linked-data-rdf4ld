@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
-import org.folio.rdf4ld.mapper.unit.MapperUnit;
-import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.LdResourceDef;
 import org.folio.rdf4ld.model.ResourceMapping;
@@ -34,7 +34,7 @@ class Rdf4LdMapperTest {
   @Mock
   private CoreRdf2LdMapper coreRdf2LdMapper;
   @Mock
-  private MapperUnitProvider mapperUnitProvider;
+  private RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Test
   void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
@@ -63,8 +63,8 @@ class Rdf4LdMapperTest {
     ).when(mappingProfileReader).getInstanceBibframe20Profile();
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
     doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectResources(any(), any());
-    var mapper = mock(MapperUnit.class);
-    doReturn(mapper).when(mapperUnitProvider).getMapper(any());
+    var mapper = mock(RdfMapperUnit.class);
+    doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
     doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any(), any());
 
@@ -82,7 +82,7 @@ class Rdf4LdMapperTest {
       .bfResourceDef(new BfResourceDef())
       .ldResourceDef(new LdResourceDef())
     ).when(mappingProfileReader).getInstanceBibframe20Profile();
-    doReturn(emptyMapper()).when(mapperUnitProvider).getMapper(any());
+    doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any());
 
     // when
     var result = topMapper.mapToBibframeRdfInstance(null);

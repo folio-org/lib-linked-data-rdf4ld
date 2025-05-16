@@ -7,7 +7,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
-import org.folio.rdf4ld.mapper.unit.MapperUnitProvider;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.util.MappingProfileReader;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   private final MappingProfileReader mappingProfileReader;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
-  private final MapperUnitProvider mapperUnitProvider;
+  private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
   public Set<Resource> mapToLdInstance(Model model) {
@@ -26,7 +26,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
-    var mapper = mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
+    var mapper = rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
     var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
     var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
     return coreRdf2LdMapper.selectResources(model, bfTypes)
@@ -42,7 +42,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   @Override
   public Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile) {
     var modelBuilder = new ModelBuilder();
-    mapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
+    rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
       .mapToBibframe(resource, modelBuilder, mappingProfile.getResourceMapping(), mappingProfile.getBfNameSpace(),
         mappingProfile.getBfResourceDef().getTypeSet());
     return modelBuilder.build();
