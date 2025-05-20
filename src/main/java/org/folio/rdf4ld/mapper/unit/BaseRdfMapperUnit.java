@@ -34,15 +34,15 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly) {
-    var ldResource = new Resource();
-    ldResource.setCreatedDate(new Date());
-    ldResource.setTypes(ldTypes);
-    ldResource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
-    setLabel(ldResource, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(), model, ldResource);
-    ldResource.setOutgoingEdges(outEdges);
-    ldResource.setId(hashService.hash(ldResource));
-    return ldResource;
+    var resource = new Resource();
+    resource.setCreatedDate(new Date());
+    resource.setTypes(ldTypes);
+    resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
+    setLabel(resource, resourceMapping);
+    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(), model, resource, rdfResource);
+    resource.setOutgoingEdges(outEdges);
+    resource.setId(hashService.hash(resource));
+    return resource;
   }
 
   private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {

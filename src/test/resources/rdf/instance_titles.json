@@ -177,5 +177,19 @@
         "@value": "VariantTitle variantType 2"
       }
     ]
+  },
+  {
+    "@id": "_:b117iddOtlocdOtgovresourcesinstances20572004",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Title"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "Not linked Title mainTitle 1"
+      },
+      {
+        "@value": "Not linked Title mainTitle 2"
+      }
+    ]
   }
 ]
