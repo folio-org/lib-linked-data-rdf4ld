@@ -29,7 +29,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
     var mapper = rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
     var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
     var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
-    return coreRdf2LdMapper.selectResources(model, bfTypes)
+    return coreRdf2LdMapper.selectSubjectsByType(model, bfTypes)
       .map(resource -> mapper.mapToLd(model, resource, mappingProfile.getResourceMapping(), ldTypes, true))
       .collect(Collectors.toSet());
   }

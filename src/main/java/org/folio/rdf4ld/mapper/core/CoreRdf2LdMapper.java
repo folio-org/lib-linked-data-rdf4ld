@@ -13,9 +13,10 @@ public interface CoreRdf2LdMapper {
 
   JsonNode mapDoc(org.eclipse.rdf4j.model.Resource resource, Model model, Set<PropertyMapping> propertyMappings);
 
-  Stream<org.eclipse.rdf4j.model.Resource> selectResources(Model model, Set<String> bfTypeSet);
+  Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByType(Model model, Set<String> bfTypeSet);
 
   Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                      Model model,
-                                     Resource parent);
+                                     Resource parent,
+                                     org.eclipse.rdf4j.model.Resource rdfParent);
 }

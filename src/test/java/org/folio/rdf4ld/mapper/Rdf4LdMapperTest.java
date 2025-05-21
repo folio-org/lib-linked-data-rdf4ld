@@ -44,7 +44,6 @@ class Rdf4LdMapperTest {
       .bfResourceDef(new BfResourceDef())
       .ldResourceDef(new LdResourceDef())
     ).when(mappingProfileReader).getInstanceBibframe20Profile();
-    doReturn(Stream.empty()).when(coreRdf2LdMapper).selectResources(any(), any());
 
     // when
     var result = topMapper.mapToLdInstance(model);
@@ -62,7 +61,7 @@ class Rdf4LdMapperTest {
       .ldResourceDef(new LdResourceDef())
     ).when(mappingProfileReader).getInstanceBibframe20Profile();
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
-    doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectResources(any(), any());
+    doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectSubjectsByType(any(), any());
     var mapper = mock(RdfMapperUnit.class);
     doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
@@ -76,7 +75,7 @@ class Rdf4LdMapperTest {
   }
 
   @Test
-  void mapToBibframeRdf_Instance_shouldReturnModelEnrichedByAccordingMapper() {
+  void mapToBibframeRdfInstance_shouldReturnModelEnrichedByAccordingMapper() {
     // given
     doReturn(new ResourceMapping()
       .bfResourceDef(new BfResourceDef())

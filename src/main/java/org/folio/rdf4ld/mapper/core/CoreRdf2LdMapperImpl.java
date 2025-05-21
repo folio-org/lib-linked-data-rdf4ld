@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -52,33 +54,56 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   }
 
   @Override
-  public Stream<org.eclipse.rdf4j.model.Resource> selectResources(Model model, Set<String> bfTypeSet) {
-    return model.stream()
-      .filter(st -> TYPE_IRI.equals(st.getPredicate().stringValue())
-        && bfTypeSet.contains(st.getObject().stringValue()))
+  public Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByType(Model model,
+                                                                       Set<String> bfTypeSet) {
+    return bfTypeSet.stream()
+      .map(type -> model.filter(null, Values.iri(TYPE_IRI), Values.iri(type)))
+      .flatMap(Collection::stream)
       .map(Statement::getSubject);
   }
 
   @Override
   public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                             Model model,
-                                            Resource parent) {
+                                            Resource parent,
+                                            org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
   }
 
-  private Set<Resource> mapEdgeTargets(Model model, ResourceMapping edgeMapping) {
+  private Set<Resource> mapEdgeTargets(Model model,
+                                       ResourceMapping edgeMapping,
+                                       org.eclipse.rdf4j.model.Resource parent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
-    return selectResources(model, edgeMapping.getBfResourceDef().getTypeSet())
+    return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),
+      edgeMapping.getBfResourceDef().getPredicate(), parent)
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
         edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
       .collect(toSet());
+  }
+
+  private Stream<org.eclipse.rdf4j.model.Resource> selectLinkedResources(Model model,
+                                                                         Set<String> bfTypeSet,
+                                                                         String bfPredicate,
+                                                                         org.eclipse.rdf4j.model.Resource parent) {
+    var linkedObjects = model.filter(parent, Values.iri(bfPredicate), null).objects();
+    return bfTypeSet.stream()
+      .flatMap(type -> selectSubjectsByObjectsAndType(model, linkedObjects, type));
+  }
+
+  private Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByObjectsAndType(Model model,
+                                                                                  Set<Value> objects,
+                                                                                  String type) {
+    return objects
+      .stream()
+      .map(object -> model.filter((org.eclipse.rdf4j.model.Resource) object, Values.iri(TYPE_IRI), Values.iri(type)))
+      .flatMap(m -> m.subjects().stream());
   }
 
 }

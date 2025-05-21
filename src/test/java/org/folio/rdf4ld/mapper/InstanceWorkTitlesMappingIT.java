@@ -1,9 +1,15 @@
 package org.folio.rdf4ld.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.test.TestUtil.getTitleLabel;
+import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithTitles;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -16,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class InstanceTitlesMappingIT {
+class InstanceWorkTitlesMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -24,17 +30,20 @@ class InstanceTitlesMappingIT {
   @Test
   void mapToLd_InstanceTitles_shouldReturnMappedInstanceWithTitles() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
+    var input = this.getClass().getResourceAsStream("/rdf/instance_work_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
     var result = rdf4LdMapper.mapToLdInstance(model);
 
     // then
-    assertThat(result).isNotEmpty().hasSize(1);
+    assertThat(result).hasSize(1);
     var instance = result.iterator().next();
     validateResourceWithTitles(instance, "");
-    assertThat(instance.getOutgoingEdges()).hasSize(3);
+    assertThat(instance.getOutgoingEdges()).hasSize(4);
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK),
+      Map.of(), getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ")
+    );
   }
 
 }
