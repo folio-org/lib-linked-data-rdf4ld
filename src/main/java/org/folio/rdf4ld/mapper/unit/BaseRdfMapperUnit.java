@@ -6,6 +6,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -33,13 +34,14 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
                           org.eclipse.rdf4j.model.Resource rdfResource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly) {
+                          Boolean localOnly, Function<String, Resource> resourceProvider) {
     var resource = new Resource();
     resource.setCreatedDate(new Date());
     resource.setTypes(ldTypes);
     resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
     setLabel(resource, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(), model, resource, rdfResource);
+    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(), model, resource, rdfResource,
+      resourceProvider);
     resource.setOutgoingEdges(outEdges);
     resource.setId(hashService.hash(resource));
     return resource;
