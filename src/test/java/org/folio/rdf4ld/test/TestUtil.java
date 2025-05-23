@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.eclipse.rdf4j.model.Model;
@@ -91,7 +92,8 @@ public class TestUtil {
       @Override
       public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
                               ResourceInternalMapping resourceMapping,
-                              Set<ResourceTypeDictionary> ldTypes, Boolean localOnly) {
+                              Set<ResourceTypeDictionary> ldTypes, Boolean localOnly,
+                              Function<String, Resource> resourceProvider) {
         return new Resource();
       }
 

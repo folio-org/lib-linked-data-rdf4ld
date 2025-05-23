@@ -289,6 +289,27 @@
                   "SUBTITLE"
                 ]
               }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/authorities/genreForms/",
+              "ldResourceDef": {
+                "typeSet": "FORM",
+                "predicate": "GENRE"
+              },
+              "bfResourceDef": {
+                "typeSet": "http://id.loc.gov/ontologies/bibframe/GenreForm",
+                "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm"
+              }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/subjects/",
+              "ldResourceDef": {
+                "typeSet": "CONCEPT",
+                "predicate": "SUBJECT"
+              },
+              "bfResourceDef": {
+                "predicate": "http://id.loc.gov/ontologies/bibframe/subject"
+              }
             }
           ]
         }
