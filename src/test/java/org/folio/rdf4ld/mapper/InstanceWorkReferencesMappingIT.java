@@ -60,6 +60,37 @@ class InstanceWorkReferencesMappingIT {
       ));
   }
 
+  @Test
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithReferenceIds() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/instance_work_references_ids.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var genreForm = new Resource().setId(1L).setLabel("genreForm");
+    var subjectAgent = new Resource().setId(2L).setLabel("subjectAgent");
+    var subjectTopic = new Resource().setId(3L).setLabel("subjectTopic");
+    var foundByLccnResources = Map.of(
+      "gf2014026339", genreForm,
+      "n79026681", subjectAgent,
+      "sh85070981", subjectTopic
+    );
+
+    // when
+    var result = rdf4LdMapper.mapToLdInstance(model, foundByLccnResources::get);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+      work -> validateWork(work,
+        new ResourceEdge(work, genreForm, GENRE),
+        new ResourceEdge(work, subjectAgent, SUBJECT),
+        new ResourceEdge(work, subjectTopic, SUBJECT)
+      ));
+  }
+
   private void validateWork(Resource work, ResourceEdge... edges) {
     assertThat(work.getId()).isNotNull();
     assertThat(work.getIncomingEdges()).isEmpty();

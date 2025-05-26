@@ -297,7 +297,6 @@
                 "predicate": "GENRE"
               },
               "bfResourceDef": {
-                "typeSet": "http://id.loc.gov/ontologies/bibframe/GenreForm",
                 "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm"
               }
             },
