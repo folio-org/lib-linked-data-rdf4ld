@@ -1,9 +1,9 @@
 package org.folio.rdf4ld.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class InstanceWorkReferencesMappingIT {
+class InstanceWorkAgentsMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -32,15 +32,13 @@ class InstanceWorkReferencesMappingIT {
   @Test
   void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithReferences() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance_work_references.json");
+    var input = this.getClass().getResourceAsStream("/rdf/instance_work_agents.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    var genreForm = new Resource().setId(1L).setLabel("genreForm");
-    var subjectAgent = new Resource().setId(2L).setLabel("subjectAgent");
-    var subjectTopic = new Resource().setId(3L).setLabel("subjectTopic");
+    var creator = new Resource().setId(1L).setLabel("creator");
+    var contributor = new Resource().setId(2L).setLabel("contributor");
     var foundByLccnResources = Map.of(
-      "gf2014026339", genreForm,
-      "n79026681", subjectAgent,
-      "sh85070981", subjectTopic
+      "n2021004098", creator,
+      "n2021004092", contributor
     );
 
     // when
@@ -54,9 +52,8 @@ class InstanceWorkReferencesMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
       work -> validateWork(work,
-        new ResourceEdge(work, genreForm, GENRE),
-        new ResourceEdge(work, subjectAgent, SUBJECT),
-        new ResourceEdge(work, subjectTopic, SUBJECT)
+        new ResourceEdge(work, creator, CREATOR),
+        new ResourceEdge(work, contributor, CONTRIBUTOR)
       ));
   }
 

@@ -310,6 +310,31 @@
               "bfResourceDef": {
                 "predicate": "http://id.loc.gov/ontologies/bibframe/subject"
               }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/contributions/",
+              "ldResourceDef": {
+                "predicate": "CREATOR"
+              },
+              "bfResourceDef": {
+                "typeSet": [
+                  "http://id.loc.gov/ontologies/bibframe/Contribution",
+                  "http://id.loc.gov/ontologies/bibframe/PrimaryContribution"
+                ],
+                "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/contributions/",
+              "ldResourceDef": {
+                "predicate": "CONTRIBUTOR"
+              },
+              "bfResourceDef": {
+                "typeSet": [
+                  "http://id.loc.gov/ontologies/bibframe/Contribution"
+                ],
+                "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              }
             }
           ]
         }

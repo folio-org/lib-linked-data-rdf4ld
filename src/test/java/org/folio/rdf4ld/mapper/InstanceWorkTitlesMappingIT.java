@@ -28,7 +28,7 @@ class InstanceWorkTitlesMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLdInstance_shouldReturnMappedInstanceWithTitles() throws IOException {
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithTitles() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_work_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);

@@ -11,7 +11,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 @Target(ElementType.TYPE)
 public @interface RdfMapperDefinition {
 
-  ResourceTypeDictionary[] types();
+  ResourceTypeDictionary[] types() default {};
 
   PredicateDictionary predicate() default PredicateDictionary.NULL;
 
