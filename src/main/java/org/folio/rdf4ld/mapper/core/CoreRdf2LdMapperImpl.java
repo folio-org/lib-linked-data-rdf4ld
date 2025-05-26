@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
                                             Model model,
                                             Resource parent,
                                             org.eclipse.rdf4j.model.Resource rdfParent,
-                                            Function<String, Resource> resourceProvider) {
+                                            Function<String, Optional<Resource>> resourceProvider) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
@@ -83,7 +84,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
                                        org.eclipse.rdf4j.model.Resource parent,
-                                       Function<String, Resource> resourceProvider) {
+                                       Function<String, Optional<Resource>> resourceProvider) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),

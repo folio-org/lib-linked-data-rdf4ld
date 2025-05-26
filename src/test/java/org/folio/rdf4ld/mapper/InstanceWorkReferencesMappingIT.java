@@ -9,6 +9,7 @@ import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -44,7 +45,7 @@ class InstanceWorkReferencesMappingIT {
     );
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model, foundByLccnResources::get);
+    var result = rdf4LdMapper.mapToLdInstance(model, key -> Optional.of(foundByLccnResources.get(key)));
 
     // then
     assertThat(result).hasSize(1);
@@ -75,7 +76,7 @@ class InstanceWorkReferencesMappingIT {
     );
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model, foundByLccnResources::get);
+    var result = rdf4LdMapper.mapToLdInstance(model, key -> Optional.of(foundByLccnResources.get(key)));
 
     // then
     assertThat(result).hasSize(1);

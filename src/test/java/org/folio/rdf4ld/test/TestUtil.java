@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -93,7 +94,7 @@ public class TestUtil {
       public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
                               ResourceInternalMapping resourceMapping,
                               Set<ResourceTypeDictionary> ldTypes, Boolean localOnly,
-                              Function<String, Resource> resourceProvider) {
+                              Function<String, Optional<Resource>> resourceProvider) {
         return new Resource();
       }
 

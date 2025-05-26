@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.unit;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.eclipse.rdf4j.model.Model;
@@ -15,7 +16,7 @@ public interface RdfMapperUnit {
                    ResourceInternalMapping resourceMapping,
                    Set<ResourceTypeDictionary> ldTypes,
                    Boolean localOnly,
-                   Function<String, Resource> resourceProvider);
+                   Function<String, Optional<Resource>> resourceProvider);
 
   void mapToBibframe(Resource resource,
                      ModelBuilder modelBuilder,

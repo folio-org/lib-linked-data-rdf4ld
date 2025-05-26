@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.unit.monograph.agent;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +27,15 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly,
-                          Function<String, Resource> resourceProvider) {
+                          Function<String, Optional<Resource>> resourceProvider) {
     var agentResources = model.filter(resource, Values.iri(AGENT_PREDICATE), null).objects();
     if (agentResources.isEmpty()) {
       log.warn("No agent resources found for contribution resource: {}", resource);
       return null;
     }
     var lccn = ((SimpleIRI) agentResources.iterator().next()).getLocalName();
-    return resourceProvider.apply(lccn);
+    return resourceProvider.apply(lccn)
+      .orElse(null);
   }
 
   @Override

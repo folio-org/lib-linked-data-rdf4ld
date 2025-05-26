@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
                           org.eclipse.rdf4j.model.Resource rdfResource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly, Function<String, Resource> resourceProvider) {
+                          Boolean localOnly, Function<String, Optional<Resource>> resourceProvider) {
     var resource = new Resource();
     resource.setCreatedDate(new Date());
     resource.setTypes(ldTypes);

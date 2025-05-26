@@ -301,7 +301,7 @@
               }
             },
             {
-              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/subjects/",
+              "bfNameSpace": "http://id.loc.gov/authorities/subjects/",
               "ldResourceDef": {
                 "typeSet": "CONCEPT",
                 "predicate": "SUBJECT"
@@ -311,7 +311,6 @@
               }
             },
             {
-              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/contributions/",
               "ldResourceDef": {
                 "predicate": "CREATOR"
               },
@@ -324,14 +323,11 @@
               }
             },
             {
-              "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/contributions/",
               "ldResourceDef": {
                 "predicate": "CONTRIBUTOR"
               },
               "bfResourceDef": {
-                "typeSet": [
-                  "http://id.loc.gov/ontologies/bibframe/Contribution"
-                ],
+                "typeSet": "http://id.loc.gov/ontologies/bibframe/Contribution",
                 "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
               }
             }

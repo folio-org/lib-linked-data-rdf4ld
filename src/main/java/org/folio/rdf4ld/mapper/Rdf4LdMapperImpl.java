@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,12 +22,14 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
-  public Set<Resource> mapToLdInstance(Model model, Function<String, Resource> resourceProvider) {
+  public Set<Resource> mapToLdInstance(Model model, Function<String, Optional<Resource>> resourceProvider) {
     return mapToLd(model, resourceProvider, mappingProfileReader.getInstanceBibframe20Profile());
   }
 
   @Override
-  public Set<Resource> mapToLd(Model model, Function<String, Resource> resourceProvider, ResourceMapping mapping) {
+  public Set<Resource> mapToLd(Model model,
+                               Function<String, Optional<Resource>> resourceProvider,
+                               ResourceMapping mapping) {
     var mapper = rdfMapperUnitProvider.getMapper(mapping.getLdResourceDef());
     var ldTypes = mapping.getLdResourceDef().getTypeSet();
     var bfTypes = mapping.getBfResourceDef().getTypeSet();

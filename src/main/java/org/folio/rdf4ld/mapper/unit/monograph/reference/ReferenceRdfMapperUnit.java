@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,10 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly,
-                          Function<String, Resource> resourceProvider) {
+                          Function<String, Optional<Resource>> resourceProvider) {
     var lccn = ((SimpleIRI) resource).getLocalName();
-    return resourceProvider.apply(lccn);
+    return resourceProvider.apply(lccn)
+      .orElse(null);
   }
 
   @Override

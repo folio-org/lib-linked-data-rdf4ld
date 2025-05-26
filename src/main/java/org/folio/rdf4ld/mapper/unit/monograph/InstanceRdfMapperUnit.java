@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class InstanceRdfMapperUnit implements RdfMapperUnit {
                           ResourceInternalMapping mapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly,
-                          Function<String, Resource> resourceProvider) {
+                          Function<String, Optional<Resource>> resourceProvider) {
     var instance = baseRdfMapperUnit.mapToLd(model, resource, mapping, ldTypes, localOnly, resourceProvider);
     instance.setLabel(getPrimaryMainTitle(instance));
     return instance;
