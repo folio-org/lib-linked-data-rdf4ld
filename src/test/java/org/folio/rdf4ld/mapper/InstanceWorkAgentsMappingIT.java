@@ -31,7 +31,7 @@ class InstanceWorkAgentsMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithReferences() throws IOException {
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithAgents() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_work_agents.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
@@ -56,6 +56,34 @@ class InstanceWorkAgentsMappingIT {
         new ResourceEdge(work, creator, CREATOR),
         new ResourceEdge(work, contributor, CONTRIBUTOR)
       ));
+  }
+
+  @Test
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithAgentIds() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/instance_work_agents_ids.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var creator = new Resource().setId(1L).setLabel("creator");
+    var contributor = new Resource().setId(2L).setLabel("contributor");
+    var foundByLccnResources = Map.of(
+            "n2021004098", creator,
+            "n2021004092", contributor
+    );
+
+    // when
+    var result = rdf4LdMapper.mapToLdInstance(model, key -> Optional.of(foundByLccnResources.get(key)));
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+            work -> validateWork(work,
+                    new ResourceEdge(work, creator, CREATOR),
+                    new ResourceEdge(work, contributor, CONTRIBUTOR)
+            ));
   }
 
   private void validateWork(Resource work, ResourceEdge... edges) {
