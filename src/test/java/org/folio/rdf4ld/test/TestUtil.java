@@ -29,6 +29,7 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 
@@ -146,5 +147,11 @@ public class TestUtil {
   public static String getTitleLabel(String prefix, String titleType) {
     return prefix + titleType + " mainTitle 1, " + prefix + titleType + " mainTitle 2, "
       + prefix + titleType + " subTitle 1, " + prefix + titleType + " subTitle 2";
+  }
+
+  public static void validateResourceWithGivenEdges(Resource resource, ResourceEdge... edges) {
+    assertThat(resource.getId()).isNotNull();
+    assertThat(resource.getIncomingEdges()).isEmpty();
+    assertThat(resource.getOutgoingEdges()).containsOnly(edges);
   }
 }

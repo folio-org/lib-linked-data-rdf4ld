@@ -103,7 +103,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .stream()
       .map(Statement::getObject)
       .filter(Value::isResource)
-      .map(value -> (org.eclipse.rdf4j.model.Resource) value)
+      .map(org.eclipse.rdf4j.model.Resource.class::cast)
       .filter(child -> bfTypeSet.isEmpty() || bfTypeSet.equals(getAllTypes(model, child)));
   }
 

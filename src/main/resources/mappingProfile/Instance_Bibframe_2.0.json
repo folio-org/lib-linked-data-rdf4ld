@@ -158,8 +158,6 @@
           "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf"
         },
         "resourceMapping": {
-          "properties": [
-          ],
           "outgoingEdges": [
             {
               "bfNameSpace": "http://id.loc.gov/sources/titles/",
@@ -320,6 +318,15 @@
                   "http://id.loc.gov/ontologies/bibframe/PrimaryContribution"
                 ],
                 "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              },
+              "resourceMapping": {
+                "outgoingEdges": [
+                  {
+                    "bfResourceDef": {
+                      "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+                    }
+                  }
+                ]
               }
             },
             {
@@ -329,6 +336,15 @@
               "bfResourceDef": {
                 "typeSet": "http://id.loc.gov/ontologies/bibframe/Contribution",
                 "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              },
+              "resourceMapping": {
+                "outgoingEdges": [
+                  {
+                    "bfResourceDef": {
+                      "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+                    }
+                  }
+                ]
               }
             }
           ]

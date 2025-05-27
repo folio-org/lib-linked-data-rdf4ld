@@ -1,5 +1,8 @@
 package org.folio.rdf4ld.mapper.unit.monograph.agent;
 
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -13,28 +16,55 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
+import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 
 @Log4j2
 @RequiredArgsConstructor
 public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
-  private static final String AGENT_PREDICATE = "http://id.loc.gov/ontologies/bibframe/agent";
   private final BaseRdfMapperUnit baseRdfMapperUnit;
 
   @Override
   public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
+                          org.eclipse.rdf4j.model.Resource contributionResource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
                           Boolean localOnly,
                           Function<String, Optional<Resource>> resourceProvider) {
-    var agentResources = model.filter(resource, Values.iri(AGENT_PREDICATE), null).objects();
-    if (agentResources.isEmpty()) {
-      log.warn("No agent resources found for contribution resource: {}", resource);
+    var agentPredicate = getAgentPredicate(resourceMapping);
+    if (isNull(agentPredicate)) {
+      log.warn("No agent predicate was provided in Contribution mapping of ldTypes [{}]", ldTypes);
       return null;
     }
-    var lccn = ((SimpleIRI) agentResources.iterator().next()).getLocalName();
+    var agentResource = getAgentResource(model, contributionResource, agentPredicate);
+    if (isNull(agentResource)) {
+      log.warn("No agent resource was found for Contribution of ldTypes: {}", ldTypes);
+      return null;
+    }
+    var lccn = agentResource.getLocalName();
     return resourceProvider.apply(lccn)
+      .orElse(null);
+  }
+
+  private String getAgentPredicate(ResourceInternalMapping resourceMapping) {
+    return ofNullable(resourceMapping)
+      .map(ResourceInternalMapping::getOutgoingEdges)
+      .map(Set::iterator)
+      .map(i -> i.hasNext() ? i.next() : null)
+      .map(ResourceMapping::getBfResourceDef)
+      .map(BfResourceDef::getPredicate)
+      .orElse(null);
+  }
+
+  private SimpleIRI getAgentResource(Model model,
+                                     org.eclipse.rdf4j.model.Resource contributionResource,
+                                     String agentPredicate) {
+    return model.filter(contributionResource, Values.iri(agentPredicate), null)
+      .objects()
+      .stream()
+      .map(SimpleIRI.class::cast)
+      .findFirst()
       .orElse(null);
   }
 

@@ -22,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class InstanceWorkTitlesMappingIT {
+class WorkTitlesMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
