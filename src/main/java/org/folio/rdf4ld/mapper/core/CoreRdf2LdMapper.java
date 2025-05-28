@@ -1,9 +1,7 @@
 package org.folio.rdf4ld.mapper.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import org.eclipse.rdf4j.model.Model;
 import org.folio.ld.dictionary.model.Resource;
@@ -20,6 +18,5 @@ public interface CoreRdf2LdMapper {
   Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                      Model model,
                                      Resource parent,
-                                     org.eclipse.rdf4j.model.Resource rdfParent,
-                                     Function<String, Optional<Resource>> resourceProvider);
+                                     org.eclipse.rdf4j.model.Resource rdfParent);
 }

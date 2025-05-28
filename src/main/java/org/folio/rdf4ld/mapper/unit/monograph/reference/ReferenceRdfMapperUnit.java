@@ -16,14 +16,14 @@ import org.folio.rdf4ld.model.ResourceInternalMapping;
 @RequiredArgsConstructor
 public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<String, Optional<Resource>> resourceProvider;
 
   @Override
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource resource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly,
-                          Function<String, Optional<Resource>> resourceProvider) {
+                          Boolean localOnly) {
     var lccn = ((SimpleIRI) resource).getLocalName();
     return resourceProvider.apply(lccn)
       .orElse(null);

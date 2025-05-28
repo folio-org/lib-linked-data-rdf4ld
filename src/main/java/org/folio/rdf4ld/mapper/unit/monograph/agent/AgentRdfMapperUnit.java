@@ -24,14 +24,14 @@ import org.folio.rdf4ld.model.ResourceMapping;
 @RequiredArgsConstructor
 public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<String, Optional<Resource>> resourceProvider;
 
   @Override
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource contributionResource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly,
-                          Function<String, Optional<Resource>> resourceProvider) {
+                          Boolean localOnly) {
     var agentPredicate = getAgentPredicate(resourceMapping);
     if (isNull(agentPredicate)) {
       log.warn("No agent predicate was provided in Contribution mapping of ldTypes [{}]", ldTypes);

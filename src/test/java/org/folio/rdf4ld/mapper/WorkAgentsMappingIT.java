@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -7,11 +8,14 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.Resource;
@@ -23,6 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 @EnableConfigurationProperties
@@ -31,6 +36,8 @@ class WorkAgentsMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
+  @MockitoBean
+  private Function<String, Optional<Resource>> resourceProvider;
 
   @ParameterizedTest
   @ValueSource(strings = {
@@ -47,9 +54,11 @@ class WorkAgentsMappingIT {
       "n2021004098", creator,
       "n2021004092", contributor
     );
+    when(resourceProvider.apply(anyString()))
+      .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model, key -> Optional.of(foundByLccnResources.get(key)));
+    var result = rdf4LdMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).hasSize(1);

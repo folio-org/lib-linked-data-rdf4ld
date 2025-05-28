@@ -28,7 +28,7 @@ class InstanceTitlesMappingIT {
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model, null);
+    var result = rdf4LdMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).isNotEmpty().hasSize(1);

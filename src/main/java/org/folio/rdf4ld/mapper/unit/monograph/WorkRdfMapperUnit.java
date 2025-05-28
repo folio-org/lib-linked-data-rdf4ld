@@ -4,9 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -29,9 +27,8 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
                           org.eclipse.rdf4j.model.Resource resource,
                           ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly,
-                          Function<String, Optional<Resource>> resourceProvider) {
-    var work = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly, resourceProvider);
+                          Boolean localOnly) {
+    var work = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
     work.setLabel(getPrimaryMainTitle(work));
     return work;
   }

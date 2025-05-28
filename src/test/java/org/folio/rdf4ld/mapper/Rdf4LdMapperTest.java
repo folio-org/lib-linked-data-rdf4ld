@@ -46,7 +46,7 @@ class Rdf4LdMapperTest {
     ).when(mappingProfileReader).getInstanceBibframe20Profile();
 
     // when
-    var result = topMapper.mapToLdInstance(model, null);
+    var result = topMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).isEmpty();
@@ -65,10 +65,10 @@ class Rdf4LdMapperTest {
     var mapper = mock(RdfMapperUnit.class);
     doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
-    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any(), any(), any());
+    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any(), any());
 
     // when
-    var result = topMapper.mapToLdInstance(model, null);
+    var result = topMapper.mapToLdInstance(model);
 
     // then
     assertThat(result).hasSize(1).contains(expectedResource);

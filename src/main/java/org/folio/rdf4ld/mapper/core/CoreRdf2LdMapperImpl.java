@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -70,12 +68,11 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                             Model model,
                                             Resource parent,
-                                            org.eclipse.rdf4j.model.Resource rdfParent,
-                                            Function<String, Optional<Resource>> resourceProvider) {
+                                            org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem, rdfParent, resourceProvider).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
@@ -83,14 +80,13 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
-                                       org.eclipse.rdf4j.model.Resource parent,
-                                       Function<String, Optional<Resource>> resourceProvider) {
+                                       org.eclipse.rdf4j.model.Resource parent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),
       edgeMapping.getBfResourceDef().getPredicate(), parent)
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
-        edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly(), resourceProvider))
+        edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
       .filter(Objects::nonNull)
       .collect(toSet());
   }

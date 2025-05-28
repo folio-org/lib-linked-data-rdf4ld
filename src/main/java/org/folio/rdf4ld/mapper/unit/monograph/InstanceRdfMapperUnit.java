@@ -3,9 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -26,11 +24,10 @@ public class InstanceRdfMapperUnit implements RdfMapperUnit {
   @Override
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource resource,
-                          ResourceInternalMapping mapping,
+                          ResourceInternalMapping resourceMapping,
                           Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly,
-                          Function<String, Optional<Resource>> resourceProvider) {
-    var instance = baseRdfMapperUnit.mapToLd(model, resource, mapping, ldTypes, localOnly, resourceProvider);
+                          Boolean localOnly) {
+    var instance = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
     instance.setLabel(getPrimaryMainTitle(instance));
     return instance;
   }
