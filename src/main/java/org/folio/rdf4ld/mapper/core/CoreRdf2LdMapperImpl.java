@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
@@ -85,6 +87,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       edgeMapping.getBfResourceDef().getPredicate(), parent)
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
         edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
+      .filter(Objects::nonNull)
       .collect(toSet());
   }
 
@@ -92,18 +95,20 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
                                                                          Set<String> bfTypeSet,
                                                                          String bfPredicate,
                                                                          org.eclipse.rdf4j.model.Resource parent) {
-    var linkedObjects = model.filter(parent, Values.iri(bfPredicate), null).objects();
-    return bfTypeSet.stream()
-      .flatMap(type -> selectSubjectsByObjectsAndType(model, linkedObjects, type));
+    return model.filter(parent, Values.iri(bfPredicate), null)
+      .stream()
+      .map(Statement::getObject)
+      .filter(Value::isResource)
+      .map(org.eclipse.rdf4j.model.Resource.class::cast)
+      .filter(child -> bfTypeSet.isEmpty() || bfTypeSet.equals(getAllTypes(model, child)));
   }
 
-  private Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByObjectsAndType(Model model,
-                                                                                  Set<Value> objects,
-                                                                                  String type) {
-    return objects
+  private Set<String> getAllTypes(Model model, org.eclipse.rdf4j.model.Resource resource) {
+    return model.filter(resource, Values.iri(TYPE_IRI), null)
       .stream()
-      .map(object -> model.filter((org.eclipse.rdf4j.model.Resource) object, Values.iri(TYPE_IRI), Values.iri(type)))
-      .flatMap(m -> m.subjects().stream());
+      .map(Statement::getObject)
+      .map(Value::stringValue)
+      .collect(Collectors.toSet());
   }
 
 }

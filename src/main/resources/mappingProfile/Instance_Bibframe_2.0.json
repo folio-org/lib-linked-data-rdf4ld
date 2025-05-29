@@ -158,8 +158,6 @@
           "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf"
         },
         "resourceMapping": {
-          "properties": [
-          ],
           "outgoingEdges": [
             {
               "bfNameSpace": "http://id.loc.gov/sources/titles/",
@@ -287,6 +285,65 @@
                 "label": [
                   "MAIN_TITLE",
                   "SUBTITLE"
+                ]
+              }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/authorities/genreForms/",
+              "ldResourceDef": {
+                "typeSet": "FORM",
+                "predicate": "GENRE"
+              },
+              "bfResourceDef": {
+                "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm"
+              }
+            },
+            {
+              "bfNameSpace": "http://id.loc.gov/authorities/subjects/",
+              "ldResourceDef": {
+                "typeSet": "CONCEPT",
+                "predicate": "SUBJECT"
+              },
+              "bfResourceDef": {
+                "predicate": "http://id.loc.gov/ontologies/bibframe/subject"
+              }
+            },
+            {
+              "ldResourceDef": {
+                "predicate": "CREATOR"
+              },
+              "bfResourceDef": {
+                "typeSet": [
+                  "http://id.loc.gov/ontologies/bibframe/Contribution",
+                  "http://id.loc.gov/ontologies/bibframe/PrimaryContribution"
+                ],
+                "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              },
+              "resourceMapping": {
+                "outgoingEdges": [
+                  {
+                    "bfResourceDef": {
+                      "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "ldResourceDef": {
+                "predicate": "CONTRIBUTOR"
+              },
+              "bfResourceDef": {
+                "typeSet": "http://id.loc.gov/ontologies/bibframe/Contribution",
+                "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+              },
+              "resourceMapping": {
+                "outgoingEdges": [
+                  {
+                    "bfResourceDef": {
+                      "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+                    }
+                  }
                 ]
               }
             }

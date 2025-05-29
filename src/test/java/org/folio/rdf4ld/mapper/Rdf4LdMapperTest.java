@@ -53,7 +53,7 @@ class Rdf4LdMapperTest {
   }
 
   @Test
-  void mapToLd_Instance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
+  void mapToLdInstance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
     var model = new ModelBuilder().build();
     doReturn(new ResourceMapping()

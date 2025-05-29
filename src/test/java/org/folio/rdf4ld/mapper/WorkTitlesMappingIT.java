@@ -22,13 +22,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class InstanceWorkTitlesMappingIT {
+class WorkTitlesMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLd_InstanceTitles_shouldReturnMappedInstanceWithTitles() throws IOException {
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithTitles() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_work_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);

@@ -26,7 +26,7 @@ class InstanceMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLd_Instance_shouldReturnMappedInstance() throws IOException {
+  void mapToLdInstance_shouldReturnMappedInstance() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
