@@ -23,7 +23,7 @@ public class BackupBeanConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean
+  @ConditionalOnMissingBean(name = "lccnResourceProvider")
   public Function<String, Optional<Resource>> dummyResourceProvider() {
     return s -> Optional.empty();
   }
