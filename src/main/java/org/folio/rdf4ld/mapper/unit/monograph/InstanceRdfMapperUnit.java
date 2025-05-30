@@ -9,6 +9,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(types = INSTANCE)
 public class InstanceRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final FingerprintHashService hashService;
 
   @Override
   public Resource mapToLd(Model model,
@@ -29,6 +31,7 @@ public class InstanceRdfMapperUnit implements RdfMapperUnit {
                           Boolean localOnly) {
     var instance = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
     instance.setLabel(getPrimaryMainTitle(instance));
+    instance.setId(hashService.hash(instance));
     return instance;
   }
 
