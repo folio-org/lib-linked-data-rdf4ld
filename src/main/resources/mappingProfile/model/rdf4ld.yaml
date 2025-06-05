@@ -8,4 +8,4 @@ paths: {}
 components:
   schemas:
     mappingProfile:
-      $ref: schema/resourceMapping.json
+      $ref: schema/mappingProfile.json

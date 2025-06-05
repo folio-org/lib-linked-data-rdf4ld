@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashMap;
 import java.util.stream.Stream;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
@@ -14,6 +15,7 @@ import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.LdResourceDef;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.util.MappingProfileReader;
 import org.folio.spring.testing.type.UnitTest;
@@ -40,10 +42,12 @@ class Rdf4LdMapperTest {
   void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
     // given
     var model = new ModelBuilder().build();
-    doReturn(new ResourceMapping()
-      .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+    var mappingProfile = new MappingProfile()
+      .resourceMapping(new ResourceMapping()
+        .bfResourceDef(new BfResourceDef())
+        .ldResourceDef(new LdResourceDef()))
+        .roleMapping(new HashMap<>());
+    doReturn(mappingProfile).when(mappingProfileReader).getInstanceBibframe20Profile();
 
     // when
     var result = topMapper.mapToLdInstance(model);
@@ -56,10 +60,12 @@ class Rdf4LdMapperTest {
   void mapToLdInstance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
     var model = new ModelBuilder().build();
-    doReturn(new ResourceMapping()
-      .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+    var mappingProfile = new MappingProfile()
+      .resourceMapping(new ResourceMapping()
+        .bfResourceDef(new BfResourceDef())
+        .ldResourceDef(new LdResourceDef()))
+      .roleMapping(new HashMap<>());
+    doReturn(mappingProfile).when(mappingProfileReader).getInstanceBibframe20Profile();
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
     doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectSubjectsByType(any(), any());
     var mapper = mock(RdfMapperUnit.class);
@@ -77,10 +83,12 @@ class Rdf4LdMapperTest {
   @Test
   void mapToBibframeRdfInstance_shouldReturnModelEnrichedByAccordingMapper() {
     // given
-    doReturn(new ResourceMapping()
-      .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+    var mappingProfile = new MappingProfile()
+      .resourceMapping(new ResourceMapping()
+        .bfResourceDef(new BfResourceDef())
+        .ldResourceDef(new LdResourceDef()))
+      .roleMapping(new HashMap<>());
+    doReturn(mappingProfile).when(mappingProfileReader).getInstanceBibframe20Profile();
     doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any());
 
     // when

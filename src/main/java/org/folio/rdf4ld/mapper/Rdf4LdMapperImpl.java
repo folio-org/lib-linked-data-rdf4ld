@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.rdf4ld.util.MappingProfileReader;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +25,12 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   }
 
   @Override
-  public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
-    var mapper = rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
-    var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
-    var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
+  public Set<Resource> mapToLd(Model model, MappingProfile mappingProfile) {
+    var resourceMapping = mappingProfile.getResourceMapping();
+    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
+    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
     return coreRdf2LdMapper.selectSubjectsByType(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, mappingProfile.getResourceMapping(), ldTypes, true))
+      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, mappingProfile.getRoleMapping(), null))
       .collect(Collectors.toSet());
   }
 
@@ -40,11 +40,11 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   }
 
   @Override
-  public Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile) {
+  public Model mapToBibframeRdf(Resource resource, MappingProfile mappingProfile) {
     var modelBuilder = new ModelBuilder();
-    rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
-      .mapToBibframe(resource, modelBuilder, mappingProfile.getResourceMapping(), mappingProfile.getBfNameSpace(),
-        mappingProfile.getBfResourceDef().getTypeSet());
+    var resourceMapping = mappingProfile.getResourceMapping();
+    rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef())
+      .mapToBibframe(resource, modelBuilder, resourceMapping);
     return modelBuilder.build();
   }
 

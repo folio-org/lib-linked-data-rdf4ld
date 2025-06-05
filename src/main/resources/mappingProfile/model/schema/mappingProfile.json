@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "RDF Bibframe to LD mapping profile",
+  "type": "object",
+  "properties": {
+    "resourceMapping": {
+      "$ref": "resourceMapping.json"
+    },
+    "roleMapping": {
+      "type": "object",
+      "description": "Map of role code to LD predicate",
+      "additionalProperties": {
+        "$ref": "predicateDictionaryPlaceholder.json"
+      }
+    }
+  }
+}

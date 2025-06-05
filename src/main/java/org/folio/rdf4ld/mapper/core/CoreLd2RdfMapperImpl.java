@@ -10,7 +10,7 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,15 +41,14 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   @Override
   public void mapOutgoingEdge(ModelBuilder modelBuilder,
                               ResourceEdge edge,
-                              ResourceInternalMapping resourceMapping,
+                              ResourceMapping mapping,
                               String nameSpace) {
-    resourceMapping.getOutgoingEdges().stream()
+    mapping.getResourceMapping().getOutgoingEdges().stream()
       .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
       .forEach(oem -> {
         var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, resourceMapping, oem.getBfNameSpace(),
-          oem.getBfResourceDef().getTypeSet());
+        mapper.mapToBibframe(edge.getTarget(), modelBuilder, mapping);
         linkResources(modelBuilder, edge, nameSpace, oem.getBfNameSpace(), oem.getBfResourceDef().getPredicate());
       });
   }

@@ -4,17 +4,17 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
-import java.util.Set;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,10 +27,10 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
   @Override
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource resource,
-                          ResourceInternalMapping resourceMapping,
-                          Set<ResourceTypeDictionary> ldTypes,
-                          Boolean localOnly) {
-    var work = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
+                          ResourceMapping mapping,
+                          Map<String, PredicateDictionary> roleMapping,
+                          Resource parent) {
+    var work = baseRdfMapperUnit.mapToLd(model, resource, mapping, roleMapping, parent);
     work.setLabel(getPrimaryMainTitle(work));
     work.setId(hashService.hash(work));
     return work;
@@ -39,9 +39,7 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
-                            ResourceInternalMapping resourceMapping,
-                            String nameSpace,
-                            Set<String> bfTypeSet) {
-    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, nameSpace, bfTypeSet);
+                            ResourceMapping resourceMapping) {
+    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping);
   }
 }
