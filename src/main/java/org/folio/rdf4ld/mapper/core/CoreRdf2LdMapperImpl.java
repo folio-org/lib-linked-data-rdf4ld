@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
@@ -68,11 +69,12 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                             Model model,
                                             Resource parent,
-                                            org.eclipse.rdf4j.model.Resource rdfParent) {
+                                            org.eclipse.rdf4j.model.Resource rdfParent,
+                                            Map<String, PredicateDictionary> roleMapping) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem, rdfParent).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent, roleMapping).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
@@ -80,13 +82,14 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
-                                       org.eclipse.rdf4j.model.Resource parent) {
+                                       Resource parent,
+                                       org.eclipse.rdf4j.model.Resource rdfParent,
+                                       Map<String, PredicateDictionary> roleMapping) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),
-      edgeMapping.getBfResourceDef().getPredicate(), parent)
-      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
-        edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
+      edgeMapping.getBfResourceDef().getPredicate(), rdfParent)
+      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, roleMapping, parent))
       .filter(Objects::nonNull)
       .collect(toSet());
   }

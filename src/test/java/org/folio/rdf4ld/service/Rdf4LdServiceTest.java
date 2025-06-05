@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +34,11 @@ class Rdf4LdServiceTest {
     var inputStream = this.getClass().getResourceAsStream("/rdf/instance.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
-    var profile = mock(ResourceMapping.class);
-    when(rdf4LdMapper.mapToLd(any(), eq(profile))).thenReturn(resources);
+    var mapping = mock(MappingProfile.class);
+    when(rdf4LdMapper.mapToLd(any(), eq(mapping))).thenReturn(resources);
 
     // when
-    var result = rdf4LdService.mapToLd(inputStream, contentType, profile);
+    var result = rdf4LdService.mapToLd(inputStream, contentType, mapping);
 
     // then
     assertThat(result).isEqualTo(resources);
@@ -49,10 +49,10 @@ class Rdf4LdServiceTest {
     // given
     InputStream inputStream = null;
     var contentType = "application/ld+json";
-    var profile = mock(ResourceMapping.class);
+    var mapping = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, profile))
+    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, mapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Input stream is null");
@@ -63,10 +63,10 @@ class Rdf4LdServiceTest {
     // given
     var inputStream = mock(InputStream.class);
     var contentType = "unsupported/type";
-    var profile = mock(ResourceMapping.class);
+    var mapping = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, profile))
+    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, mapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Unsupported RDF format");
@@ -77,10 +77,10 @@ class Rdf4LdServiceTest {
     // given
     var inputStream = this.getClass().getResourceAsStream("/rdf/invalid.json");
     var contentType = "application/ld+json";
-    var profile = mock(ResourceMapping.class);
+    var mapping = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, profile))
+    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, mapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("RDF parsing error");

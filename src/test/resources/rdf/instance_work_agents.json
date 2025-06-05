@@ -38,6 +38,9 @@
     "http://id.loc.gov/ontologies/bibframe/role": [
       {
         "@id": "http://id.loc.gov/vocabulary/relators/aut"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/relators/340"
       }
     ]
   },
@@ -53,7 +56,10 @@
     ],
     "http://id.loc.gov/ontologies/bibframe/role": [
       {
-        "@id": "http://id.loc.gov/vocabulary/relators/aut"
+        "@id": "http://id.loc.gov/vocabulary/relators/ill"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/relators/205"
       }
     ]
   },

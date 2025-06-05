@@ -29,7 +29,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 
 @UtilityClass
 public class TestUtil {
@@ -91,15 +91,14 @@ public class TestUtil {
     return new RdfMapperUnit() {
       @Override
       public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
-                              ResourceInternalMapping resourceMapping,
-                              Set<ResourceTypeDictionary> ldTypes, Boolean localOnly) {
+                              ResourceMapping resourceMapping,
+                              Map<String, PredicateDictionary> roleMapping, Resource parent) {
         return new Resource();
       }
 
       @Override
       public void mapToBibframe(Resource resource, ModelBuilder modelBuilder,
-                                ResourceInternalMapping resourceMapping,
-                                String nameSpace, Set<String> bfTypeSet) {
+                                ResourceMapping resourceMapping) {
         modelBuilder.add("http://test_subject.com", "http://test_predicate.com", "test_object");
       }
     };

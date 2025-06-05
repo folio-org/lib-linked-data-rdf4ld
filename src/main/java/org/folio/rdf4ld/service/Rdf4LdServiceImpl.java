@@ -11,7 +11,7 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +21,7 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   private final Rdf4LdMapper rdf4LdMapper;
 
   @Override
-  public Set<Resource> mapToLd(InputStream input, String contentType, ResourceMapping mappingProfile) {
+  public Set<Resource> mapToLd(InputStream input, String contentType, MappingProfile mappingProfile) {
     var model = readModel(input, contentType);
     return rdf4LdMapper.mapToLd(model, mappingProfile);
   }

@@ -2,8 +2,12 @@ package org.folio.rdf4ld.mapper;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
+import static org.folio.ld.dictionary.PredicateDictionary.COLLABORATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
@@ -69,7 +73,11 @@ class WorkAgentsMappingIT {
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
-        new ResourceEdge(work, contributor, CONTRIBUTOR)
+        new ResourceEdge(work, creator, AUTHOR),
+        new ResourceEdge(work, creator, EDITOR),
+        new ResourceEdge(work, contributor, CONTRIBUTOR),
+        new ResourceEdge(work, contributor, ILLUSTRATOR),
+        new ResourceEdge(work, contributor, COLLABORATOR)
       ));
   }
 
