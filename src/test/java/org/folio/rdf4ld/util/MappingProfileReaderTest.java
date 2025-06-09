@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.util;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.rdf4ld.model.MappingProfile;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -30,33 +31,36 @@ class MappingProfileReaderTest {
   private ObjectMapper objectMapper;
 
   @Test
-  void getInstanceBibframe20Profile_shouldReturnMappingProfileWhenFilesAreValid() throws Exception {
+  void getBibframe20Profile_shouldReturnMappingProfileWhenFilesAreValid() throws Exception {
     // given
-    var expectedMapping = new ResourceMapping();
-    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenReturn(expectedMapping);
+    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class)))
+      .thenAnswer(inv -> getResourceMapping(randomUUID().toString()));
     var expectedRoleMapping = new HashMap<String, PredicateDictionary>();
     when(objectMapper.readValue(any(InputStream.class), any(TypeReference.class))).thenReturn(expectedRoleMapping);
-    var expectedProfile = new MappingProfile()
-      .resourceMapping(expectedMapping)
-      .roleMapping(expectedRoleMapping);
 
     // when
-    var result = mappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getBibframe20Profile();
 
     // then
-    assertThat(result).isEqualTo(expectedProfile);
+    assertThat(result).isNotNull();
+    assertThat(result.getResourceMapping()).isNotNull();
+    assertThat(result.getRoleMapping()).isEqualTo(expectedRoleMapping);
   }
 
   @Test
-  void getInstanceBibframe20Profile_shouldReturnNullWhenExceptionOccurs() throws Exception {
+  void getBibframe20Profile_shouldReturnNullWhenExceptionOccurs() throws Exception {
     // given
     when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenThrow(new IOException());
 
     // when
-    var result = mappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getBibframe20Profile();
 
     // then
     assertThat(result).isNull();
+  }
+
+  private ResourceMapping getResourceMapping(String random) {
+    return new ResourceMapping().bfNameSpace(random).resourceMapping(new ResourceInternalMapping());
   }
 
 }

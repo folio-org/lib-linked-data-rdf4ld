@@ -1,0 +1,10 @@
+{
+  "bfNameSpace": "http://id.loc.gov/authorities/subjects/",
+  "ldResourceDef": {
+    "typeSet": "CONCEPT",
+    "predicate": "SUBJECT"
+  },
+  "bfResourceDef": {
+    "predicate": "http://id.loc.gov/ontologies/bibframe/subject"
+  }
+}

@@ -21,7 +21,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapToLdInstance(Model model) {
-    return mapToLd(model, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToLd(model, mappingProfileReader.getBibframe20Profile());
   }
 
   @Override
@@ -36,7 +36,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Model mapToBibframeRdfInstance(Resource resource) {
-    return mapToBibframeRdf(resource, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToBibframeRdf(resource, mappingProfileReader.getBibframe20Profile());
   }
 
   @Override
