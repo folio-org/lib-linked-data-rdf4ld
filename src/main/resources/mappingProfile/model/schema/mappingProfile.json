@@ -3,7 +3,8 @@
   "description": "RDF Bibframe to LD mapping profile",
   "type": "object",
   "properties": {
-    "resourceMapping": {
+    "graphMapping": {
+      "description": "Resource graph mapping",
       "$ref": "resourceMapping.json"
     },
     "roleMapping": {

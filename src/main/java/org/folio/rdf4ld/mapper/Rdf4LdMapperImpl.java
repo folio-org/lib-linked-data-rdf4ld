@@ -26,11 +26,11 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapToLd(Model model, MappingProfile mappingProfile) {
-    var resourceMapping = mappingProfile.getResourceMapping();
-    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
-    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
+    var graphMapping = mappingProfile.getGraphMapping();
+    var mapper = rdfMapperUnitProvider.getMapper(graphMapping.getLdResourceDef());
+    var bfTypes = graphMapping.getBfResourceDef().getTypeSet();
     return coreRdf2LdMapper.selectSubjectsByType(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, mappingProfile.getRoleMapping(), null))
+      .map(resource -> mapper.mapToLd(model, resource, graphMapping, mappingProfile.getRoleMapping(), null))
       .collect(Collectors.toSet());
   }
 
@@ -42,9 +42,9 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   @Override
   public Model mapToBibframeRdf(Resource resource, MappingProfile mappingProfile) {
     var modelBuilder = new ModelBuilder();
-    var resourceMapping = mappingProfile.getResourceMapping();
-    rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef())
-      .mapToBibframe(resource, modelBuilder, resourceMapping);
+    var graphMapping = mappingProfile.getGraphMapping();
+    rdfMapperUnitProvider.getMapper(graphMapping.getLdResourceDef())
+      .mapToBibframe(resource, modelBuilder, graphMapping);
     return modelBuilder.build();
   }
 

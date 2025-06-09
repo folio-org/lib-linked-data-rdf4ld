@@ -37,7 +37,7 @@ public class MappingProfileReader {
     return getInstanceMapping()
       .map(im ->
         new MappingProfile()
-          .resourceMapping(im)
+          .graphMapping(im)
           .roleMapping(getRoleMapping().orElse(null))
       )
       .orElse(null);

@@ -43,7 +43,7 @@ class MappingProfileReaderTest {
 
     // then
     assertThat(result).isNotNull();
-    assertThat(result.getResourceMapping()).isNotNull();
+    assertThat(result.getGraphMapping()).isNotNull();
     assertThat(result.getRoleMapping()).isEqualTo(expectedRoleMapping);
   }
 

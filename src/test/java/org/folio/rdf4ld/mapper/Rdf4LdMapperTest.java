@@ -43,7 +43,7 @@ class Rdf4LdMapperTest {
     // given
     var model = new ModelBuilder().build();
     var mappingProfile = new MappingProfile()
-      .resourceMapping(new ResourceMapping()
+      .graphMapping(new ResourceMapping()
         .bfResourceDef(new BfResourceDef())
         .ldResourceDef(new LdResourceDef()))
         .roleMapping(new HashMap<>());
@@ -61,7 +61,7 @@ class Rdf4LdMapperTest {
     // given
     var model = new ModelBuilder().build();
     var mappingProfile = new MappingProfile()
-      .resourceMapping(new ResourceMapping()
+      .graphMapping(new ResourceMapping()
         .bfResourceDef(new BfResourceDef())
         .ldResourceDef(new LdResourceDef()))
       .roleMapping(new HashMap<>());
@@ -84,7 +84,7 @@ class Rdf4LdMapperTest {
   void mapToBibframeRdfInstance_shouldReturnModelEnrichedByAccordingMapper() {
     // given
     var mappingProfile = new MappingProfile()
-      .resourceMapping(new ResourceMapping()
+      .graphMapping(new ResourceMapping()
         .bfResourceDef(new BfResourceDef())
         .ldResourceDef(new LdResourceDef()))
       .roleMapping(new HashMap<>());
