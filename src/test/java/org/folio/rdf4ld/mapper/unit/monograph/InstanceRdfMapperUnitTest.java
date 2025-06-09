@@ -6,7 +6,6 @@ import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.util.Map;
 import org.eclipse.rdf4j.model.Model;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -37,16 +36,15 @@ class InstanceRdfMapperUnitTest {
     var model = mock(Model.class);
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
     var resourceMapping = mock(ResourceMapping.class);
-    var rolesMapping = mock(Map.class);
     var mappedResource = new Resource()
       .setId(123L);
     mappedResource.addOutgoingEdge(new ResourceEdge(mappedResource, createPrimaryTitle(456L), TITLE));
-    doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, resourceMapping, rolesMapping, null);
+    doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, resourceMapping, null);
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
 
     // when
-    var result = instanceRdfMapperUnit.mapToLd(model, resource, resourceMapping, rolesMapping, null);
+    var result = instanceRdfMapperUnit.mapToLd(model, resource, resourceMapping, null);
 
     // then
     assertThat(result.getId()).isEqualTo(newId);

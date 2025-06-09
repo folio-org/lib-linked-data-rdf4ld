@@ -6,12 +6,10 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
@@ -34,7 +32,6 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource rdfResource,
                           ResourceMapping mapping,
-                          Map<String, PredicateDictionary> roleMapping,
                           Resource parent) {
     var resourceMapping = mapping.getResourceMapping();
     var resource = new Resource();
@@ -43,7 +40,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
     setLabel(resource, resourceMapping);
     var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(),
-      model, resource, rdfResource, roleMapping);
+      model, resource, rdfResource);
     resource.getOutgoingEdges().addAll(outEdges);
     resource.setId(hashService.hash(resource));
     return resource;

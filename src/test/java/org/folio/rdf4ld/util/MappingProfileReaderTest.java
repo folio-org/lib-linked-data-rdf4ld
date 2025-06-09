@@ -6,12 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
@@ -35,16 +32,12 @@ class MappingProfileReaderTest {
     // given
     when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class)))
       .thenAnswer(inv -> getResourceMapping(randomUUID().toString()));
-    var expectedRoleMapping = new HashMap<String, PredicateDictionary>();
-    when(objectMapper.readValue(any(InputStream.class), any(TypeReference.class))).thenReturn(expectedRoleMapping);
 
     // when
     var result = mappingProfileReader.getBibframe20Profile();
 
     // then
     assertThat(result).isNotNull();
-    assertThat(result.getGraphMapping()).isNotNull();
-    assertThat(result.getRoleMapping()).isEqualTo(expectedRoleMapping);
   }
 
   @Test

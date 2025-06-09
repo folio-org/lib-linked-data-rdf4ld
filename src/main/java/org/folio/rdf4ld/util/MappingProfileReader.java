@@ -1,15 +1,10 @@
 package org.folio.rdf4ld.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.function.IOFunction;
-import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.core.io.ClassPathResource;
@@ -30,16 +25,10 @@ public class MappingProfileReader {
   public static final String CREATOR = "creator.json";
   public static final String GENRE_FORM = "genre_form.json";
   public static final String SUBJECT_CONCEPT = "subject_concept.json";
-  public static final String ROLES = "roles.json";
   private final ObjectMapper objectMapper;
 
-  public MappingProfile getBibframe20Profile() {
+  public ResourceMapping getBibframe20Profile() {
     return getInstanceMapping()
-      .map(im ->
-        new MappingProfile()
-          .graphMapping(im)
-          .roleMapping(getRoleMapping().orElse(null))
-      )
       .orElse(null);
   }
 
@@ -69,19 +58,10 @@ public class MappingProfileReader {
       });
   }
 
-  private Optional<Map<String, PredicateDictionary>> getRoleMapping() {
-    var type = new TypeReference<Map<String, PredicateDictionary>>() {};
-    return readFile(ROLES, r -> objectMapper.readValue(r.getInputStream(), type));
-  }
-
-  private Optional<ResourceMapping> readResourceMapping(String filename) {
-    return readFile(filename, r -> objectMapper.readValue(r.getInputStream(), ResourceMapping.class));
-  }
-
-  private <T> Optional<T> readFile(String fileName, IOFunction<ClassPathResource, T> ioFunction) {
+  private Optional<ResourceMapping> readResourceMapping(String fileName) {
     try {
       var resource = new ClassPathResource(BASE_PATH + fileName);
-      return Optional.of(ioFunction.apply(resource));
+      return Optional.of(objectMapper.readValue(resource.getInputStream(), ResourceMapping.class));
     } catch (IOException e) {
       log.error("Mapping profile reading issue for file: {}", fileName, e);
       return Optional.empty();

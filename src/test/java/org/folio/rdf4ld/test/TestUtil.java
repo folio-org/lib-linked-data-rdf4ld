@@ -92,7 +92,7 @@ public class TestUtil {
       @Override
       public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
                               ResourceMapping resourceMapping,
-                              Map<String, PredicateDictionary> roleMapping, Resource parent) {
+                              Resource parent) {
         return new Resource();
       }
 

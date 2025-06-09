@@ -20,7 +20,6 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
@@ -69,12 +68,11 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                             Model model,
                                             Resource parent,
-                                            org.eclipse.rdf4j.model.Resource rdfParent,
-                                            Map<String, PredicateDictionary> roleMapping) {
+                                            org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent, roleMapping).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
@@ -83,13 +81,12 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
                                        Resource parent,
-                                       org.eclipse.rdf4j.model.Resource rdfParent,
-                                       Map<String, PredicateDictionary> roleMapping) {
+                                       org.eclipse.rdf4j.model.Resource rdfParent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),
       edgeMapping.getBfResourceDef().getPredicate(), rdfParent)
-      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, roleMapping, parent))
+      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, parent))
       .filter(Objects::nonNull)
       .collect(toSet());
   }

@@ -1,13 +1,11 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -22,7 +20,6 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   public Resource mapToLd(Model model,
                           org.eclipse.rdf4j.model.Resource resource,
                           ResourceMapping resourceMapping,
-                          Map<String, PredicateDictionary> roleMapping,
                           Resource parent) {
     var lccn = ((SimpleIRI) resource).getLocalName();
     return resourceProvider.apply(lccn)
