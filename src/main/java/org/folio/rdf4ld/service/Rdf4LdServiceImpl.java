@@ -21,9 +21,9 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   private final Rdf4LdMapper rdf4LdMapper;
 
   @Override
-  public Set<Resource> mapToLd(InputStream input, String contentType, ResourceMapping mappingProfile) {
+  public Set<Resource> mapToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
     var model = readModel(input, contentType);
-    return rdf4LdMapper.mapToLd(model, mappingProfile);
+    return rdf4LdMapper.mapToLd(model, resourceMapping);
   }
 
   @Override

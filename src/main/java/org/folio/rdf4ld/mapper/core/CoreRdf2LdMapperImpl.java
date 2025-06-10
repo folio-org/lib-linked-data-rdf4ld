@@ -72,7 +72,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
-      .flatMap(oem -> mapEdgeTargets(model, oem, rdfParent).stream()
+      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
@@ -80,13 +80,13 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
-                                       org.eclipse.rdf4j.model.Resource parent) {
+                                       Resource parent,
+                                       org.eclipse.rdf4j.model.Resource rdfParent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef().getTypeSet(),
-      edgeMapping.getBfResourceDef().getPredicate(), parent)
-      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping.getResourceMapping(),
-        edgeMapping.getLdResourceDef().getTypeSet(), edgeMapping.getLocalOnly()))
+      edgeMapping.getBfResourceDef().getPredicate(), rdfParent)
+      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, parent))
       .filter(Objects::nonNull)
       .collect(toSet());
   }

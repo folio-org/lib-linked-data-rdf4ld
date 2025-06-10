@@ -40,10 +40,10 @@ class Rdf4LdMapperTest {
   void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
     // given
     var model = new ModelBuilder().build();
-    doReturn(new ResourceMapping()
+    var resourceMapping = new ResourceMapping()
       .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+      .ldResourceDef(new LdResourceDef());
+    doReturn(resourceMapping).when(mappingProfileReader).getBibframe20Profile();
 
     // when
     var result = topMapper.mapToLdInstance(model);
@@ -56,16 +56,16 @@ class Rdf4LdMapperTest {
   void mapToLdInstance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
     var model = new ModelBuilder().build();
-    doReturn(new ResourceMapping()
+    var resourceMapping = new ResourceMapping()
       .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+      .ldResourceDef(new LdResourceDef());
+    doReturn(resourceMapping).when(mappingProfileReader).getBibframe20Profile();
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
     doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectSubjectsByType(any(), any());
     var mapper = mock(RdfMapperUnit.class);
     doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
-    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any(), any());
+    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any());
 
     // when
     var result = topMapper.mapToLdInstance(model);
@@ -77,10 +77,10 @@ class Rdf4LdMapperTest {
   @Test
   void mapToBibframeRdfInstance_shouldReturnModelEnrichedByAccordingMapper() {
     // given
-    doReturn(new ResourceMapping()
+    var mappingProfile = new ResourceMapping()
       .bfResourceDef(new BfResourceDef())
-      .ldResourceDef(new LdResourceDef())
-    ).when(mappingProfileReader).getInstanceBibframe20Profile();
+      .ldResourceDef(new LdResourceDef());
+    doReturn(mappingProfile).when(mappingProfileReader).getBibframe20Profile();
     doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any());
 
     // when

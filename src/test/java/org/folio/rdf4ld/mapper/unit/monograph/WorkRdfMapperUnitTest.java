@@ -6,14 +6,12 @@ import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.util.Set;
 import org.eclipse.rdf4j.model.Model;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,18 +35,16 @@ class WorkRdfMapperUnitTest {
     // given
     var model = mock(Model.class);
     var resource = mock(org.eclipse.rdf4j.model.Resource.class);
-    var resourceMapping = mock(ResourceInternalMapping.class);
-    var ldTypes = Set.of(ResourceTypeDictionary.WORK);
-    var localOnly = true;
+    var mapping = mock(ResourceMapping.class);
     var mappedResource = new Resource()
       .setId(123L);
     mappedResource.addOutgoingEdge(new ResourceEdge(mappedResource, createPrimaryTitle(456L), TITLE));
-    doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
+    doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, mapping, null);
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
 
     // when
-    var result = workRdfMapperUnit.mapToLd(model, resource, resourceMapping, ldTypes, localOnly);
+    var result = workRdfMapperUnit.mapToLd(model, resource, mapping, null);
 
     // then
     assertThat(result.getId()).isEqualTo(newId);

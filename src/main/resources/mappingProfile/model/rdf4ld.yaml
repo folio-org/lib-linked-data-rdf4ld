@@ -7,5 +7,5 @@ paths: {}
 
 components:
   schemas:
-    mappingProfile:
+    resourceMapping:
       $ref: schema/resourceMapping.json

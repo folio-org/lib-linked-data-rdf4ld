@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.util;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -26,28 +28,32 @@ class MappingProfileReaderTest {
   private ObjectMapper objectMapper;
 
   @Test
-  void getInstanceBibframe20Profile_shouldReturnResourceMappingWhenFileIsValid() throws Exception {
+  void getBibframe20Profile_shouldReturnMappingProfileWhenFilesAreValid() throws Exception {
     // given
-    var expectedMapping = new ResourceMapping();
-    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenReturn(expectedMapping);
+    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class)))
+      .thenAnswer(inv -> getResourceMapping(randomUUID().toString()));
 
     // when
-    var result = mappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getBibframe20Profile();
 
     // then
-    assertThat(result).isEqualTo(expectedMapping);
+    assertThat(result).isNotNull();
   }
 
   @Test
-  void getInstanceBibframe20Profile_shouldReturnNullWhenExceptionOccurs() throws Exception {
+  void getBibframe20Profile_shouldReturnNullWhenExceptionOccurs() throws Exception {
     // given
     when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenThrow(new IOException());
 
     // when
-    var result = mappingProfileReader.getInstanceBibframe20Profile();
+    var result = mappingProfileReader.getBibframe20Profile();
 
     // then
     assertThat(result).isNull();
+  }
+
+  private ResourceMapping getResourceMapping(String random) {
+    return new ResourceMapping().bfNameSpace(random).resourceMapping(new ResourceInternalMapping());
   }
 
 }

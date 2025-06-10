@@ -1,0 +1,23 @@
+{
+  "ldResourceDef": {
+    "predicate": "CONTRIBUTOR"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Contribution",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
+  },
+  "resourceMapping": {
+    "outgoingEdges": [
+      {
+        "bfResourceDef": {
+          "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+        }
+      },
+      {
+        "bfResourceDef": {
+          "predicate": "http://id.loc.gov/ontologies/bibframe/role"
+        }
+      }
+    ]
+  }
+}

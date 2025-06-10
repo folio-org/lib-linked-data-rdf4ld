@@ -1,0 +1,11 @@
+{
+  "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/works/",
+  "ldResourceDef": {
+    "typeSet": "WORK",
+    "predicate": "INSTANTIATES"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Work",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf"
+  }
+}

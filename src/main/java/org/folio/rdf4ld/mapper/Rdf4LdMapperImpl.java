@@ -21,30 +21,28 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapToLdInstance(Model model) {
-    return mapToLd(model, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToLd(model, mappingProfileReader.getBibframe20Profile());
   }
 
   @Override
-  public Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile) {
-    var mapper = rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef());
-    var ldTypes = mappingProfile.getLdResourceDef().getTypeSet();
-    var bfTypes = mappingProfile.getBfResourceDef().getTypeSet();
+  public Set<Resource> mapToLd(Model model, ResourceMapping resourceMapping) {
+    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
+    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
     return coreRdf2LdMapper.selectSubjectsByType(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, mappingProfile.getResourceMapping(), ldTypes, true))
+      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
       .collect(Collectors.toSet());
   }
 
   @Override
   public Model mapToBibframeRdfInstance(Resource resource) {
-    return mapToBibframeRdf(resource, mappingProfileReader.getInstanceBibframe20Profile());
+    return mapToBibframeRdf(resource, mappingProfileReader.getBibframe20Profile());
   }
 
   @Override
-  public Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile) {
+  public Model mapToBibframeRdf(Resource resource, ResourceMapping resourceMapping) {
     var modelBuilder = new ModelBuilder();
-    rdfMapperUnitProvider.getMapper(mappingProfile.getLdResourceDef())
-      .mapToBibframe(resource, modelBuilder, mappingProfile.getResourceMapping(), mappingProfile.getBfNameSpace(),
-        mappingProfile.getBfResourceDef().getTypeSet());
+    rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef())
+      .mapToBibframe(resource, modelBuilder, resourceMapping);
     return modelBuilder.build();
   }
 

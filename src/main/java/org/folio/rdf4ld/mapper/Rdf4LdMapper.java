@@ -9,9 +9,9 @@ public interface Rdf4LdMapper {
 
   Set<Resource> mapToLdInstance(Model model);
 
-  Set<Resource> mapToLd(Model model, ResourceMapping mappingProfile);
+  Set<Resource> mapToLd(Model model, ResourceMapping resourceMapping);
 
   Model mapToBibframeRdfInstance(Resource resource);
 
-  Model mapToBibframeRdf(Resource resource, ResourceMapping mappingProfile);
+  Model mapToBibframeRdf(Resource resource, ResourceMapping resourceMapping);
 }

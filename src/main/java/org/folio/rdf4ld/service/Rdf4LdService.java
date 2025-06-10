@@ -7,7 +7,7 @@ import org.folio.rdf4ld.model.ResourceMapping;
 
 public interface Rdf4LdService {
 
-  Set<Resource> mapToLd(InputStream inputStream, String contentType, ResourceMapping mappingProfile);
+  Set<Resource> mapToLd(InputStream inputStream, String contentType, ResourceMapping resourceMapping);
 
   Set<Resource> mapToLdInstance(InputStream inputStream, String contentType);
 
