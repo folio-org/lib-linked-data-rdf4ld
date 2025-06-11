@@ -50,6 +50,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     return doc.isEmpty() ? null : toJson(doc);
   }
 
+  @Override
   public JsonNode toJson(Map<String, List<String>> map) {
     var node = objectMapper.convertValue(map, JsonNode.class);
     return ! (node instanceof NullNode) ? node : objectMapper.createObjectNode();

@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper.unit;
 
 import static java.lang.String.valueOf;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
@@ -37,11 +38,14 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     var resource = new Resource();
     resource.setCreatedDate(new Date());
     resource.setTypes(mapping.getLdResourceDef().getTypeSet());
-    resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
-    setLabel(resource, resourceMapping);
-    var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(),
-      model, resource, rdfResource);
-    resource.getOutgoingEdges().addAll(outEdges);
+    ofNullable(resourceMapping)
+      .ifPresent(rm -> {
+        resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
+        setLabel(resource, resourceMapping);
+        var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(),
+          model, resource, rdfResource);
+        resource.getOutgoingEdges().addAll(outEdges);
+      });
     resource.setId(hashService.hash(resource));
     return resource;
   }
