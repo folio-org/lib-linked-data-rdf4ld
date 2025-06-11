@@ -1,0 +1,24 @@
+{
+  "bfNameSpace": "http://id.loc.gov/sources/eans/",
+  "ldResourceDef": {
+    "typeSet": ["IDENTIFIER", "ID_EAN"],
+    "predicate": "MAP"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Ean",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "EAN_VALUE",
+        "bfProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
+      },
+      {
+        "ldProperty": "QUALIFIER",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/qualifier"
+      }
+    ],
+    "label": "EAN_VALUE"
+  }
+}
