@@ -1,10 +1,10 @@
 {
-  "bfResourceDef": {
-    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
-  },
   "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/instances/",
   "ldResourceDef": {
     "typeSet": "INSTANCE"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
   },
   "resourceMapping": {
     "properties": [

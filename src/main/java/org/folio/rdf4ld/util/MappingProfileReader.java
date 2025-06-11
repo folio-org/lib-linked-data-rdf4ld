@@ -25,6 +25,9 @@ public class MappingProfileReader {
   public static final String CREATOR = "creator.json";
   public static final String GENRE_FORM = "genre_form.json";
   public static final String SUBJECT_CONCEPT = "subject_concept.json";
+  public static final String LCCN = "lccn.json";
+  public static final String ISBN = "isbn.json";
+  public static final String EAN = "ean.json";
   private final ObjectMapper objectMapper;
 
   public ResourceMapping getBibframe20Profile() {
@@ -38,6 +41,9 @@ public class MappingProfileReader {
         readResourceMapping(TITLE).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_PARALLEL).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_VARIANT).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(LCCN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(ISBN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(EAN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         getWorkMapping().ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         return im;
       });
