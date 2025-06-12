@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
+import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
@@ -150,4 +151,16 @@ public class TestUtil {
     assertThat(resource.getIncomingEdges()).isEmpty();
     assertThat(resource.getOutgoingEdges()).containsOnly(edges);
   }
+
+  public static Resource create(Long id,
+                                String label,
+                                Set<ResourceTypeDictionary> types,
+                                Map<String, List<String>> properties) {
+    return new Resource()
+      .setId(id)
+      .setLabel(label)
+      .setTypes(types)
+      .setDoc(getJsonNode(properties));
+  }
+
 }

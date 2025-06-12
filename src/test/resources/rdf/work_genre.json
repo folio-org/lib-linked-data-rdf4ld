@@ -19,13 +19,22 @@
       {
         "@id": "http://id.loc.gov/authorities/genreForms/gf2014026339"
       }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/authorities/genreForms/gf2014026339",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/GenreForm"
     ],
-    "http://id.loc.gov/ontologies/bibframe/subject": [
+    "http://www.w3.org/2000/01/rdf-schema#label": [
       {
-        "@id": "http://id.loc.gov/rwo/agents/n79026681"
-      },
+        "@language": "en",
+        "@value": "Fiction"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bflc/marcKey": [
       {
-        "@id": "http://id.loc.gov/authorities/subjects/sh85070981"
+        "@value": "155  $aFiction"
       }
     ]
   }

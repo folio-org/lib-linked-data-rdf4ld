@@ -4,7 +4,6 @@ import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
@@ -32,7 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class WorkReferenceResourcesMappingIT {
+class WorkGenreMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -41,21 +40,15 @@ class WorkReferenceResourcesMappingIT {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "/rdf/instance_work_references.json",
-    "/rdf/instance_work_references_ids.json"
+    "/rdf/work_genre.json",
+    "/rdf/work_genre_id.json"
   })
-  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithReferences(String rdfFile) throws IOException {
+  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithGenre(String rdfFile) throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
     var genreForm = new Resource().setId(1L).setLabel("genreForm");
-    var subjectAgent = new Resource().setId(2L).setLabel("subjectAgent");
-    var subjectTopic = new Resource().setId(3L).setLabel("subjectTopic");
-    var foundByLccnResources = Map.of(
-      "gf2014026339", genreForm,
-      "n79026681", subjectAgent,
-      "sh85070981", subjectTopic
-    );
+    var foundByLccnResources = Map.of("gf2014026339", genreForm);
     when(resourceProvider.apply(anyString()))
       .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
 
@@ -69,11 +62,8 @@ class WorkReferenceResourcesMappingIT {
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
-      work -> validateResourceWithGivenEdges(work,
-        new ResourceEdge(work, genreForm, GENRE),
-        new ResourceEdge(work, subjectAgent, SUBJECT),
-        new ResourceEdge(work, subjectTopic, SUBJECT)
-      ));
+      work -> validateResourceWithGivenEdges(work, new ResourceEdge(work, genreForm, GENRE))
+    );
   }
 
 }
