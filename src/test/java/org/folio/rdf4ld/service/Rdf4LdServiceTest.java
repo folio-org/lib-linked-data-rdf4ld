@@ -9,6 +9,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.util.Set;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.model.ResourceMapping;
@@ -29,115 +32,148 @@ class Rdf4LdServiceTest {
   private Rdf4LdServiceImpl rdf4LdService;
 
   @Test
-  void mapToLd_returnsMappedResources_forValidInput() {
+  void mapRdfToLd_returnsMappedResources_forValidInput() {
     // given
-    var inputStream = this.getClass().getResourceAsStream("/rdf/instance.json");
+    var inputStream = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
     var resourceMapping = mock(ResourceMapping.class);
-    when(rdf4LdMapper.mapToLd(any(), eq(resourceMapping))).thenReturn(resources);
+    when(rdf4LdMapper.mapRdfToLd(any(), eq(resourceMapping))).thenReturn(resources);
 
     // when
-    var result = rdf4LdService.mapToLd(inputStream, contentType, resourceMapping);
+    var result = rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping);
 
     // then
     assertThat(result).isEqualTo(resources);
   }
 
   @Test
-  void mapToLd_returnsEmptySet_forNullInput() {
+  void mapRdfToLd_returnsEmptySet_forNullInput() {
     // given
     InputStream inputStream = null;
     var contentType = "application/ld+json";
     var resourceMapping = mock(ResourceMapping.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, resourceMapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Input stream is null");
   }
 
   @Test
-  void mapToLd_throwsException_forUnsupportedContentType() {
+  void mapRdfToLd_throwsException_forUnsupportedContentType() {
     // given
     var inputStream = mock(InputStream.class);
     var contentType = "unsupported/type";
     var resourceMapping = mock(ResourceMapping.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, resourceMapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Unsupported RDF format");
   }
 
   @Test
-  void mapToLd_returnsEmptySet_whenExceptionOccursDuringParsing() {
+  void mapRdfToLd_returnsEmptySet_whenExceptionOccursDuringParsing() {
     // given
     var inputStream = this.getClass().getResourceAsStream("/rdf/invalid.json");
     var contentType = "application/ld+json";
     var mapping = mock(ResourceMapping.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLd(inputStream, contentType, mapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, mapping))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("RDF parsing error");
   }
 
   @Test
-  void mapToLdInstance_returnsMappedResources_forValidInput() {
+  void mapBibframe2RdfToLd_returnsMappedResources_forValidInput() {
     // given
-    var inputStream = this.getClass().getResourceAsStream("/rdf/instance.json");
+    var inputStream = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
-    when(rdf4LdMapper.mapToLdInstance(any())).thenReturn(resources);
+    when(rdf4LdMapper.mapBibframe2RdfToLd(any())).thenReturn(resources);
 
     // when
-    var result = rdf4LdService.mapToLdInstance(inputStream, contentType);
+    var result = rdf4LdService.mapBibframe2RdfToLd(inputStream, contentType);
 
     // then
     assertThat(result).isEqualTo(resources);
   }
 
   @Test
-  void mapToLdInstance_returnsEmptySet_forNullInput() {
+  void mapBibframe2RdfToLd_returnsEmptySet_forNullInput() {
     // given
     InputStream inputStream = null;
     var contentType = "application/ld+json";
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLdInstance(inputStream, contentType))
+    assertThatThrownBy(() -> rdf4LdService.mapBibframe2RdfToLd(inputStream, contentType))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Input stream is null");
   }
 
   @Test
-  void mapToLdInstance_throwsException_forUnsupportedContentType() {
+  void mapBibframe2RdfToLd_throwsException_forUnsupportedContentType() {
     // given
     var inputStream = mock(InputStream.class);
     var contentType = "unsupported/type";
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLdInstance(inputStream, contentType))
+    assertThatThrownBy(() -> rdf4LdService.mapBibframe2RdfToLd(inputStream, contentType))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Unsupported RDF format");
   }
 
   @Test
-  void mapToLdInstance_returnsEmptySet_whenExceptionOccursDuringParsing() {
+  void mapBibframe2RdfToLd_returnsEmptySet_whenExceptionOccursDuringParsing() {
     // given
     var inputStream = this.getClass().getResourceAsStream("/rdf/invalid.json");
     var contentType = "application/ld+json";
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapToLdInstance(inputStream, contentType))
+    assertThatThrownBy(() -> rdf4LdService.mapBibframe2RdfToLd(inputStream, contentType))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("RDF parsing error");
+  }
+
+  @Test
+  void mapLdToRdf_returnsSerializedModel_forValidInput() {
+    // given
+    var resource = new Resource().setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var resourceMapping = mock(ResourceMapping.class);
+    var rdfFormat = RDFFormat.JSONLD;
+    var model = new ModelBuilder().build();
+    when(rdf4LdMapper.mapLdToRdf(resource, resourceMapping)).thenReturn(model);
+
+    // when
+    var result = rdf4LdService.mapLdToRdf(resource, rdfFormat, resourceMapping);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.size()).isGreaterThan(0);
+  }
+
+  @Test
+  void mapLdToBibframe2Rdf_returnsSerializedModel_forValidInput() {
+    // given
+    var resource = new Resource().setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var rdfFormat = RDFFormat.JSONLD;
+    var model = new ModelBuilder().build();
+    when(rdf4LdMapper.mapLdToBibframe2Rdf(resource)).thenReturn(model);
+
+    // when
+    var result = rdf4LdService.mapLdToBibframe2Rdf(resource, rdfFormat);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.size()).isGreaterThan(0);
   }
 
 }

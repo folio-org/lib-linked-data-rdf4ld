@@ -1,0 +1,7 @@
+# http://editorconfig.org/
+
+root = true
+
+[*]
+indent_size = 4
+ij_continuation_indent_size = 4

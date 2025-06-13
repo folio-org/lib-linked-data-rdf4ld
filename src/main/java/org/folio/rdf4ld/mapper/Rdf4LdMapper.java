@@ -7,11 +7,11 @@ import org.folio.rdf4ld.model.ResourceMapping;
 
 public interface Rdf4LdMapper {
 
-  Set<Resource> mapToLdInstance(Model model);
+  Set<Resource> mapBibframe2RdfToLd(Model model);
 
-  Set<Resource> mapToLd(Model model, ResourceMapping resourceMapping);
+  Set<Resource> mapRdfToLd(Model model, ResourceMapping resourceMapping);
 
-  Model mapToBibframeRdfInstance(Resource resource);
+  Model mapLdToBibframe2Rdf(Resource resource);
 
-  Model mapToBibframeRdf(Resource resource, ResourceMapping resourceMapping);
+  Model mapLdToRdf(Resource resource, ResourceMapping resourceMapping);
 }

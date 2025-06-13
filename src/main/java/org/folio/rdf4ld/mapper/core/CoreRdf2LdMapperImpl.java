@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
-  private static final String TYPE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
   private final ObjectMapper objectMapper;
 
@@ -60,7 +60,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   public Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByType(Model model,
                                                                        Set<String> bfTypeSet) {
     return bfTypeSet.stream()
-      .map(type -> model.filter(null, Values.iri(TYPE_IRI), Values.iri(type)))
+      .map(type -> model.filter(null, RDF.TYPE, Values.iri(type)))
       .flatMap(Collection::stream)
       .map(Statement::getSubject);
   }
@@ -105,7 +105,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   }
 
   private Set<String> getAllTypes(Model model, org.eclipse.rdf4j.model.Resource resource) {
-    return model.filter(resource, Values.iri(TYPE_IRI), null)
+    return model.filter(resource, RDF.TYPE, null)
       .stream()
       .map(Statement::getObject)
       .map(Value::stringValue)

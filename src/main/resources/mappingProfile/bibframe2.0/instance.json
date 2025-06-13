@@ -1,5 +1,5 @@
 {
-  "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/instances/",
+  "bfNameSpace": "http://id.loc.gov/resources/instances/",
   "ldResourceDef": {
     "typeSet": "INSTANCE"
   },

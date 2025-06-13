@@ -10,7 +10,7 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,20 +41,19 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   @Override
   public void mapOutgoingEdge(ModelBuilder modelBuilder,
                               ResourceEdge edge,
-                              ResourceMapping mapping,
+                              ResourceInternalMapping mapping,
                               String nameSpace) {
-    mapping.getResourceMapping().getOutgoingEdges().stream()
+    mapping.getOutgoingEdges().stream()
       .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
       .forEach(oem -> {
         var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, mapping);
+        mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem);
         linkResources(modelBuilder, edge, nameSpace, oem.getBfNameSpace(), oem.getBfResourceDef().getPredicate());
       });
   }
 
-  @Override
-  public void linkResources(ModelBuilder modelBuilder,
+  private void linkResources(ModelBuilder modelBuilder,
                             ResourceEdge edge,
                             String parentNamesSpace,
                             String targetNamesSpace,

@@ -2,6 +2,7 @@ package org.folio.rdf4ld.test;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
@@ -16,6 +17,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +27,8 @@ import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -163,4 +168,14 @@ public class TestUtil {
       .setDoc(getJsonNode(properties));
   }
 
+
+  public static String toJsonLdString(Model model) {
+    try (var out = new ByteArrayOutputStream()) {
+      Rio.write(model, out, RDFFormat.JSONLD);
+      return out.toString();
+    } catch (IOException e) {
+      fail("Failed to write a model to output stream: " + e.getMessage());
+      return null;
+    }
+  }
 }
