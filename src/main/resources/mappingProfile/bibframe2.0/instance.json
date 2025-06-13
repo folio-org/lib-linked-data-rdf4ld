@@ -1,4 +1,5 @@
 {
+  "bfNameSpace": "http://id.loc.gov/resources/instances/",
   "ldResourceDef": {
     "typeSet": "INSTANCE"
   },

@@ -1,6 +1,6 @@
 [
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/INSTANCE_ID",
+        "@id": "http://id.loc.gov/resources/instances/INSTANCE_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Instance"
         ],
@@ -22,18 +22,18 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/title": [
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID"
+                "@id": "http://id.loc.gov/resources/titles/PRIMARY_TITLE_ID"
             },
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_ID"
+                "@id": "http://id.loc.gov/resources/titles/PARALLEL_TITLE_ID"
             },
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_ID"
+                "@id": "http://id.loc.gov/resources/titles/VARIANT_TITLE_ID"
             }
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID",
+        "@id": "http://id.loc.gov/resources/titles/PRIMARY_TITLE_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Title"
         ],
@@ -79,7 +79,7 @@
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_ID",
+        "@id": "http://id.loc.gov/resources/titles/PARALLEL_TITLE_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/ParallelTitle"
         ],
@@ -125,40 +125,17 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@id": "_:PARALLEL_TITLE_NOTE_ID_1"
-            },
-            {
-                "@id": "_:PARALLEL_TITLE_NOTE_ID_2"
-            }
-        ]
-    },
-    {
-        "@id": "_:PARALLEL_TITLE_NOTE_ID_1",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Note"
-        ],
-        "http://www.w3.org/2000/01/rdf-schema#label": [
-            {
                 "@value": "ParallelTitle note 1"
-            }
-        ]
-    },
-    {
-        "@id": "_:PARALLEL_TITLE_NOTE_ID_2",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Note"
-        ],
-        "http://www.w3.org/2000/01/rdf-schema#label": [
+            },
             {
                 "@value": "ParallelTitle note 2"
             }
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_ID",
+        "@id": "http://id.loc.gov/resources/titles/VARIANT_TITLE_ID",
         "@type": [
-            "http://id.loc.gov/ontologies/bibframe/VariantTitle",
-            "http://id.loc.gov/vocabulary/vartitletype/por"
+            "http://id.loc.gov/ontologies/bibframe/VariantTitle"
         ],
         "http://id.loc.gov/ontologies/bibframe/mainTitle": [
             {
@@ -202,32 +179,18 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@id": "_:VARIANT_TITLE_NOTE_ID_1"
+                "@value": "VariantTitle note 1"
             },
             {
-                "@id": "_:VARIANT_TITLE_NOTE_ID_2"
-            }
-        ]
-    },
-    {
-        "@id": "_:VARIANT_TITLE_NOTE_ID_1",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Note"
-        ],
-        "http://www.w3.org/2000/01/rdf-schema#label": [
-            {
-                "@value": "VariantTitle note 1"
-            }
-        ]
-    },
-    {
-        "@id": "_:VARIANT_TITLE_NOTE_ID_2",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Note"
-        ],
-        "http://www.w3.org/2000/01/rdf-schema#label": [
-            {
                 "@value": "VariantTitle note 2"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/variantType": [
+            {
+                "@value": "VariantTitle variantType 1"
+            },
+            {
+                "@value": "VariantTitle variantType 2"
             }
         ]
     }

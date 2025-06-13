@@ -68,16 +68,13 @@ class InstanceTitlesMappingIT {
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("PRIMARY_TITLE_ID", primaryTitle.getId().toString())
       .replaceAll("PARALLEL_TITLE_ID", parallelTitle.getId().toString())
-      .replaceAll("VARIANT_TITLE_ID", variantTitle.getId().toString())
-      .replaceAll("PARALLEL_TITLE_NOTE_ID_1", "NOTE_1_" + parallelTitle.getId().toString())
-      .replaceAll("PARALLEL_TITLE_NOTE_ID_2", "NOTE_2_" + parallelTitle.getId().toString())
-      .replaceAll("VARIANT_TITLE_NOTE_ID_1", "NOTE_1_" + variantTitle.getId().toString())
-      .replaceAll("VARIANT_TITLE_NOTE_ID_2", "NOTE_2_" + variantTitle.getId().toString());
+      .replaceAll("VARIANT_TITLE_ID", variantTitle.getId().toString());
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
     //then
+    assertThat(model).hasSize(47);
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
