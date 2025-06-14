@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class WorkAgentsMappingIT {
+class WorkAgentMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -45,8 +45,8 @@ class WorkAgentsMappingIT {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "/rdf/instance_work_agents.json",
-    "/rdf/instance_work_agents_ids.json"
+    "/rdf/work_agent.json",
+    "/rdf/work_agent_id.json"
   })
   void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given

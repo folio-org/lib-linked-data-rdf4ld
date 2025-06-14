@@ -4,9 +4,11 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Spliterator;
@@ -85,6 +87,18 @@ public class ResourceUtil {
       .objects()
       .stream()
       .map(SimpleIRI.class::cast);
+  }
+
+  public static JsonNode copyWithoutPreferred(Resource resource) {
+    return ofNullable(resource.getDoc())
+      .map(node -> {
+        var copiedDoc = node.deepCopy();
+        if (copiedDoc.isObject()) {
+          ((ObjectNode) copiedDoc).remove(RESOURCE_PREFERRED.getValue());
+        }
+        return copiedDoc;
+      })
+      .orElse(null);
   }
 
 }
