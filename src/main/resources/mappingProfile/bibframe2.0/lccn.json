@@ -1,0 +1,31 @@
+{
+  "bfNameSpace": "http://id.loc.gov/sources/lccns/",
+  "ldResourceDef": {
+    "typeSet": ["IDENTIFIER", "ID_LCCN"],
+    "predicate": "MAP"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Lccn",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "NAME",
+        "bfProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
+      }
+    ],
+    "outgoingEdges": [
+      {
+        "bfResourceDef": {
+          "predicate": "http://id.loc.gov/ontologies/bibframe/status"
+        },
+        "ldResourceDef": {
+          "predicate": "STATUS",
+          "typeSet": "STATUS"
+        }
+      }
+    ],
+    "label": "NAME"
+  }
+}
