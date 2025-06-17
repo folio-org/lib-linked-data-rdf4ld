@@ -1,12 +1,12 @@
 {
-  "bfNameSpace": "http://id.loc.gov/resources/titles/",
   "ldResourceDef": {
     "typeSet": "VARIANT_TITLE",
     "predicate": "TITLE"
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/title"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/title",
+    "nameSpace": "http://id.loc.gov/resources/titles/"
   },
   "resourceMapping": {
     "properties": [
@@ -32,7 +32,12 @@
       },
       {
         "ldProperty": "NOTE",
-        "bfProperty": "http://id.loc.gov/ontologies/bibframe/note"
+        "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label",
+        "edgeParentBfDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/Note",
+          "predicate": "http://id.loc.gov/ontologies/bibframe/note",
+          "nameSpace": "http://id.loc.gov/resources/notes/"
+        }
       },
       {
         "ldProperty": "VARIANT_TYPE",

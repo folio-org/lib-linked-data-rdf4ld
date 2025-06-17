@@ -1,12 +1,12 @@
 {
-  "bfNameSpace": "http://id.loc.gov/sources/eans/",
   "ldResourceDef": {
     "typeSet": ["IDENTIFIER", "ID_EAN"],
     "predicate": "MAP"
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Ean",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
+    "nameSpace": "http://id.loc.gov/sources/eans/"
   },
   "resourceMapping": {
     "properties": [

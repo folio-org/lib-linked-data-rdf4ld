@@ -14,6 +14,10 @@
     "predicate": {
       "type": "string",
       "description": "Bibframe resource predicate"
+    },
+    "nameSpace": {
+      "type": "string",
+      "description": "Bibframe resource name space"
     }
   }
 }
