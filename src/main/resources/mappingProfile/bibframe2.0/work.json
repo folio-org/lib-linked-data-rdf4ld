@@ -5,6 +5,7 @@
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Work",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf",
+    "nameSpace": "http://id.loc.gov/ontologies/bibframe/works/"
   }
 }

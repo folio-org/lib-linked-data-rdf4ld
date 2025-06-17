@@ -114,10 +114,10 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@value": "ParallelTitle note 1"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158739"
             },
             {
-                "@value": "ParallelTitle note 2"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158710"
             }
         ]
     },
@@ -168,10 +168,10 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@value": "VariantTitle note 1"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158711"
             },
             {
-                "@value": "VariantTitle note 2"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158712"
             }
         ],
         "http://id.loc.gov/ontologies/bibframe/variantType": [
@@ -293,10 +293,10 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@value": "Work ParallelTitle note 1"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158735"
             },
             {
-                "@value": "Work ParallelTitle note 2"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158736"
             }
         ]
     },
@@ -347,10 +347,10 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@value": "Work VariantTitle note 1"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158737"
             },
             {
-                "@value": "Work VariantTitle note 2"
+                "@id": "_:b111iddOtlocdOtgovresourcesinstances7158738"
             }
         ],
         "http://id.loc.gov/ontologies/bibframe/variantType": [
@@ -359,6 +359,94 @@
             },
             {
                 "@value": "Work VariantTitle variantType 2"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158735",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Work ParallelTitle note 1"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158736",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Work ParallelTitle note 2"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158737",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Work VariantTitle note 1"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158738",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Work VariantTitle note 2"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158739",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "ParallelTitle note 1"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158710",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "ParallelTitle note 2"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158711",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "VariantTitle note 1"
+            }
+        ]
+    },
+    {
+        "@id": "_:b111iddOtlocdOtgovresourcesinstances7158712",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "VariantTitle note 2"
             }
         ]
     },

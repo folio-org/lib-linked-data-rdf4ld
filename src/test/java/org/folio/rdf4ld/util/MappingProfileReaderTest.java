@@ -55,7 +55,7 @@ class MappingProfileReaderTest {
 
   private ResourceMapping getResourceMapping(String random) {
     return new ResourceMapping()
-      .bfResourceDef(new BfResourceDef().predicate(random))
+      .bfResourceDef(new BfResourceDef().nameSpace(random))
       .resourceMapping(new ResourceInternalMapping());
   }
 

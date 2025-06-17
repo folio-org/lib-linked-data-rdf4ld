@@ -5,7 +5,8 @@
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Lccn",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
+    "nameSpace": "http://id.loc.gov/sources/lccns/"
   },
   "resourceMapping": {
     "properties": [
