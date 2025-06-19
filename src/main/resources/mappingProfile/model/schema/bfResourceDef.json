@@ -11,6 +11,11 @@
         "type": "string"
       }
     },
+    "partialTypesMatch": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indicates if it's enough for the type set to match partially"
+    },
     "predicate": {
       "type": "string",
       "description": "Bibframe resource predicate"

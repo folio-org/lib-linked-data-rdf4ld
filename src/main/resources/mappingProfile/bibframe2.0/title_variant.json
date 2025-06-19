@@ -4,7 +4,17 @@
     "predicate": "TITLE"
   },
   "bfResourceDef": {
-    "typeSet": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
+    "typeSet": [
+      "http://id.loc.gov/ontologies/bibframe/VariantTitle",
+      "http://id.loc.gov/vocabulary/vartitletype/por",
+      "http://id.loc.gov/vocabulary/vartitletype/dis",
+      "http://id.loc.gov/vocabulary/vartitletype/cov",
+      "http://id.loc.gov/vocabulary/vartitletype/atp",
+      "http://id.loc.gov/vocabulary/vartitletype/cap",
+      "http://id.loc.gov/vocabulary/vartitletype/run",
+      "http://id.loc.gov/vocabulary/vartitletype/spi"
+    ],
+    "partialTypesMatch": true,
     "predicate": "http://id.loc.gov/ontologies/bibframe/title",
     "nameSpace": "http://id.loc.gov/resources/titles/"
   },
