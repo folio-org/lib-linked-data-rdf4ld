@@ -141,7 +141,7 @@ public class TestUtil {
         SUBTITLE, List.of(prefix + "VariantTitle subTitle 1", prefix + "VariantTitle subTitle 2"),
         DATE, List.of(prefix + "VariantTitle date 1", prefix + "VariantTitle date 2"),
         NOTE, List.of(prefix + "VariantTitle note 1", prefix + "VariantTitle note 2"),
-        VARIANT_TYPE, List.of(prefix + "VariantTitle variantType 1", prefix + "VariantTitle variantType 2")
+        VARIANT_TYPE, List.of("0")
       ), getTitleLabel(prefix, "VariantTitle")
     );
   }

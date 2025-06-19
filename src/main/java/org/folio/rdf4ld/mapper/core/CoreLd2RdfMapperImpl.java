@@ -3,7 +3,7 @@ package org.folio.rdf4ld.mapper.core;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.IRI;
@@ -31,7 +31,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
 
   @Override
   public void mapProperties(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
-    final var idMap = new HashMap<PropertyDictionary, Integer>();
+    final var idMap = new EnumMap<PropertyDictionary, Integer>(PropertyDictionary.class);
     mapping.getResourceMapping().getProperties().forEach(p -> {
         if (isNull(p.getEdgeParentBfDef())) {
           mapDirectProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty());

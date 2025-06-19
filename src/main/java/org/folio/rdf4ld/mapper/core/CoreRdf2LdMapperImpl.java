@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.core;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
@@ -67,7 +68,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   @Override
   public JsonNode toJson(Map<String, List<String>> map) {
     var node = objectMapper.convertValue(map, JsonNode.class);
-    return ! (node instanceof NullNode) ? node : objectMapper.createObjectNode();
+    return !(node instanceof NullNode) ? node : objectMapper.createObjectNode();
   }
 
   @Override
@@ -114,7 +115,9 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .filter(Value::isResource)
       .map(org.eclipse.rdf4j.model.Resource.class::cast)
       .filter(child -> bfResourceDef.getTypeSet().isEmpty()
-        || bfResourceDef.getTypeSet().equals(getAllTypes(model, child))
+        || (TRUE.equals(bfResourceDef.getPartialTypesMatch())
+        ? bfResourceDef.getTypeSet().containsAll(getAllTypes(model, child))
+        : bfResourceDef.getTypeSet().equals(getAllTypes(model, child)))
       );
   }
 

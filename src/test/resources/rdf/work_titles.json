@@ -124,7 +124,8 @@
     {
         "@id": "_:b123iddOtlocdOtgovresourcesinstances20572081",
         "@type": [
-            "http://id.loc.gov/ontologies/bibframe/VariantTitle"
+            "http://id.loc.gov/ontologies/bibframe/VariantTitle",
+            "http://id.loc.gov/vocabulary/vartitletype/por"
         ],
         "http://id.loc.gov/ontologies/bibframe/mainTitle": [
             {
@@ -172,14 +173,6 @@
             },
             {
                 "@id": "_:b111iddOtlocdOtgovresourcesinstances7158712"
-            }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/variantType": [
-            {
-                "@value": "VariantTitle variantType 1"
-            },
-            {
-                "@value": "VariantTitle variantType 2"
             }
         ]
     },
@@ -303,7 +296,8 @@
     {
         "@id": "_:b117iddOtlocdOtgovresourcesinstances20572002",
         "@type": [
-            "http://id.loc.gov/ontologies/bibframe/VariantTitle"
+            "http://id.loc.gov/ontologies/bibframe/VariantTitle",
+            "http://id.loc.gov/vocabulary/vartitletype/por"
         ],
         "http://id.loc.gov/ontologies/bibframe/mainTitle": [
             {
@@ -351,14 +345,6 @@
             },
             {
                 "@id": "_:b111iddOtlocdOtgovresourcesinstances7158738"
-            }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/variantType": [
-            {
-                "@value": "Work VariantTitle variantType 1"
-            },
-            {
-                "@value": "Work VariantTitle variantType 2"
             }
         ]
     },
