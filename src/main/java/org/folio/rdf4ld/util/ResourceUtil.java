@@ -1,10 +1,8 @@
 package org.folio.rdf4ld.util;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.StreamSupport.stream;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
@@ -12,9 +10,13 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Model;
@@ -47,20 +49,26 @@ public class ResourceUtil {
   }
 
   public static String getPropertiesString(JsonNode doc, PropertyDictionary... properties) {
-    return Arrays.stream(properties)
-      .map(property -> getPropertiesString(doc, property))
-      .filter(StringUtils::isNotBlank)
-      .collect(joining(", "));
+    var props = new ArrayList<>();
+    for (PropertyDictionary property : properties) {
+      var propertyString = getPropertiesString(doc, property);
+      if (StringUtils.isNotBlank(propertyString)) {
+        props.add(propertyString);
+      }
+    }
+    return StringUtils.join(props, ", ");
   }
 
   public static String getPropertiesString(JsonNode doc, PropertyDictionary property) {
-    return ofNullable(doc)
-      .map(d -> d.get(property.getValue()))
-      .map(JsonNode::elements)
-      .stream()
-      .flatMap(elements -> stream(spliteratorUnknownSize(elements, Spliterator.ORDERED), false))
-      .map(JsonNode::asText)
-      .collect(joining(", "));
+    if (nonNull(doc) && doc.has(property.getValue())) {
+      Iterator<JsonNode> elements = doc.get(property.getValue()).elements();
+      return StreamSupport.stream(
+          Spliterators.spliteratorUnknownSize(elements, Spliterator.ORDERED),
+          false)
+        .map(JsonNode::asText)
+        .collect(Collectors.joining(", "));
+    }
+    return "";
   }
 
   public static String getPredicate(ResourceInternalMapping resourceMapping, int number) {
@@ -84,30 +92,28 @@ public class ResourceUtil {
 
   public static JsonNode copyWithoutPreferred(Resource resource) {
     return ofNullable(resource.getDoc())
-      .filter(JsonNode::isObject)
-      .map(JsonNode::deepCopy)
-      .map(ObjectNode.class::cast)
-      .map(copiedDoc -> {
-        copiedDoc.remove(RESOURCE_PREFERRED.getValue());
+      .map(node -> {
+        var copiedDoc = node.deepCopy();
+        if (copiedDoc.isObject()) {
+          ((ObjectNode) copiedDoc).remove(RESOURCE_PREFERRED.getValue());
+        }
         return copiedDoc;
       })
       .orElse(null);
   }
 
   public static JsonNode addProperty(JsonNode doc, PropertyDictionary property, String value) {
-    return ofNullable(doc)
-      .filter(JsonNode::isObject)
-      .map(ObjectNode.class::cast)
-      .map(d -> {
-        if (d.has(property.getValue())) {
-          var propertyArray = (ArrayNode) d.get(property.getValue());
-          propertyArray.add(value);
-        } else {
-          d.putArray(property.getValue()).add(value);
-        }
-        return d;
-      })
-      .orElse((ObjectNode) doc);
+    if (nonNull(doc) && doc.isObject()) {
+      var objectNode = (ObjectNode) doc;
+      if (objectNode.has(property.getValue())) {
+        var arrayNode = (ArrayNode) objectNode.get(property.getValue());
+        arrayNode.add(value);
+      } else {
+        objectNode.putArray(property.getValue()).add(value);
+      }
+      return objectNode;
+    }
+    return doc;
   }
 
 }
