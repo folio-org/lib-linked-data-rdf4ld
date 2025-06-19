@@ -73,7 +73,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       modelBuilder.add(predicate, resource.getLabel());
       return;
     }
-    if (nonNull(resource.getDoc().get(property.getValue()))) {
+    if (nonNull(resource.getDoc()) && nonNull(resource.getDoc().get(property.getValue()))) {
       resource.getDoc().get(property.getValue())
         .forEach(node -> modelBuilder.add(predicate, node.asText()));
     }
