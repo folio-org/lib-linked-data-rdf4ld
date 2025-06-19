@@ -33,7 +33,7 @@ class InstanceTitlesMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLdInstance_shouldReturnMappedInstanceWithTitles() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithTitles() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
@@ -55,12 +55,12 @@ class InstanceTitlesMappingIT {
   }
 
   @Test
-  void mapToBibframeRdf_shouldReturnMappedRdfInstanceWithTitles() throws IOException {
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithTitles() throws IOException {
     // given
-    var primaryTitle = createPrimaryTitle();
-    var parallelTitle = createParallelTitle();
-    var variantTitle = createVariantTitle();
-    var instance = MonographUtil.createInstance(parallelTitle.getLabel());
+    var primaryTitle = createPrimaryTitle("");
+    var parallelTitle = createParallelTitle("");
+    var variantTitle = createVariantTitle("");
+    var instance = MonographUtil.createInstance(primaryTitle.getLabel());
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));

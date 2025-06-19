@@ -52,7 +52,7 @@ class WorkSubjectConceptMappingIT {
     "/rdf/work_subject.json",
     "/rdf/work_subject_id.json"
   })
-  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
