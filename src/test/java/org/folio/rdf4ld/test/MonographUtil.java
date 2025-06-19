@@ -101,7 +101,7 @@ public class MonographUtil {
         MAIN_TITLE, List.of(mainTitle1, mainTitle2),
         DATE, List.of("VariantTitle date 1", "VariantTitle date 2"),
         SUBTITLE, List.of(subTitle1, subTitle2),
-        VARIANT_TYPE, List.of("VariantTitle variantType 1", "VariantTitle variantType 2"),
+        VARIANT_TYPE, List.of("0"),
         NOTE, List.of("VariantTitle note 1", "VariantTitle note 2")
       ),
       Set.of(VARIANT_TITLE),
