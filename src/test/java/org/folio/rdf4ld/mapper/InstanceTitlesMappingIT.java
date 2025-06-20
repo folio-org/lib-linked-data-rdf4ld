@@ -57,10 +57,10 @@ class InstanceTitlesMappingIT {
   @Test
   void mapToBibframeRdf_shouldReturnMappedRdfInstanceWithTitles() throws IOException {
     // given
-    var primaryTitle = createPrimaryTitle();
-    var parallelTitle = createParallelTitle();
-    var variantTitle = createVariantTitle();
-    var instance = MonographUtil.createInstance(parallelTitle.getLabel());
+    var primaryTitle = createPrimaryTitle("");
+    var parallelTitle = createParallelTitle("");
+    var variantTitle = createVariantTitle("");
+    var instance = MonographUtil.createInstance(primaryTitle.getLabel());
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));
