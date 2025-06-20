@@ -2,11 +2,13 @@ package org.folio.rdf4ld.service;
 
 import static java.util.Objects.isNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.Resource;
@@ -21,18 +23,30 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   private final Rdf4LdMapper rdf4LdMapper;
 
   @Override
-  public Set<Resource> mapToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
+  public Set<Resource> mapRdfToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
     var model = readModel(input, contentType);
-    return rdf4LdMapper.mapToLd(model, resourceMapping);
+    return rdf4LdMapper.mapRdfToLd(model, resourceMapping);
   }
 
   @Override
-  public Set<Resource> mapToLdInstance(InputStream input, String contentType) {
+  public Set<Resource> mapBibframe2RdfToLd(InputStream input, String contentType) {
     var model = readModel(input, contentType);
-    return rdf4LdMapper.mapToLdInstance(model);
+    return rdf4LdMapper.mapBibframe2RdfToLd(model);
   }
 
-  private static Model readModel(InputStream input, String contentType) {
+  @Override
+  public ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, ResourceMapping resourceMapping) {
+    var model = rdf4LdMapper.mapLdToRdf(resource, resourceMapping);
+    return writeModel(model, rdfFormat);
+  }
+
+  @Override
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat) {
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(resource);
+    return writeModel(model, rdfFormat);
+  }
+
+  private Model readModel(InputStream input, String contentType) {
     if (isNull(input)) {
       throw new IllegalArgumentException("Input stream is null");
     }
@@ -49,6 +63,12 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
       throw new IllegalArgumentException("RDF parsing error", e);
     }
     return model;
+  }
+
+  private ByteArrayOutputStream writeModel(Model model, RDFFormat rdfFormat) {
+    var out = new ByteArrayOutputStream();
+    Rio.write(model, out, rdfFormat);
+    return out;
   }
 
 }

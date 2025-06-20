@@ -12,7 +12,5 @@ public interface RdfMapperUnit {
                    ResourceMapping resourceMapping,
                    Resource parent);
 
-  void mapToBibframe(Resource resource,
-                     ModelBuilder modelBuilder,
-                     ResourceMapping resourceMapping);
+  void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping resourceMapping);
 }

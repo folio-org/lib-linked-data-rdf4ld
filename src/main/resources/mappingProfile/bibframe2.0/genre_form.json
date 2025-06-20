@@ -1,10 +1,10 @@
 {
-  "bfNameSpace": "http://id.loc.gov/authorities/genreForms/",
   "ldResourceDef": {
     "typeSet": "FORM",
     "predicate": "GENRE"
   },
   "bfResourceDef": {
-    "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm",
+    "nameSpace": "http://id.loc.gov/authorities/genreForms/"
   }
 }

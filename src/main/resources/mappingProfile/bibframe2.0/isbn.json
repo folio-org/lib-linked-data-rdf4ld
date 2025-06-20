@@ -1,12 +1,12 @@
 {
-  "bfNameSpace": "http://id.loc.gov/sources/isbns/",
   "ldResourceDef": {
     "typeSet": ["IDENTIFIER", "ID_ISBN"],
     "predicate": "MAP"
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Isbn",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
+    "nameSpace": "http://id.loc.gov/sources/isbns/"
   },
   "resourceMapping": {
     "properties": [

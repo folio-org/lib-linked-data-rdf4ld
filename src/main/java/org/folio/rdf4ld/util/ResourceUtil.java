@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -99,6 +100,20 @@ public class ResourceUtil {
         return copiedDoc;
       })
       .orElse(null);
+  }
+
+  public static JsonNode addProperty(JsonNode doc, PropertyDictionary property, String value) {
+    if (nonNull(doc) && doc.isObject()) {
+      var objectNode = (ObjectNode) doc;
+      if (objectNode.has(property.getValue())) {
+        var arrayNode = (ArrayNode) objectNode.get(property.getValue());
+        arrayNode.add(value);
+      } else {
+        objectNode.putArray(property.getValue()).add(value);
+      }
+      return objectNode;
+    }
+    return doc;
   }
 
 }

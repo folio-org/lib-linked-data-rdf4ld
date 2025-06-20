@@ -1,12 +1,22 @@
 {
-  "bfNameSpace": "http://id.loc.gov/sources/titles/",
   "ldResourceDef": {
     "typeSet": "VARIANT_TITLE",
     "predicate": "TITLE"
   },
   "bfResourceDef": {
-    "typeSet": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/title"
+    "typeSet": [
+      "http://id.loc.gov/ontologies/bibframe/VariantTitle",
+      "http://id.loc.gov/vocabulary/vartitletype/por",
+      "http://id.loc.gov/vocabulary/vartitletype/dis",
+      "http://id.loc.gov/vocabulary/vartitletype/cov",
+      "http://id.loc.gov/vocabulary/vartitletype/atp",
+      "http://id.loc.gov/vocabulary/vartitletype/cap",
+      "http://id.loc.gov/vocabulary/vartitletype/run",
+      "http://id.loc.gov/vocabulary/vartitletype/spi"
+    ],
+    "partialTypesMatch": true,
+    "predicate": "http://id.loc.gov/ontologies/bibframe/title",
+    "nameSpace": "http://id.loc.gov/resources/titles/"
   },
   "resourceMapping": {
     "properties": [
@@ -32,7 +42,12 @@
       },
       {
         "ldProperty": "NOTE",
-        "bfProperty": "http://id.loc.gov/ontologies/bibframe/note"
+        "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label",
+        "edgeParentBfDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/Note",
+          "predicate": "http://id.loc.gov/ontologies/bibframe/note",
+          "nameSpace": "http://id.loc.gov/resources/notes/"
+        }
       },
       {
         "ldProperty": "VARIANT_TYPE",

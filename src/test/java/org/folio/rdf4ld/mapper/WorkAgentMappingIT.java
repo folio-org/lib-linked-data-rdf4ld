@@ -62,7 +62,7 @@ class WorkAgentMappingIT {
       .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model);
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
 
     // then
     assertThat(result).hasSize(1);

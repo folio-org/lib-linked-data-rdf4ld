@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
@@ -53,7 +54,9 @@ class MappingProfileReaderTest {
   }
 
   private ResourceMapping getResourceMapping(String random) {
-    return new ResourceMapping().bfNameSpace(random).resourceMapping(new ResourceInternalMapping());
+    return new ResourceMapping()
+      .bfResourceDef(new BfResourceDef().nameSpace(random))
+      .resourceMapping(new ResourceInternalMapping());
   }
 
 }

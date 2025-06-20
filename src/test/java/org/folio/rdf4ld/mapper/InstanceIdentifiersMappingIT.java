@@ -37,7 +37,7 @@ class InstanceIdentifiersMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapToLdInstance_shouldReturnMappedInstanceWithIdentifiers() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithIdentifiers() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_identifiers.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
@@ -48,10 +48,9 @@ class InstanceIdentifiersMappingIT {
     final var currentStatusLink = "http://id.loc.gov/vocabulary/mstatus/current";
     final var cancelledStatusLabel = "cancinv";
     final var cancelledStatusLink = "http://id.loc.gov/vocabulary/mstatus/cancinv";
-    // should we add current if no status?
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model);
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
 
     // then
     assertThat(result).isNotEmpty().hasSize(1);

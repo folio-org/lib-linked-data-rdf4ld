@@ -34,7 +34,7 @@ class WorkTitlesMappingIT {
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
-    var result = rdf4LdMapper.mapToLdInstance(model);
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
 
     // then
     assertThat(result).hasSize(1);
