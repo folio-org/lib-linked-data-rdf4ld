@@ -77,7 +77,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
       ? IteratorUtils.toList(resource.getDoc().get(VARIANT_TYPE.getValue()).iterator())
       : emptyList();
     TYPES_MAP.forEach((key, value) -> {
-      if (! values.contains(TextNode.valueOf(value))) {
+      if (!values.contains(TextNode.valueOf(value))) {
         modelBuilder.build().remove(resourceIri, RDF.TYPE, Values.iri(key));
       }
     });
