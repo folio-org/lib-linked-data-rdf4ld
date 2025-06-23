@@ -5,8 +5,7 @@
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Ean",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
-    "nameSpace": "http://id.loc.gov/sources/eans/"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
   },
   "resourceMapping": {
     "properties": [

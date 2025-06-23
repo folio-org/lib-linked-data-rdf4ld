@@ -2,6 +2,7 @@ package org.folio.rdf4ld.mapper.core;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -22,31 +23,33 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
+  private static final String LD_NAMESPACE = "http://test-tobe-changed.folio.com/resources/";
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
-  public IRI getResourceIri(String nameSpace, String id) {
-    return Values.iri(nameSpace, id);
+  public IRI getResourceIri(String id) {
+    return Values.iri(LD_NAMESPACE, id);
   }
 
   @Override
   public void mapProperties(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
     final var idMap = new EnumMap<PropertyDictionary, Integer>(PropertyDictionary.class);
-    mapping.getResourceMapping().getProperties().forEach(p -> {
-        if (isNull(p.getEdgeParentBfDef())) {
-          mapDirectProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty());
-        } else {
-          mapPropertyToAnotherResource(modelBuilder, resource, p, idMap, mapping.getBfResourceDef().getNameSpace());
-        }
-      }
-    );
+    ofNullable(mapping.getResourceMapping())
+      .ifPresent(irm ->
+        irm.getProperties().forEach(p -> {
+          if (isNull(p.getEdgeParentBfDef())) {
+            mapDirectProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty());
+          } else {
+            mapPropertyToAnotherResource(modelBuilder, resource, p, idMap);
+          }
+        })
+      );
   }
 
   @Override
   public void mapOutgoingEdge(ModelBuilder modelBuilder,
                               ResourceEdge edge,
-                              ResourceInternalMapping mapping,
-                              String nameSpace) {
+                              ResourceInternalMapping mapping) {
     mapping.getOutgoingEdges().stream()
       .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
@@ -54,7 +57,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
         var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
         mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem);
         linkResources(modelBuilder, String.valueOf(edge.getSource().getId()), String.valueOf(edge.getTarget().getId()),
-          nameSpace, oem.getBfResourceDef().getNameSpace(), oem.getBfResourceDef().getPredicate());
+          oem.getBfResourceDef().getPredicate());
       });
   }
 
@@ -82,31 +85,23 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   private void mapPropertyToAnotherResource(ModelBuilder modelBuilder,
                                             Resource resource,
                                             PropertyMapping pm,
-                                            Map<PropertyDictionary, Integer> idMap,
-                                            String parentNamesSpace) {
+                                            Map<PropertyDictionary, Integer> idMap) {
     if (nonNull(resource.getDoc().get(pm.getLdProperty().getValue()))) {
       resource.getDoc().get(pm.getLdProperty().getValue())
         .forEach(node -> {
           var id = generateId(resource, pm, idMap);
-          var bfNameSpace = pm.getEdgeParentBfDef().getNameSpace();
-          modelBuilder.subject(getResourceIri(bfNameSpace, id));
+          modelBuilder.subject(getResourceIri(id));
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
-          linkResources(modelBuilder, resource.getId().toString(), id, parentNamesSpace,
-            bfNameSpace, pm.getEdgeParentBfDef().getPredicate()
+          linkResources(modelBuilder, resource.getId().toString(), id, pm.getEdgeParentBfDef().getPredicate()
           );
         });
     }
   }
 
-  private void linkResources(ModelBuilder modelBuilder,
-                             String sourceId,
-                             String targetId,
-                             String parentNamesSpace,
-                             String targetNamesSpace,
-                             String bfPredicate) {
-    modelBuilder.subject(getResourceIri(parentNamesSpace, sourceId));
-    var iri = getResourceIri(targetNamesSpace, targetId);
+  private void linkResources(ModelBuilder modelBuilder, String sourceId, String targetId, String bfPredicate) {
+    modelBuilder.subject(getResourceIri(sourceId));
+    var iri = getResourceIri(targetId);
     modelBuilder.add(bfPredicate, iri);
   }
 
