@@ -9,13 +9,12 @@ import org.folio.rdf4ld.model.ResourceMapping;
 
 public interface CoreLd2RdfMapper {
 
-  IRI getResourceIri(String nameSpace, String id);
+  IRI getResourceIri(String id);
 
   void mapProperties(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping);
 
   void mapOutgoingEdge(ModelBuilder modelBuilder,
                        ResourceEdge edge,
-                       ResourceInternalMapping resourceMapping,
-                       String nameSpace);
+                       ResourceInternalMapping resourceMapping);
 
 }

@@ -62,12 +62,11 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
 
   @Override
   public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
-    var bfNameSpace = mapping.getBfResourceDef().getNameSpace();
-    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(bfNameSpace, valueOf(resource.getId())));
+    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(valueOf(resource.getId())));
     mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
     coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
     resource.getOutgoingEdges().forEach(oe ->
-      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping(), bfNameSpace)
+      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
     );
   }
 

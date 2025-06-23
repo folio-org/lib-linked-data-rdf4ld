@@ -4,7 +4,6 @@
     "predicate": "GENRE"
   },
   "bfResourceDef": {
-    "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm",
-    "nameSpace": "http://id.loc.gov/authorities/genreForms/"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/genreForm"
   }
 }

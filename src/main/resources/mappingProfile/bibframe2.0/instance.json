@@ -3,8 +3,7 @@
     "typeSet": "INSTANCE"
   },
   "bfResourceDef": {
-    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance",
-    "nameSpace": "http://id.loc.gov/resources/instances/"
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
   },
   "resourceMapping": {
     "properties": [

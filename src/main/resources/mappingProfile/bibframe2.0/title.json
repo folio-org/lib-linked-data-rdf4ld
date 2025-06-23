@@ -5,8 +5,7 @@
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Title",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/title",
-    "nameSpace": "http://id.loc.gov/resources/titles/"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/title"
   },
   "resourceMapping": {
     "properties": [

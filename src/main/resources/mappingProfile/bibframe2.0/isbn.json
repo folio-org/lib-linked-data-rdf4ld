@@ -5,8 +5,7 @@
   },
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Isbn",
-    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
-    "nameSpace": "http://id.loc.gov/sources/isbns/"
+    "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
   },
   "resourceMapping": {
     "properties": [

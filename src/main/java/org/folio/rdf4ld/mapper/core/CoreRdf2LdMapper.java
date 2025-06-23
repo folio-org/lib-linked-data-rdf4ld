@@ -23,4 +23,7 @@ public interface CoreRdf2LdMapper {
                                      Model model,
                                      Resource parent,
                                      org.eclipse.rdf4j.model.Resource rdfParent);
+
+  Set<String> getAllTypes(Model model, org.eclipse.rdf4j.model.Resource resource);
+
 }
