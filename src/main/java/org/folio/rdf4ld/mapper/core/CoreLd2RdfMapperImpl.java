@@ -1,7 +1,6 @@
 package org.folio.rdf4ld.mapper.core;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.EnumMap;
@@ -76,27 +75,29 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       modelBuilder.add(predicate, resource.getLabel());
       return;
     }
-    if (nonNull(resource.getDoc().get(property.getValue()))) {
-      resource.getDoc().get(property.getValue())
-        .forEach(node -> modelBuilder.add(predicate, node.asText()));
-    }
+    ofNullable(resource.getDoc())
+      .map(d -> d.get(property.getValue()))
+      .ifPresent(propertyArray ->
+        propertyArray.forEach(node -> modelBuilder.add(predicate, node.asText()))
+      );
   }
 
   private void mapPropertyToAnotherResource(ModelBuilder modelBuilder,
                                             Resource resource,
                                             PropertyMapping pm,
                                             Map<PropertyDictionary, Integer> idMap) {
-    if (nonNull(resource.getDoc().get(pm.getLdProperty().getValue()))) {
-      resource.getDoc().get(pm.getLdProperty().getValue())
-        .forEach(node -> {
+    ofNullable(resource.getDoc())
+      .map(doc -> doc.get(pm.getLdProperty().getValue()))
+      .ifPresent(propertyArray ->
+        propertyArray.forEach(node -> {
           var id = generateId(resource, pm, idMap);
           modelBuilder.subject(getResourceIri(id));
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
           linkResources(modelBuilder, resource.getId().toString(), id, pm.getEdgeParentBfDef().getPredicate()
           );
-        });
-    }
+        })
+      );
   }
 
   private void linkResources(ModelBuilder modelBuilder, String sourceId, String targetId, String bfPredicate) {
