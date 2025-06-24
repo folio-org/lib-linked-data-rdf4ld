@@ -55,8 +55,8 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       .forEach(oem -> {
         var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
         mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem);
-        linkResources(modelBuilder, String.valueOf(edge.getSource().getId()), String.valueOf(edge.getTarget().getId()),
-          oem.getBfResourceDef().getPredicate());
+        linkResources(modelBuilder, String.valueOf(edge.getSource().getId()),
+          getResourceIri(String.valueOf(edge.getTarget().getId())), oem.getBfResourceDef().getPredicate());
       });
   }
 
@@ -64,7 +64,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                             org.folio.rdf4ld.model.PropertyMapping p,
                             Map<PropertyDictionary, Integer> idMap) {
     idMap.put(p.getLdProperty(), idMap.getOrDefault(p.getLdProperty(), 0) + 1);
-    return resource.getId() + "_" + p.getLdProperty().name() + "_" + idMap.get(p.getLdProperty());
+    return p.getLdProperty().name() + "_" + idMap.get(p.getLdProperty()) + "_" + resource.getId();
   }
 
   private void mapDirectProperty(ModelBuilder modelBuilder,
@@ -91,19 +91,22 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       .ifPresent(propertyArray ->
         propertyArray.forEach(node -> {
           var id = generateId(resource, pm, idMap);
-          modelBuilder.subject(getResourceIri(id));
+          var blankNode = Values.bnode(id);
+          modelBuilder.subject(blankNode);
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
-          linkResources(modelBuilder, resource.getId().toString(), id, pm.getEdgeParentBfDef().getPredicate()
+          linkResources(modelBuilder, resource.getId().toString(), blankNode, pm.getEdgeParentBfDef().getPredicate()
           );
         })
       );
   }
 
-  private void linkResources(ModelBuilder modelBuilder, String sourceId, String targetId, String bfPredicate) {
+  private void linkResources(ModelBuilder modelBuilder,
+                             String sourceId,
+                             org.eclipse.rdf4j.model.Resource target,
+                             String bfPredicate) {
     modelBuilder.subject(getResourceIri(sourceId));
-    var iri = getResourceIri(targetId);
-    modelBuilder.add(bfPredicate, iri);
+    modelBuilder.add(bfPredicate, target);
   }
 
 }

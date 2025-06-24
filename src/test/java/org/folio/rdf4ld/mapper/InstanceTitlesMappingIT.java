@@ -69,10 +69,10 @@ class InstanceTitlesMappingIT {
       .replaceAll("PRIMARY_TITLE_ID", primaryTitle.getId().toString())
       .replaceAll("PARALLEL_TITLE_ID", parallelTitle.getId().toString())
       .replaceAll("VARIANT_TITLE_ID", variantTitle.getId().toString())
-      .replaceAll("PARALLEL_TITLE_NOTE_ID_1", parallelTitle.getId().toString() + "_NOTE_1")
-      .replaceAll("PARALLEL_TITLE_NOTE_ID_2", parallelTitle.getId().toString() + "_NOTE_2")
-      .replaceAll("VARIANT_TITLE_NOTE_ID_1", variantTitle.getId().toString() + "_NOTE_1")
-      .replaceAll("VARIANT_TITLE_NOTE_ID_2", variantTitle.getId().toString() + "_NOTE_2");
+      .replaceAll("PARALLEL_TITLE_NOTE_ID_1", "NOTE_1_" + parallelTitle.getId().toString())
+      .replaceAll("PARALLEL_TITLE_NOTE_ID_2", "NOTE_2_" + parallelTitle.getId().toString())
+      .replaceAll("VARIANT_TITLE_NOTE_ID_1", "NOTE_1_" + variantTitle.getId().toString())
+      .replaceAll("VARIANT_TITLE_NOTE_ID_2", "NOTE_2_" + variantTitle.getId().toString());
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
