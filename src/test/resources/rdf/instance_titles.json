@@ -125,15 +125,15 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_NOTE_ID_1"
+                "@id": "_:PARALLEL_TITLE_NOTE_ID_1"
             },
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_NOTE_ID_2"
+                "@id": "_:PARALLEL_TITLE_NOTE_ID_2"
             }
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_NOTE_ID_1",
+        "@id": "_:PARALLEL_TITLE_NOTE_ID_1",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Note"
         ],
@@ -144,7 +144,7 @@
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/PARALLEL_TITLE_NOTE_ID_2",
+        "@id": "_:PARALLEL_TITLE_NOTE_ID_2",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Note"
         ],
@@ -202,15 +202,15 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_NOTE_ID_1"
+                "@id": "_:VARIANT_TITLE_NOTE_ID_1"
             },
             {
-                "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_NOTE_ID_2"
+                "@id": "_:VARIANT_TITLE_NOTE_ID_2"
             }
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_NOTE_ID_1",
+        "@id": "_:VARIANT_TITLE_NOTE_ID_1",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Note"
         ],
@@ -221,7 +221,7 @@
         ]
     },
     {
-        "@id": "http://test-tobe-changed.folio.com/resources/VARIANT_TITLE_NOTE_ID_2",
+        "@id": "_:VARIANT_TITLE_NOTE_ID_2",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Note"
         ],
