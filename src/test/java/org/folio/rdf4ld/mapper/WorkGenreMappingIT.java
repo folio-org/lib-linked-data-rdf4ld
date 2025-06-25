@@ -43,7 +43,7 @@ class WorkGenreMappingIT {
     "/rdf/work_genre.json",
     "/rdf/work_genre_id.json"
   })
-  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithGenre(String rdfFile) throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithGenre(String rdfFile) throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);

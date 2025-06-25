@@ -48,7 +48,7 @@ class WorkAgentMappingIT {
     "/rdf/work_agent.json",
     "/rdf/work_agent_id.json"
   })
-  void mapToLdInstance_shouldReturnMappedInstanceWithWorkWithAgents(String rdfFile) throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
