@@ -1,5 +1,4 @@
 {
-  "bfNameSpace": "http://id.loc.gov/ontologies/bibframe/works/",
   "ldResourceDef": {
     "typeSet": "WORK",
     "predicate": "INSTANTIATES"

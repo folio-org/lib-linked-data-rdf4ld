@@ -1,5 +1,4 @@
 {
-  "bfNameSpace": "http://id.loc.gov/sources/isbns/",
   "ldResourceDef": {
     "typeSet": ["IDENTIFIER", "ID_ISBN"],
     "predicate": "MAP"

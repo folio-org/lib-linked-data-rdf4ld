@@ -37,7 +37,7 @@ class Rdf4LdMapperTest {
   private RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Test
-  void mapToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
+  void mapRdfToLd_shouldReturnEmptySetWhenCoreRdf2LdInstanceMapperReturnsNoStatements() {
     // given
     var model = new ModelBuilder().build();
     var resourceMapping = new ResourceMapping()
@@ -46,14 +46,14 @@ class Rdf4LdMapperTest {
     doReturn(resourceMapping).when(mappingProfileReader).getBibframe20Profile();
 
     // when
-    var result = topMapper.mapToLdInstance(model);
+    var result = topMapper.mapBibframe2RdfToLd(model);
 
     // then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void mapToLdInstance_shouldReturnSetWithResourcesMappedByAccordingMapper() {
+  void mapBibframe2RdfToLd_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
     var model = new ModelBuilder().build();
     var resourceMapping = new ResourceMapping()
@@ -68,14 +68,14 @@ class Rdf4LdMapperTest {
     doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any());
 
     // when
-    var result = topMapper.mapToLdInstance(model);
+    var result = topMapper.mapBibframe2RdfToLd(model);
 
     // then
     assertThat(result).hasSize(1).contains(expectedResource);
   }
 
   @Test
-  void mapToBibframeRdfInstance_shouldReturnModelEnrichedByAccordingMapper() {
+  void mapLdToBibframe2Rdf_shouldReturnModelEnrichedByAccordingMapper() {
     // given
     var mappingProfile = new ResourceMapping()
       .bfResourceDef(new BfResourceDef())
@@ -84,7 +84,7 @@ class Rdf4LdMapperTest {
     doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any());
 
     // when
-    var result = topMapper.mapToBibframeRdfInstance(null);
+    var result = topMapper.mapLdToBibframe2Rdf(null);
 
     // then
     assertThat(result).hasSize(1);

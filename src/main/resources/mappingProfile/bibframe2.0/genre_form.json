@@ -1,5 +1,4 @@
 {
-  "bfNameSpace": "http://id.loc.gov/authorities/genreForms/",
   "ldResourceDef": {
     "typeSet": "FORM",
     "predicate": "GENRE"

@@ -1,5 +1,4 @@
 {
-  "bfNameSpace": "http://id.loc.gov/sources/lccns/",
   "ldResourceDef": {
     "typeSet": ["IDENTIFIER", "ID_LCCN"],
     "predicate": "MAP"

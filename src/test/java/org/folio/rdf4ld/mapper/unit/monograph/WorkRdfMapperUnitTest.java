@@ -38,7 +38,7 @@ class WorkRdfMapperUnitTest {
     var mapping = mock(ResourceMapping.class);
     var mappedResource = new Resource()
       .setId(123L);
-    mappedResource.addOutgoingEdge(new ResourceEdge(mappedResource, createPrimaryTitle(456L), TITLE));
+    mappedResource.addOutgoingEdge(new ResourceEdge(mappedResource, createPrimaryTitle(), TITLE));
     doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, mapping, null);
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
@@ -48,6 +48,7 @@ class WorkRdfMapperUnitTest {
 
     // then
     assertThat(result.getId()).isEqualTo(newId);
-    assertThat(result.getLabel()).isEqualTo("Primary: mainTitle456, Primary: subTitle");
+    assertThat(result.getLabel())
+      .isEqualTo("Title mainTitle 1, Title mainTitle 2, Title subTitle 1, Title subTitle 2");
   }
 }

@@ -10,6 +10,7 @@ import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.Resource;
@@ -60,17 +61,12 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
   }
 
   @Override
-  public void mapToBibframe(Resource resource,
-                            ModelBuilder modelBuilder,
-                            ResourceMapping mapping) {
-    var bfNameSpace = mapping.getBfNameSpace();
-    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(bfNameSpace, valueOf(resource.getId())))
-      .add(RDF.TYPE, mapping.getBfResourceDef().getTypeSet().iterator().next());
-    mapping.getResourceMapping().getProperties().forEach(p ->
-      coreLd2RdfMapper.mapProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty())
-    );
+  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
+    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(valueOf(resource.getId())));
+    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
+    coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
     resource.getOutgoingEdges().forEach(oe ->
-      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping, bfNameSpace)
+      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
     );
   }
 

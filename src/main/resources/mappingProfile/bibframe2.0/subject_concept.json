@@ -1,5 +1,4 @@
 {
-  "bfNameSpace": "http://id.loc.gov/authorities/subjects/",
   "ldResourceDef": {
     "typeSet": "CONCEPT",
     "predicate": "SUBJECT"
