@@ -17,4 +17,8 @@ public interface CoreLd2RdfMapper {
                        ResourceEdge edge,
                        ResourceInternalMapping resourceMapping);
 
+  void linkResources(ModelBuilder modelBuilder,
+                     String sourceId,
+                     org.eclipse.rdf4j.model.Resource target,
+                     String bfPredicate);
 }

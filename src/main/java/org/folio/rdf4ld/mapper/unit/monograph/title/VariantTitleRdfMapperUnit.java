@@ -54,8 +54,11 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
   }
 
   @Override
-  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
-    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, mapping);
+  public void mapToBibframe(Resource resource,
+                            ModelBuilder modelBuilder,
+                            ResourceMapping mapping,
+                            Resource parent) {
+    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, mapping, parent);
     addVariantTypes(resource, modelBuilder);
     removeVariantTypeProperty(modelBuilder, mapping, resource.getId().toString());
   }

@@ -42,7 +42,7 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   public Model mapLdToRdf(Resource resource, ResourceMapping resourceMapping) {
     var modelBuilder = new ModelBuilder();
     rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef())
-      .mapToBibframe(resource, modelBuilder, resourceMapping);
+      .mapToBibframe(resource, modelBuilder, resourceMapping, null);
     return modelBuilder.build();
   }
 

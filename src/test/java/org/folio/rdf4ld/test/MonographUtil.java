@@ -2,9 +2,14 @@ package org.folio.rdf4ld.test;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
@@ -12,8 +17,12 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
@@ -66,7 +75,7 @@ public class MonographUtil {
         NON_SORT_NUM, List.of(prefix + "Title nonSortNum 1", prefix + "Title nonSortNum 2"),
         SUBTITLE, List.of(subTitleValue1, subTitleValue2)
       ),
-      Set.of(ResourceTypeDictionary.TITLE),
+      Set.of(TITLE),
       emptyMap()
     ).setLabel(primaryTitleValue1 + " " + primaryTitleValue2 + " " + subTitleValue1 + " " + subTitleValue2);
   }
@@ -118,6 +127,33 @@ public class MonographUtil {
     );
     work.setLabel(label);
     return work;
+  }
+
+  public static Resource createAgent(String lccn) {
+    return createResource(
+      Map.of(),
+      Set.of(AGENT),
+      Map.of(MAP, List.of(createLccn(lccn)))
+    );
+  }
+
+  public static Resource createLccn(String lccn) {
+    return createResource(
+      Map.of(NAME, List.of(lccn)),
+      Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(STATUS, List.of(createStatus("current")))
+    ).setLabel(lccn);
+  }
+
+  private static Resource createStatus(String value) {
+    return createResource(
+      Map.of(
+        LABEL, List.of(value),
+        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + value)
+      ),
+      Set.of(ResourceTypeDictionary.STATUS),
+      emptyMap()
+    ).setLabel(value);
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,

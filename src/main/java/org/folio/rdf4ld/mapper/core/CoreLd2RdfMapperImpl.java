@@ -50,14 +50,22 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                               ResourceEdge edge,
                               ResourceInternalMapping mapping) {
     mapping.getOutgoingEdges().stream()
-      .filter(oem -> edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet())
+      .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
+        || edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet()))
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
       .forEach(oem -> {
         var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem);
-        linkResources(modelBuilder, String.valueOf(edge.getSource().getId()),
-          getResourceIri(String.valueOf(edge.getTarget().getId())), oem.getBfResourceDef().getPredicate());
+        mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem, edge.getSource());
       });
+  }
+
+  @Override
+  public void linkResources(ModelBuilder modelBuilder,
+                            String sourceId,
+                            org.eclipse.rdf4j.model.Resource target,
+                            String bfPredicate) {
+    modelBuilder.subject(getResourceIri(sourceId));
+    modelBuilder.add(bfPredicate, target);
   }
 
   private String generateId(Resource resource,
@@ -99,14 +107,6 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
           );
         })
       );
-  }
-
-  private void linkResources(ModelBuilder modelBuilder,
-                             String sourceId,
-                             org.eclipse.rdf4j.model.Resource target,
-                             String bfPredicate) {
-    modelBuilder.subject(getResourceIri(sourceId));
-    modelBuilder.add(bfPredicate, target);
   }
 
 }

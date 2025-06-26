@@ -6,10 +6,14 @@ import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COLLABORATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.test.MonographUtil.createAgent;
+import static org.folio.rdf4ld.test.MonographUtil.createInstance;
+import static org.folio.rdf4ld.test.MonographUtil.createWork;
+import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,6 +30,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +79,38 @@ class WorkAgentMappingIT {
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
         new ResourceEdge(work, creator, AUTHOR),
-        new ResourceEdge(work, creator, EDITOR),
+        new ResourceEdge(work, creator, DEGREE_GRANTOR),
         new ResourceEdge(work, contributor, CONTRIBUTOR),
         new ResourceEdge(work, contributor, ILLUSTRATOR),
         new ResourceEdge(work, contributor, COLLABORATOR)
       ));
   }
 
+  @Test
+  void mapLdToBibframe2Rdf() throws IOException {
+    // given
+    var work = createWork("work");
+    var creator = createAgent("n2021004098");
+    var contributor = createAgent("n2021004092");
+    work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, DEGREE_GRANTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, ILLUSTRATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
+    var instance = createInstance("instance").setDoc(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_id.json").readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString())
+      .replaceAll("CREATOR_ID", "_" + creator.getId().toString())
+      .replaceAll("CONTRIBUTOR_ID", "_" + contributor.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    //then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
 }
