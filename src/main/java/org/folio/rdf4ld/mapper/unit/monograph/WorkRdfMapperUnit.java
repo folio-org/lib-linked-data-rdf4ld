@@ -36,7 +36,8 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping) {
-    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping);
+                            ResourceMapping resourceMapping,
+                            Resource parent) {
+    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
   }
 }
