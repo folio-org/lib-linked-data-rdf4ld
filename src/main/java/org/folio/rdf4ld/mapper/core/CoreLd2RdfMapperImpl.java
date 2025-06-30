@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper.core;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.EnumMap;
@@ -50,6 +51,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                               ResourceEdge edge,
                               ResourceInternalMapping mapping) {
     mapping.getOutgoingEdges().stream()
+      .filter(oem -> nonNull(oem.getLdResourceDef()))
       .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
         || edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet()))
         && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
@@ -61,10 +63,10 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
 
   @Override
   public void linkResources(ModelBuilder modelBuilder,
-                            String sourceId,
+                            org.eclipse.rdf4j.model.Resource source,
                             org.eclipse.rdf4j.model.Resource target,
                             String bfPredicate) {
-    modelBuilder.subject(getResourceIri(sourceId));
+    modelBuilder.subject(source);
     modelBuilder.add(bfPredicate, target);
   }
 
@@ -103,7 +105,8 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
           modelBuilder.subject(blankNode);
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
-          linkResources(modelBuilder, resource.getId().toString(), blankNode, pm.getEdgeParentBfDef().getPredicate()
+          linkResources(modelBuilder, getResourceIri(resource.getId().toString()), blankNode,
+            pm.getEdgeParentBfDef().getPredicate()
           );
         })
       );

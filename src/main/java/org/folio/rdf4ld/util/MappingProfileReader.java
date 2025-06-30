@@ -56,11 +56,19 @@ public class MappingProfileReader {
         readResourceMapping(TITLE).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_PARALLEL).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_VARIANT).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
-        readResourceMapping(CONTRIBUTOR).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
-        readResourceMapping(CREATOR).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
+        getAgentMapping(CONTRIBUTOR).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
+        getAgentMapping(CREATOR).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(GENRE_FORM).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(SUBJECT_CONCEPT).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         return wm;
+      });
+  }
+
+  private Optional<ResourceMapping> getAgentMapping(String fileName) {
+    return readResourceMapping(fileName)
+      .map(am -> {
+        readResourceMapping(LCCN).ifPresent(am.getResourceMapping()::addOutgoingEdgesItem);
+        return am;
       });
   }
 

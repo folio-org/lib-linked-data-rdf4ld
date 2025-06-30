@@ -5,7 +5,9 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import java.util.Optional;
 import java.util.function.Function;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
+import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Component;
 public class ContributorRdfMapperUnit extends AgentRdfMapperUnit {
 
   public ContributorRdfMapperUnit(Function<String, Optional<Resource>> resourceProvider,
-                                  CoreLd2RdfMapper coreLd2RdfMapper) {
-    super(resourceProvider, coreLd2RdfMapper);
+                                  CoreLd2RdfMapper coreLd2RdfMapper,
+                                  BaseRdfMapperUnit baseRdfMapperUnit,
+                                  FingerprintHashService hashService) {
+    super(coreLd2RdfMapper, hashService, baseRdfMapperUnit, resourceProvider);
   }
 }

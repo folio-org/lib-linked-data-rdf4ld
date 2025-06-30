@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(types = STATUS, predicate = PredicateDictionary.STATUS)
 public class StatusRdfMapperUnit implements RdfMapperUnit {
 
+  private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
@@ -48,9 +52,12 @@ public class StatusRdfMapperUnit implements RdfMapperUnit {
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping,
+                            ResourceMapping mapping,
                             Resource parent) {
-    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
+    var statusLink = getPropertyString(resource.getDoc(), LINK);
+    coreLd2RdfMapper.linkResources(modelBuilder, coreLd2RdfMapper.getResourceIri(String.valueOf(parent.getId())),
+      Values.iri(statusLink), mapping.getBfResourceDef().getPredicate());
+
   }
 
 }

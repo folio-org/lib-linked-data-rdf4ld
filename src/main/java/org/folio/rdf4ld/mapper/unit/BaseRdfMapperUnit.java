@@ -70,8 +70,10 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
       coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
     );
     ofNullable(parent)
-      .ifPresent(p -> coreLd2RdfMapper.linkResources(modelBuilder, String.valueOf(p.getId()),
-        resourceIri, mapping.getBfResourceDef().getPredicate())
+      .ifPresent(p -> coreLd2RdfMapper.linkResources(modelBuilder,
+        coreLd2RdfMapper.getResourceIri(String.valueOf(p.getId())),
+        resourceIri,
+        mapping.getBfResourceDef().getPredicate())
       );
   }
 

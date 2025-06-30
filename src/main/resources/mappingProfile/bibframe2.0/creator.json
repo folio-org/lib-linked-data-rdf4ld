@@ -10,6 +10,12 @@
     "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
   },
   "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "LABEL",
+        "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+      }
+    ],
     "outgoingEdges": [
       {
         "bfResourceDef": {
