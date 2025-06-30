@@ -2,12 +2,13 @@ package org.folio.rdf4ld.mapper.unit.monograph.agent;
 
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.rdf4ld.util.ResourceUtil.getIrisByPredicate;
 import static org.folio.rdf4ld.util.ResourceUtil.getPredicate;
+import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -32,7 +33,7 @@ import org.folio.rdf4ld.model.ResourceMapping;
 public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int AGENT_PREDICATE_NUMBER = 0;
   private static final int ROLE_PREDICATE_NUMBER = 1;
-  private static final String STATUS_CURRENT = "current";
+  private static final String STATUS_CURRENT = "http://id.loc.gov/vocabulary/mstatus/current";
   private static final String AGENTS_NAMESPACE = "http://id.loc.gov/rwo/agents/";
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
   private final Function<String, Optional<Resource>> resourceProvider;
@@ -90,25 +91,22 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .stream()
       .map(ResourceEdge::getTarget)
       .filter(target -> target.isOfType(ID_LCCN))
-      .filter(this::hasCurrentStatus)
+      .filter(this::isCurrent)
       .map(Resource::getDoc)
-      .filter(doc -> doc.has(NAME.getValue()))
-      .map(doc -> doc.get(NAME.getValue()))
-      .filter(n -> !n.isEmpty())
-      .map(n -> n.get(0).asText())
+      .map(d -> getPropertiesString(d, NAME))
       .findFirst();
   }
 
-  private boolean hasCurrentStatus(Resource resource) {
+  private boolean isCurrent(Resource resource) {
+    if (resource.getOutgoingEdges().isEmpty()) {
+      return true;
+    }
     return resource.getOutgoingEdges()
       .stream()
       .map(ResourceEdge::getTarget)
       .filter(target -> target.isOfType(STATUS))
       .map(Resource::getDoc)
-      .filter(doc -> doc.has(LABEL.getValue()))
-      .map(doc -> doc.get(LABEL.getValue()))
-      .filter(n -> !n.isEmpty())
-      .map(n -> n.get(0).asText())
+      .map(d -> getPropertiesString(d, LINK))
       .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
   }
 

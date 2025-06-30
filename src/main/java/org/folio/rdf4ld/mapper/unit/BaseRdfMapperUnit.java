@@ -62,7 +62,8 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
 
   @Override
   public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    modelBuilder.subject(coreLd2RdfMapper.getResourceIri(valueOf(resource.getId())));
+    var resourceIri = coreLd2RdfMapper.getResourceIri(valueOf(resource.getId()));
+    modelBuilder.subject(resourceIri);
     mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
     coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
     resource.getOutgoingEdges().forEach(oe ->
@@ -70,7 +71,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     );
     ofNullable(parent)
       .ifPresent(p -> coreLd2RdfMapper.linkResources(modelBuilder, String.valueOf(p.getId()),
-        coreLd2RdfMapper.getResourceIri(String.valueOf(resource.getId())), mapping.getBfResourceDef().getPredicate())
+        resourceIri, mapping.getBfResourceDef().getPredicate())
       );
   }
 
