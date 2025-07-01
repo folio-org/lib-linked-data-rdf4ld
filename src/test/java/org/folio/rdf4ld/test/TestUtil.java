@@ -103,8 +103,10 @@ public class TestUtil {
       }
 
       @Override
-      public void mapToBibframe(Resource resource, ModelBuilder modelBuilder,
-                                ResourceMapping resourceMapping) {
+      public void mapToBibframe(Resource resource,
+                                ModelBuilder modelBuilder,
+                                ResourceMapping resourceMapping,
+                                Resource parent) {
         modelBuilder.add("http://test_subject.com", "http://test_predicate.com", "test_object");
       }
     };
