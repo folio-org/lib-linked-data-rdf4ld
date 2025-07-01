@@ -15,7 +15,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.rdf4ld.util.ResourceUtil.getByPredicate;
-import static org.folio.rdf4ld.util.ResourceUtil.getEdge;
+import static org.folio.rdf4ld.util.ResourceUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.ResourceUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
@@ -25,10 +25,10 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.SimpleBNode;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
@@ -83,10 +83,10 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     return agentResourceOptional
       .map(ar -> {
         Resource agent = null;
-        if (ar instanceof SimpleIRI iri) {
+        if (ar instanceof IRI iri) {
           agent = resourceProvider.apply(iri.getLocalName()).orElse(null);
         }
-        if (ar instanceof SimpleBNode node) {
+        if (ar instanceof BNode node) {
           agent = mapAgent(model, node, mapping, parent);
         }
         if (nonNull(agent)) {
@@ -97,7 +97,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .get();
   }
 
-  private Resource mapAgent(Model model, SimpleBNode agentNode, ResourceMapping mapping, Resource parent) {
+  private Resource mapAgent(Model model, BNode agentNode, ResourceMapping mapping, Resource parent) {
     var agent = baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent);
     model.filter(agentNode, RDF.TYPE, null)
       .stream()
@@ -206,15 +206,15 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   }
 
   private void writeIdentifiers(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
+    var lccnEdgeMapping = getEdgeMapping(mapping.getResourceMapping(), LCCN_EDGE_NUMBER);
+    var lccnEdgePredicate = getEdgePredicate(mapping.getResourceMapping(), LCCN_EDGE_NUMBER);
     agent.getOutgoingEdges()
       .stream()
       .filter(oe -> oe.getPredicate() == MAP)
       .forEach(oe -> {
-        baseRdfMapperUnit.mapToBibframe(oe.getTarget(), modelBuilder, getEdge(mapping.getResourceMapping(),
-          LCCN_EDGE_NUMBER), null);
+        baseRdfMapperUnit.mapToBibframe(oe.getTarget(), modelBuilder, lccnEdgeMapping, null);
         coreLd2RdfMapper.linkResources(modelBuilder, agentNode,
-          coreLd2RdfMapper.getResourceIri(oe.getTarget().getId().toString()),
-          getEdgePredicate(mapping.getResourceMapping(), LCCN_EDGE_NUMBER));
+          coreLd2RdfMapper.getResourceIri(oe.getTarget().getId().toString()), lccnEdgePredicate);
       });
   }
 }

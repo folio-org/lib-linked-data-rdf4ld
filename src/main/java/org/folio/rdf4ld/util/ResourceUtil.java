@@ -63,16 +63,16 @@ public class ResourceUtil {
       .collect(joining(", "));
   }
 
-  public static ResourceMapping getEdge(ResourceInternalMapping resourceMapping, int number) {
+  public static ResourceMapping getEdgeMapping(ResourceInternalMapping resourceMapping, int number) {
     return ofNullable(resourceMapping)
       .map(ResourceInternalMapping::getOutgoingEdges)
-      .filter(oe -> oe.size() >= number)
+      .filter(oe -> oe.size() > number)
       .map(oe -> oe.toArray(new ResourceMapping[number])[number])
       .orElse(null);
   }
 
   public static String getEdgePredicate(ResourceInternalMapping resourceMapping, int number) {
-    return ofNullable(getEdge(resourceMapping, number))
+    return ofNullable(getEdgeMapping(resourceMapping, number))
       .map(ResourceMapping::getBfResourceDef)
       .map(BfResourceDef::getPredicate)
       .orElse(null);
