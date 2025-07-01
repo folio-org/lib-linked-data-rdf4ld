@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.SimpleIRI;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -48,12 +48,12 @@ public class ResourceUtil {
 
   public static String getPropertiesString(JsonNode doc, PropertyDictionary... properties) {
     return Arrays.stream(properties)
-      .map(property -> getPropertiesString(doc, property))
+      .map(property -> getPropertyString(doc, property))
       .filter(StringUtils::isNotBlank)
       .collect(joining(", "));
   }
 
-  public static String getPropertiesString(JsonNode doc, PropertyDictionary property) {
+  public static String getPropertyString(JsonNode doc, PropertyDictionary property) {
     return ofNullable(doc)
       .map(d -> d.get(property.getValue()))
       .map(JsonNode::elements)
@@ -63,23 +63,27 @@ public class ResourceUtil {
       .collect(joining(", "));
   }
 
-  public static String getPredicate(ResourceInternalMapping resourceMapping, int number) {
+  public static ResourceMapping getEdgeMapping(ResourceInternalMapping resourceMapping, int number) {
     return ofNullable(resourceMapping)
       .map(ResourceInternalMapping::getOutgoingEdges)
-      .filter(oe -> oe.size() >= number)
+      .filter(oe -> oe.size() > number)
       .map(oe -> oe.toArray(new ResourceMapping[number])[number])
+      .orElse(null);
+  }
+
+  public static String getEdgePredicate(ResourceInternalMapping resourceMapping, int number) {
+    return ofNullable(getEdgeMapping(resourceMapping, number))
       .map(ResourceMapping::getBfResourceDef)
       .map(BfResourceDef::getPredicate)
       .orElse(null);
   }
 
-  public static Stream<SimpleIRI> getIrisByPredicate(Model model,
-                                                     org.eclipse.rdf4j.model.Resource contributionResource,
-                                                     String predicate) {
-    return model.filter(contributionResource, Values.iri(predicate), null)
+  public static Stream<Value> getByPredicate(Model model,
+                                             org.eclipse.rdf4j.model.Resource resource,
+                                             String predicate) {
+    return model.filter(resource, Values.iri(predicate), null)
       .objects()
-      .stream()
-      .map(SimpleIRI.class::cast);
+      .stream();
   }
 
   public static JsonNode copyWithoutPreferred(Resource resource) {

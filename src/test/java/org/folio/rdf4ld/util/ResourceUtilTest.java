@@ -67,36 +67,36 @@ class ResourceUtilTest {
   }
 
   @Test
-  void getPropertiesString_shouldReturnEmptyStringWhenDocIsNull() {
+  void getPropertyString_shouldReturnEmptyStringWhenDocIsNull() {
     // given
     var doc = (JsonNode) null;
 
     // when
-    var result = ResourceUtil.getPropertiesString(doc, MISC_INFO);
+    var result = ResourceUtil.getPropertyString(doc, MISC_INFO);
 
     // then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void getPropertiesString_shouldReturnEmptyStringWhenPropertyDoesNotExist() {
+  void getPropertyString_shouldReturnEmptyStringWhenPropertyDoesNotExist() {
     // given
     var doc = getJsonNode(Map.of());
 
     // when
-    var result = ResourceUtil.getPropertiesString(doc, MISC_INFO);
+    var result = ResourceUtil.getPropertyString(doc, MISC_INFO);
 
     // then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void getPropertiesString_shouldReturnPropertyValueWhenPropertyExists() {
+  void getPropertyString_shouldReturnPropertyValueWhenPropertyExists() {
     // given
     var doc = getJsonNode(Map.of(MISC_INFO.getValue(), List.of("Misc info")));
 
     // when
-    var result = ResourceUtil.getPropertiesString(doc, MISC_INFO);
+    var result = ResourceUtil.getPropertyString(doc, MISC_INFO);
 
     // then
     assertThat(result).isEqualTo("Misc info");

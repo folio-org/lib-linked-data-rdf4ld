@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper;
 
 import static java.util.Optional.ofNullable;
+import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COLLABORATOR;
@@ -9,6 +10,16 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
@@ -20,12 +31,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -48,14 +62,10 @@ class WorkAgentMappingIT {
   @MockitoBean
   private Function<String, Optional<Resource>> resourceProvider;
 
-  @ParameterizedTest
-  @ValueSource(strings = {
-    "/rdf/work_agent.json",
-    "/rdf/work_agent_id.json"
-  })
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents(String rdfFile) throws IOException {
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withCurrentLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream(rdfFile);
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
     var creator = new Resource().setId(1L).setLabel("creator");
     var contributor = new Resource().setId(2L).setLabel("contributor");
@@ -87,11 +97,88 @@ class WorkAgentMappingIT {
   }
 
   @Test
-  void mapLdToBibframe2Rdf() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withNoCurrentLccn() throws IOException {
+    // given
+    var creatorLabel = "Creator Agent";
+    var creatorLccn = "n2021004098";
+    var contributorLabel = "Contributor Agent";
+    var contributorLccn = "n2021004092";
+    var status = "cancinv";
+    when(resourceProvider.apply(creatorLccn))
+      .thenReturn(Optional.of(createAgent(creatorLccn, status, List.of(AGENT, PERSON), creatorLabel)));
+    when(resourceProvider.apply(contributorLccn))
+      .thenReturn(Optional.of(createAgent(contributorLccn, status, List.of(AGENT, FAMILY), contributorLabel)));
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var statusLink = "http://id.loc.gov/vocabulary/mstatus/" + status;
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK), Map.of(), "",
+      work -> {
+        assertThat(work.getId()).isNotNull();
+        assertThat(work.getIncomingEdges()).isEmpty();
+        assertThat(work.getOutgoingEdges()).hasSize(6);
+        validateAgent(work, creatorLabel, creatorLccn, status, statusLink, CREATOR, PERSON);
+        validateOutgoingEdge(work, AUTHOR, of(AGENT, PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel,
+          c -> {});
+        validateOutgoingEdge(work, DEGREE_GRANTOR, of(AGENT, PERSON), Map.of(LABEL, List.of(creatorLabel)),
+          creatorLabel, c -> {});
+        validateAgent(work, contributorLabel, contributorLccn, status, statusLink, CONTRIBUTOR, FAMILY);
+        validateOutgoingEdge(work, ILLUSTRATOR, of(AGENT, FAMILY), Map.of(LABEL, List.of(contributorLabel)),
+          contributorLabel, c -> {});
+        validateOutgoingEdge(work, COLLABORATOR, of(AGENT, FAMILY), Map.of(LABEL, List.of(contributorLabel)),
+          contributorLabel, c -> {});
+      });
+  }
+
+  private void validateAgent(Resource work,
+                             String agentLabel,
+                             String agentLccn,
+                             String status,
+                             String statusLink,
+                             PredicateDictionary predicate,
+                             ResourceTypeDictionary type) {
+    validateOutgoingEdge(work, predicate, of(AGENT, type), Map.of(LABEL, List.of(agentLabel)), agentLabel,
+      agent -> {
+        assertThat(agent.getId()).isNotNull();
+        assertThat(agent.getIncomingEdges()).isEmpty();
+        assertThat(agent.getOutgoingEdges()).hasSize(1);
+        validateLccn(agent, agentLccn, status, statusLink);
+      }
+    );
+  }
+
+  private void validateLccn(Resource agent, String agentLccn, String status, String statusLink) {
+    validateOutgoingEdge(agent, MAP, of(IDENTIFIER, ID_LCCN),
+      Map.of(NAME, List.of(agentLccn)), agentLccn,
+      lccn -> {
+        assertThat(lccn.getId()).isNotNull();
+        assertThat(lccn.getIncomingEdges()).isEmpty();
+        assertThat(lccn.getOutgoingEdges()).hasSize(1);
+        validateOutgoingEdge(lccn, STATUS, of(ResourceTypeDictionary.STATUS),
+          Map.of(LABEL, List.of(status), LINK, List.of(statusLink)), status);
+      });
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "/rdf/work_agent_lccn.json",
+    "/rdf/work_agent_no_lccn.json"
+  })
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
     var work = createWork("work");
-    var creator = createAgent("n2021004098");
-    var contributor = createAgent("n2021004092");
+    var lccnStatus = rdfFile.contains("no_lccn") ? "cancinv" : "current";
+    var creator = createAgent("n2021004098", lccnStatus, List.of(AGENT, PERSON), "Creator Agent");
+    var contributor = createAgent("n2021004092", lccnStatus, List.of(AGENT, FAMILY), "Contributor Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, DEGREE_GRANTOR));
@@ -100,11 +187,17 @@ class WorkAgentMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
     var instance = createInstance("instance").setDoc(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_id.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("CREATOR_ID", "_" + creator.getId().toString())
-      .replaceAll("CONTRIBUTOR_ID", "_" + contributor.getId().toString());
+      .replaceAll("CONTRIBUTOR_ID", "_" + contributor.getId().toString())
+      .replaceAll("CREATOR_AGENT_ID", "_" + creator.getId().toString() + "_agent")
+      .replaceAll("CONTRIBUTOR_AGENT_ID", "_" + contributor.getId().toString() + "_agent")
+      .replaceAll("CREATOR_AGENT_LCCN_ID", creator.getOutgoingEdges().iterator().next().getTarget().getId()
+        .toString())
+      .replaceAll("CONTRIBUTOR_AGENT_LCCN_ID", contributor.getOutgoingEdges().iterator().next().getTarget()
+        .getId().toString());
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);

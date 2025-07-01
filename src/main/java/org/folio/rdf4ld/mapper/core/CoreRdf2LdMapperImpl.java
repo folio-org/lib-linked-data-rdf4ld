@@ -2,6 +2,7 @@ package org.folio.rdf4ld.mapper.core;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
@@ -88,6 +89,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Set::stream)
+      .filter(oem -> nonNull(oem.getLdResourceDef()))
       .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )

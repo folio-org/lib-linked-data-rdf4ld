@@ -17,7 +17,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -30,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -129,19 +129,22 @@ public class MonographUtil {
     return work;
   }
 
-  public static Resource createAgent(String lccn) {
+  public static Resource createAgent(String lccn,
+                                     String lccnStatus,
+                                     List<ResourceTypeDictionary> types,
+                                     String label) {
     return createResource(
-      Map.of(),
-      Set.of(AGENT),
-      Map.of(MAP, List.of(createLccn(lccn)))
-    );
+      Map.of(LABEL, List.of(label)),
+      new LinkedHashSet<>(types),
+      Map.of(MAP, List.of(createLccn(lccn, lccnStatus)))
+    ).setLabel(label);
   }
 
-  public static Resource createLccn(String lccn) {
+  public static Resource createLccn(String lccn, String status) {
     return createResource(
       Map.of(NAME, List.of(lccn)),
       Set.of(IDENTIFIER, ID_LCCN),
-      Map.of(STATUS, List.of(createStatus("current")))
+      Map.of(STATUS, List.of(createStatus(status)))
     ).setLabel(lccn);
   }
 
@@ -169,7 +172,7 @@ public class MonographUtil {
 
     var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
-    types.forEach(t -> resource.getTypes().add(t));
+    resource.setTypes(types);
     resource.setId(randomLong());
     return resource;
   }
