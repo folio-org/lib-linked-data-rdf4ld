@@ -2,6 +2,7 @@ package org.folio.rdf4ld.test;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
+import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
@@ -22,6 +23,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
@@ -42,6 +44,8 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 
 public class MonographUtil {
 
+  public static final String STATUS_CURRENT = "current";
+  public static final String STATUS_CANCELLED = "cancinv";
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
     .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -130,33 +134,55 @@ public class MonographUtil {
   }
 
   public static Resource createAgent(String lccn,
-                                     String lccnStatus,
+                                     boolean isCurrent,
                                      List<ResourceTypeDictionary> types,
                                      String label) {
     return createResource(
       Map.of(LABEL, List.of(label)),
       new LinkedHashSet<>(types),
-      Map.of(MAP, List.of(createLccn(lccn, lccnStatus)))
+      Map.of(MAP, List.of(createLccn(lccn, isCurrent)))
     ).setLabel(label);
   }
 
-  public static Resource createLccn(String lccn, String status) {
+  public static Resource createConceptAgent(String lccn,
+                                            boolean isCurrent,
+                                            List<ResourceTypeDictionary> types,
+                                            String label) {
+    return createResource(
+      Map.of(LABEL, List.of(label)),
+      new LinkedHashSet<>(types),
+      Map.of(FOCUS, List.of(createAgent(lccn, isCurrent, types, label)))
+    ).setLabel(label);
+  }
+
+  public static Resource createTopic(String lccn,
+                                     boolean isCurrent,
+                                     String label) {
+    return createResource(
+      Map.of(LABEL, List.of(label)),
+      Set.of(TOPIC),
+      Map.of(MAP, List.of(createLccn(lccn, isCurrent)))
+    ).setLabel(label);
+  }
+
+  public static Resource createLccn(String lccn, boolean isCurrent) {
     return createResource(
       Map.of(NAME, List.of(lccn)),
       Set.of(IDENTIFIER, ID_LCCN),
-      Map.of(STATUS, List.of(createStatus(status)))
+      Map.of(STATUS, List.of(createStatus(isCurrent)))
     ).setLabel(lccn);
   }
 
-  private static Resource createStatus(String value) {
+  private static Resource createStatus(boolean isCurrent) {
+    var status = isCurrent ? STATUS_CURRENT : STATUS_CANCELLED;
     return createResource(
       Map.of(
-        LABEL, List.of(value),
-        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + value)
+        LABEL, List.of(status),
+        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + status)
       ),
       Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
-    ).setLabel(value);
+    ).setLabel(status);
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
