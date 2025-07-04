@@ -1,23 +1,26 @@
 [
     {
-        "@id": "http://id.loc.gov/resources/instances/20572081",
+        "@id": "http://test-tobe-changed.folio.com/resources/INSTANCE_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Instance"
         ],
         "http://id.loc.gov/ontologies/bibframe/instanceOf": [
             {
-                "@id": "http://id.loc.gov/resources/works/20572081"
+                "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID"
             }
         ]
     },
     {
-        "@id": "http://id.loc.gov/resources/works/20572081",
+        "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Work"
         ],
         "http://id.loc.gov/ontologies/bibframe/subject": [
             {
                 "@id": "http://id.loc.gov/rwo/agents/n79026681"
+            },
+            {
+                "@id": "http://id.loc.gov/rwo/agents/n123456789"
             },
             {
                 "@id": "http://id.loc.gov/authorities/subjects/sh85070981"

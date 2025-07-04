@@ -15,12 +15,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.test.MonographUtil.STATUS_CANCELLED;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -103,11 +103,10 @@ class WorkAgentMappingIT {
     var creatorLccn = "n2021004098";
     var contributorLabel = "Contributor Agent";
     var contributorLccn = "n2021004092";
-    var status = "cancinv";
     when(resourceProvider.apply(creatorLccn))
-      .thenReturn(Optional.of(createAgent(creatorLccn, status, List.of(AGENT, PERSON), creatorLabel)));
+      .thenReturn(Optional.of(createAgent(creatorLccn, false, List.of(PERSON), creatorLabel)));
     when(resourceProvider.apply(contributorLccn))
-      .thenReturn(Optional.of(createAgent(contributorLccn, status, List.of(AGENT, FAMILY), contributorLabel)));
+      .thenReturn(Optional.of(createAgent(contributorLccn, false, List.of(FAMILY), contributorLabel)));
     var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
@@ -120,21 +119,21 @@ class WorkAgentMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    var statusLink = "http://id.loc.gov/vocabulary/mstatus/" + status;
+    var statusLink = "http://id.loc.gov/vocabulary/mstatus/" + STATUS_CANCELLED;
     validateOutgoingEdge(instance, INSTANTIATES, of(WORK), Map.of(), "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
-        validateAgent(work, creatorLabel, creatorLccn, status, statusLink, CREATOR, PERSON);
-        validateOutgoingEdge(work, AUTHOR, of(AGENT, PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel,
+        validateAgent(work, creatorLabel, creatorLccn, STATUS_CANCELLED, statusLink, CREATOR, PERSON);
+        validateOutgoingEdge(work, AUTHOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel,
           c -> {});
-        validateOutgoingEdge(work, DEGREE_GRANTOR, of(AGENT, PERSON), Map.of(LABEL, List.of(creatorLabel)),
+        validateOutgoingEdge(work, DEGREE_GRANTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)),
           creatorLabel, c -> {});
-        validateAgent(work, contributorLabel, contributorLccn, status, statusLink, CONTRIBUTOR, FAMILY);
-        validateOutgoingEdge(work, ILLUSTRATOR, of(AGENT, FAMILY), Map.of(LABEL, List.of(contributorLabel)),
+        validateAgent(work, contributorLabel, contributorLccn, STATUS_CANCELLED, statusLink, CONTRIBUTOR, FAMILY);
+        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
           contributorLabel, c -> {});
-        validateOutgoingEdge(work, COLLABORATOR, of(AGENT, FAMILY), Map.of(LABEL, List.of(contributorLabel)),
+        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
           contributorLabel, c -> {});
       });
   }
@@ -146,7 +145,7 @@ class WorkAgentMappingIT {
                              String statusLink,
                              PredicateDictionary predicate,
                              ResourceTypeDictionary type) {
-    validateOutgoingEdge(work, predicate, of(AGENT, type), Map.of(LABEL, List.of(agentLabel)), agentLabel,
+    validateOutgoingEdge(work, predicate, of(type), Map.of(LABEL, List.of(agentLabel)), agentLabel,
       agent -> {
         assertThat(agent.getId()).isNotNull();
         assertThat(agent.getIncomingEdges()).isEmpty();
@@ -176,9 +175,9 @@ class WorkAgentMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
     var work = createWork("work");
-    var lccnStatus = rdfFile.contains("no_lccn") ? "cancinv" : "current";
-    var creator = createAgent("n2021004098", lccnStatus, List.of(AGENT, PERSON), "Creator Agent");
-    var contributor = createAgent("n2021004092", lccnStatus, List.of(AGENT, FAMILY), "Contributor Agent");
+    var isCurrent = !rdfFile.contains("no_lccn");
+    var creator = createAgent("n2021004098", isCurrent, List.of(PERSON), "Creator Agent");
+    var contributor = createAgent("n2021004092", isCurrent, List.of(FAMILY), "Contributor Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, DEGREE_GRANTOR));

@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -23,14 +24,16 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
   private final FingerprintHashService hashService;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping mapping,
-                          Resource parent) {
-    var work = baseRdfMapperUnit.mapToLd(model, resource, mapping, parent);
-    work.setLabel(getPrimaryMainTitle(work));
-    work.setId(hashService.hash(work));
-    return work;
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping mapping,
+                                    Resource parent) {
+    return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
+      .map(work -> {
+        work.setLabel(getPrimaryMainTitle(work));
+        work.setId(hashService.hash(work));
+        return work;
+      });
   }
 
   @Override

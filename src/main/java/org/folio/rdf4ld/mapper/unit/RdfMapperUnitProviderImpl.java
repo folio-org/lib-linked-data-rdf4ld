@@ -30,7 +30,7 @@ public class RdfMapperUnitProviderImpl implements RdfMapperUnitProvider {
       .filter(m -> m.getClass().isAnnotationPresent(RdfMapperDefinition.class))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(RdfMapperDefinition.class);
-        return (isNull(ldResourceDef.getTypeSet()) || ldResourceDef.getTypeSet().equals(toSet(annotation.types())))
+        return (ldResourceDef.getTypeSet().isEmpty() || ldResourceDef.getTypeSet().equals(toSet(annotation.types())))
           && (isNull(ldResourceDef.getPredicate()) || ldResourceDef.getPredicate() == annotation.predicate());
       })
       .findFirst()

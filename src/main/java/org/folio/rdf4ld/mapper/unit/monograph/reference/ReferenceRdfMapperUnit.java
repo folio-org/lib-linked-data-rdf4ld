@@ -17,13 +17,12 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   private final Function<String, Optional<Resource>> resourceProvider;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping resourceMapping,
-                          Resource parent) {
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping resourceMapping,
+                                    Resource parent) {
     var lccn = ((SimpleIRI) resource).getLocalName();
-    return resourceProvider.apply(lccn)
-      .orElse(null);
+    return resourceProvider.apply(lccn);
   }
 
   @Override

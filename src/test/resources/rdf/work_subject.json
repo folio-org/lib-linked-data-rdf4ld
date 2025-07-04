@@ -20,6 +20,9 @@
                 "@id": "http://id.loc.gov/rwo/agents/n79026681"
             },
             {
+                "@id": "http://id.loc.gov/rwo/agents/n123456789"
+            },
+            {
                 "@id": "http://id.loc.gov/authorities/subjects/sh85070981"
             }
         ]
@@ -33,10 +36,16 @@
             {
                 "@value": "Catiline, approximately 108 B.C.-62 B.C."
             }
+        ]
+    },
+    {
+        "@id": "http://id.loc.gov/rwo/agents/n123456789",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Family"
         ],
-        "http://id.loc.gov/ontologies/bflc/marcKey": [
+        "http://www.w3.org/2000/01/rdf-schema#label": [
             {
-                "@value": "1000 $aCatiline,$dapproximately 108 B.C.-62 B.C."
+                "@value": "Subject-concept Agent"
             }
         ]
     },
@@ -49,11 +58,6 @@
             {
                 "@language": "en",
                 "@value": "Jugurthine War, 111-105 B.C."
-            }
-        ],
-        "http://id.loc.gov/ontologies/bflc/marcKey": [
-            {
-                "@value": "150 0$aJugurthine War, 111-105 B.C."
             }
         ]
     }

@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -31,10 +32,10 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
   private final FingerprintHashService hashService;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource rdfResource,
-                          ResourceMapping mapping,
-                          Resource parent) {
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource rdfResource,
+                                    ResourceMapping mapping,
+                                    Resource parent) {
     var resourceMapping = mapping.getResourceMapping();
     var resource = new Resource();
     resource.setCreatedDate(new Date());
@@ -48,7 +49,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
         resource.getOutgoingEdges().addAll(outEdges);
       });
     resource.setId(hashService.hash(resource));
-    return resource;
+    return Optional.of(resource);
   }
 
   private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {

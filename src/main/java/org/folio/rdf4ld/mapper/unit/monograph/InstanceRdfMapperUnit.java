@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -22,14 +23,16 @@ public class InstanceRdfMapperUnit implements RdfMapperUnit {
   private final FingerprintHashService hashService;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping mapping,
-                          Resource parent) {
-    var instance = baseRdfMapperUnit.mapToLd(model, resource, mapping, parent);
-    instance.setLabel(getPrimaryMainTitle(instance));
-    instance.setId(hashService.hash(instance));
-    return instance;
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping mapping,
+                                    Resource parent) {
+    return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
+      .map(instance -> {
+        instance.setLabel(getPrimaryMainTitle(instance));
+        instance.setId(hashService.hash(instance));
+        return instance;
+      });
   }
 
   @Override

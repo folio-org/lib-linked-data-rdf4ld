@@ -50,15 +50,17 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
   public void mapOutgoingEdge(ModelBuilder modelBuilder,
                               ResourceEdge edge,
                               ResourceInternalMapping mapping) {
-    mapping.getOutgoingEdges().stream()
-      .filter(oem -> nonNull(oem.getLdResourceDef()))
-      .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
-        || edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet()))
-        && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
-      .forEach(oem -> {
-        var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
-        mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem, edge.getSource());
-      });
+    ofNullable(mapping)
+      .ifPresent(m -> m.getOutgoingEdges().stream()
+        .filter(oem -> nonNull(oem.getLdResourceDef()))
+        .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
+          || edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet()))
+          && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
+        .forEach(oem -> {
+          var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
+          mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem, edge.getSource());
+        })
+      );
   }
 
   @Override
