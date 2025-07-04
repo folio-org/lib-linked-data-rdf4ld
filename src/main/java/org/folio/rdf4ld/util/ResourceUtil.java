@@ -7,17 +7,9 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.StreamSupport.stream;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,7 +17,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Spliterator;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -38,8 +29,6 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 @UtilityClass
 public class ResourceUtil {
   private static final String STATUS_CURRENT = "http://id.loc.gov/vocabulary/mstatus/current";
-  private static final Set<ResourceTypeDictionary> AGENT_TYPES = Set.of(
-    PERSON, ORGANIZATION, FAMILY, MEETING, JURISDICTION, AGENT);
 
   public static String getPrimaryMainTitle(Resource titledRresource) {
     if (isNull(titledRresource) || isNull(titledRresource.getOutgoingEdges())) {
@@ -100,14 +89,14 @@ public class ResourceUtil {
       .orElse((ObjectNode) doc);
   }
 
-  public static Optional<String> getCurrentLccn(Resource resource) {
+  public static Optional<String> getCurrentLccnLink(Resource resource) {
     return resource.getOutgoingEdges()
       .stream()
       .map(ResourceEdge::getTarget)
       .filter(target -> target.isOfType(ID_LCCN))
       .filter(ResourceUtil::isCurrent)
       .map(Resource::getDoc)
-      .map(d -> getPropertiesString(d, NAME))
+      .map(d -> getPropertiesString(d, LINK))
       .findFirst();
   }
 
@@ -122,10 +111,6 @@ public class ResourceUtil {
       .map(Resource::getDoc)
       .map(d -> getPropertiesString(d, LINK))
       .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
-  }
-
-  public static boolean isAgent(Resource resource) {
-    return !resource.isOfType(CONCEPT) && AGENT_TYPES.stream().anyMatch(resource::isOfType);
   }
 
 }

@@ -11,9 +11,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
-import static org.folio.rdf4ld.util.RdfUtil.AGENTS_NAMESPACE;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccn;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import com.google.common.collect.ImmutableBiMap;
 import java.util.Optional;
@@ -126,8 +125,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                             Resource parent) {
     var contributionNode = Values.bnode("_" + agent.getId());
     writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
-    getCurrentLccn(agent).ifPresentOrElse(lccn -> {
-        var agentIri = Values.iri(AGENTS_NAMESPACE, lccn);
+    getCurrentLccnLink(agent).ifPresentOrElse(lccnLink -> {
+        var agentIri = Values.iri(lccnLink);
         writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
       }, () -> {
         var agentNode = Values.bnode("_" + agent.getId() + "_agent");

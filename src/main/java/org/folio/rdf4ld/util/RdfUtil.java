@@ -14,10 +14,6 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 @UtilityClass
 public class RdfUtil {
-
-  public static final String AGENTS_NAMESPACE = "http://id.loc.gov/rwo/agents/";
-  public static final String SUBJECTS_NAMESPACE = "http://id.loc.gov/authorities/subjects/";
-
   public static Stream<Value> getByPredicate(Model model,
                                              Resource rdfResource,
                                              String predicate) {

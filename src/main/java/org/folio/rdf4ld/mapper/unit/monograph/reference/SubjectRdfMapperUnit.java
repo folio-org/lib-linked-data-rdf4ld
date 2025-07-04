@@ -4,11 +4,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.rdf4ld.util.RdfUtil.AGENTS_NAMESPACE;
-import static org.folio.rdf4ld.util.RdfUtil.SUBJECTS_NAMESPACE;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccn;
-import static org.folio.rdf4ld.util.ResourceUtil.isAgent;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.Set;
@@ -79,9 +76,9 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                   ModelBuilder modelBuilder,
                                   ResourceMapping mapping,
                                   Resource parent) {
-    var currentLccn = getCurrentLccn(subject);
-    currentLccn.ifPresent(writeSubjectLink(subject, modelBuilder, mapping, parent));
-    return currentLccn.isPresent();
+    var currentLccnLink = getCurrentLccnLink(subject);
+    currentLccnLink.ifPresent(writeSubjectLink(modelBuilder, mapping, parent));
+    return currentLccnLink.isPresent();
   }
 
   private void writeConceptSubjectLccn(Resource subject,
@@ -94,24 +91,21 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       .flatMap(Set::stream)
       .filter(oe -> oe.getPredicate() == FOCUS)
       .map(ResourceEdge::getTarget)
-      .map(ResourceUtil::getCurrentLccn)
+      .map(ResourceUtil::getCurrentLccnLink)
       .filter(Optional::isPresent)
       .flatMap(Optional::stream)
-      .forEach(writeSubjectLink(subject, modelBuilder, mapping, parent));
+      .forEach(writeSubjectLink(modelBuilder, mapping, parent));
   }
 
   private Predicate<Set<ResourceEdge>> noSubFocuses() {
     return outgoingEdges -> outgoingEdges.stream().noneMatch(oe -> oe.getPredicate() == SUB_FOCUS);
   }
 
-  private Consumer<String> writeSubjectLink(Resource subject,
-                                            ModelBuilder modelBuilder,
+  private Consumer<String> writeSubjectLink(ModelBuilder modelBuilder,
                                             ResourceMapping mapping,
                                             Resource parent) {
-    return lccn -> {
-      var subjectIri = isAgent(subject)
-        ? Values.iri(AGENTS_NAMESPACE, lccn)
-        : Values.iri(SUBJECTS_NAMESPACE, lccn);
+    return lccnLink -> {
+      var subjectIri = Values.iri(lccnLink);
       modelBuilder.subject(coreLd2RdfMapper.getResourceIri(parent.getId().toString()));
       modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
     };

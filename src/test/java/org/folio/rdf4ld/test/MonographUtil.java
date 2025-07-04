@@ -140,7 +140,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       new LinkedHashSet<>(types),
-      Map.of(MAP, List.of(createLccn(lccn, isCurrent)))
+      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/rwo/agents/", isCurrent)))
     ).setLabel(label);
   }
 
@@ -161,13 +161,13 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       Set.of(TOPIC),
-      Map.of(MAP, List.of(createLccn(lccn, isCurrent)))
+      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/authorities/subjects/", isCurrent)))
     ).setLabel(label);
   }
 
-  public static Resource createLccn(String lccn, boolean isCurrent) {
+  public static Resource createLccn(String lccn, String lccnNameSpace, boolean isCurrent) {
     return createResource(
-      Map.of(NAME, List.of(lccn)),
+      Map.of(NAME, List.of(lccn), LINK, List.of(lccnNameSpace + lccn)),
       Set.of(IDENTIFIER, ID_LCCN),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
     ).setLabel(lccn);
