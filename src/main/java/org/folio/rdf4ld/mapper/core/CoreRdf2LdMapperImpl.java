@@ -5,25 +5,23 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
+import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
@@ -73,15 +71,6 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   }
 
   @Override
-  public Stream<org.eclipse.rdf4j.model.Resource> selectSubjectsByType(Model model,
-                                                                       Set<String> bfTypeSet) {
-    return bfTypeSet.stream()
-      .map(type -> model.filter(null, RDF.TYPE, Values.iri(type)))
-      .flatMap(Collection::stream)
-      .map(Statement::getSubject);
-  }
-
-  @Override
   public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
                                             Model model,
                                             Resource parent,
@@ -94,15 +83,6 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
-  }
-
-  @Override
-  public Set<String> getAllTypes(Model model, org.eclipse.rdf4j.model.Resource resource) {
-    return model.filter(resource, RDF.TYPE, null)
-      .stream()
-      .map(Statement::getObject)
-      .map(Value::stringValue)
-      .collect(Collectors.toSet());
   }
 
   private Set<Resource> mapEdgeTargets(Model model,

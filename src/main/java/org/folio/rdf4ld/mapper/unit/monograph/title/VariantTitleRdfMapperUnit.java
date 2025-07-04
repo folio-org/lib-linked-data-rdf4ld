@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph.title;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
+import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 
 import com.google.common.collect.ImmutableBiMap;
@@ -16,7 +17,6 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
-import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -38,7 +38,6 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
     .put("http://id.loc.gov/vocabulary/vartitletype/run", "7")
     .put("http://id.loc.gov/vocabulary/vartitletype/spi", "8")
     .build();
-  private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
@@ -68,7 +67,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
 
   private void mapVariantTypeToProperty(Model model, Resource variantTitle,
                                         org.eclipse.rdf4j.model.Resource rdfResource) {
-    coreRdf2LdMapper.getAllTypes(model, rdfResource)
+    getAllTypes(model, rdfResource)
       .stream()
       .filter(TYPES_BI_MAP::containsKey)
       .map(TYPES_BI_MAP::get)
