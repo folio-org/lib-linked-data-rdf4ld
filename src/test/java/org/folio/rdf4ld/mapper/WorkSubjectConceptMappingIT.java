@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -68,9 +67,9 @@ class WorkSubjectConceptMappingIT {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    var subjectAgent = createAgent(SUBJECT_AGENT_LCCN, true, List.of(AGENT, PERSON), AGENT_LABEL);
+    var subjectAgent = createAgent(SUBJECT_AGENT_LCCN, true, List.of(PERSON), AGENT_LABEL);
     var subjectTopic = createTopic(SUBJECT_TOPIC_LCCN, true, TOPIC_LABEL);
-    var conceptAgent = createConceptAgent(CONCEPT_AGENT_LCCN, true, List.of(AGENT, FAMILY),
+    var conceptAgent = createConceptAgent(CONCEPT_AGENT_LCCN, true, List.of(FAMILY),
       CONCEPT_AGENT_LABEL);
     var foundByLccnResources = Map.of(
       SUBJECT_AGENT_LCCN, subjectAgent,
@@ -91,14 +90,14 @@ class WorkSubjectConceptMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
       work -> {
-        validateOutgoingEdge(work, SUBJECT, Set.of(AGENT, PERSON, CONCEPT), Map.of(LABEL, List.of(AGENT_LABEL)),
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(AGENT_LABEL)),
           AGENT_LABEL, concept ->
             validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectAgent, FOCUS))
         );
         validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), Map.of(LABEL, List.of(TOPIC_LABEL)), TOPIC_LABEL,
           concept -> validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectTopic, FOCUS))
         );
-        validateOutgoingEdge(work, SUBJECT, Set.of(AGENT, FAMILY, CONCEPT), Map.of(LABEL, List.of(CONCEPT_AGENT_LABEL)),
+        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(CONCEPT_AGENT_LABEL)),
           CONCEPT_AGENT_LABEL, concept ->
             validateResourceWithGivenEdges(concept, new ResourceEdge(concept, conceptAgent, FOCUS))
         );
@@ -113,8 +112,8 @@ class WorkSubjectConceptMappingIT {
     // given
     var work = createWork("work");
     var isCurrent = !rdfFile.contains("no_lccn");
-    var agentConcept = createConceptAgent(SUBJECT_AGENT_LCCN, isCurrent, List.of(AGENT, PERSON), CONCEPT_AGENT_LABEL);
-    var agent = createAgent(CONCEPT_AGENT_LCCN, isCurrent, List.of(AGENT, FAMILY), AGENT_LABEL);
+    var agentConcept = createConceptAgent(SUBJECT_AGENT_LCCN, isCurrent, List.of(PERSON), CONCEPT_AGENT_LABEL);
+    var agent = createAgent(CONCEPT_AGENT_LCCN, isCurrent, List.of(FAMILY), AGENT_LABEL);
     var topic = createTopic(SUBJECT_TOPIC_LCCN, isCurrent, TOPIC_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, agentConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, agent, SUBJECT));

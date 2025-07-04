@@ -3,12 +3,12 @@ package org.folio.rdf4ld.mapper.unit.monograph.reference;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.RdfUtil.AGENTS_NAMESPACE;
 import static org.folio.rdf4ld.util.RdfUtil.SUBJECTS_NAMESPACE;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccn;
+import static org.folio.rdf4ld.util.ResourceUtil.isAgent;
 
 import java.util.Optional;
 import java.util.Set;
@@ -109,7 +109,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                             ResourceMapping mapping,
                                             Resource parent) {
     return lccn -> {
-      var subjectIri = subject.isOfType(AGENT)
+      var subjectIri = isAgent(subject)
         ? Values.iri(AGENTS_NAMESPACE, lccn)
         : Values.iri(SUBJECTS_NAMESPACE, lccn);
       modelBuilder.subject(coreLd2RdfMapper.getResourceIri(parent.getId().toString()));

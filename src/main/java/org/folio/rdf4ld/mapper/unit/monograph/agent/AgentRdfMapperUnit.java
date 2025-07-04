@@ -4,7 +4,6 @@ import static java.util.Optional.empty;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
@@ -48,9 +47,9 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int ROLE_EDGE_NUMBER = 1;
   private static final int LCCN_EDGE_NUMBER = 2;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
+  private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
   private static final ImmutableBiMap<ResourceTypeDictionary, String> AGENT_LD_TO_BF_TYPES =
     new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
-      .put(AGENT, "http://id.loc.gov/ontologies/bibframe/Agent")
       .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
       .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
       .put(ORGANIZATION, "http://id.loc.gov/ontologies/bibframe/Organization")
@@ -98,6 +97,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
           .stream()
           .map(Statement::getObject)
           .map(Value::stringValue)
+          .filter(type -> AGENT_LD_TO_BF_TYPES.inverse().containsKey(type))
           .map(type -> AGENT_LD_TO_BF_TYPES.inverse().get(type))
           .forEach(agent::addType);
         agent.setId(hashService.hash(agent));
@@ -168,6 +168,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
 
   private void writeAgentResource(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
     modelBuilder.subject(agentNode);
+    modelBuilder.add(RDF.TYPE, Values.iri(AGENT_RDF_TYPE));
     agent.getTypes()
       .stream()
       .filter(AGENT_LD_TO_BF_TYPES::containsKey)
