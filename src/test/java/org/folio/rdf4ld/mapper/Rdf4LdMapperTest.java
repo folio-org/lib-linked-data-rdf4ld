@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper;
 
+import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.rdf4ld.test.TestUtil.emptyMapper;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +66,7 @@ class Rdf4LdMapperTest {
     var mapper = mock(RdfMapperUnit.class);
     doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
-    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any());
+    doReturn(of(expectedResource)).when(mapper).mapToLd(any(), any(), any(), any());
 
     // when
     var result = topMapper.mapBibframe2RdfToLd(model);

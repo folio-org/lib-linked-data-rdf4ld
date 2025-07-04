@@ -7,6 +7,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 
 import com.google.common.collect.ImmutableBiMap;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -43,14 +44,16 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping resourceMapping,
-                          Resource parent) {
-    var variantTitle = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, parent);
-    mapVariantTypeToProperty(model, variantTitle, resource);
-    variantTitle.setId(hashService.hash(variantTitle));
-    return variantTitle;
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping resourceMapping,
+                                    Resource parent) {
+    return baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, parent)
+      .map(variantTitle -> {
+        mapVariantTypeToProperty(model, variantTitle, resource);
+        variantTitle.setId(hashService.hash(variantTitle));
+        return variantTitle;
+      });
   }
 
   @Override

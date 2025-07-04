@@ -1,6 +1,5 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
-import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
@@ -46,13 +45,12 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   }
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping resourceMapping,
-                          Resource parent) {
-    return ofNullable(super.mapToLd(model, resource, resourceMapping, parent))
-      .map(subject -> subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject))
-      .orElse(null);
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping resourceMapping,
+                                    Resource parent) {
+    return super.mapToLd(model, resource, resourceMapping, parent)
+      .map(subject -> subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject));
   }
 
   private Resource wrapWithConcept(Resource subject) {

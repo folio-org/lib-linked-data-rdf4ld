@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -113,7 +113,8 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef(), rdfParent)
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, parent))
-      .filter(Objects::nonNull)
+      .filter(Optional::isPresent)
+      .map(Optional::get)
       .collect(toSet());
   }
 

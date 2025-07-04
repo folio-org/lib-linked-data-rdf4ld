@@ -7,6 +7,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
@@ -34,19 +35,21 @@ public class StatusRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping resourceMapping,
-                          Resource parent) {
-    var status = baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, parent);
-    var label = ((SimpleIRI) resource).getLocalName();
-    status.setDoc(coreRdf2LdMapper.toJson(Map.of(
-      LABEL.getValue(), List.of(label),
-      LINK.getValue(), List.of(resource.stringValue())
-    )));
-    status.setLabel(label);
-    status.setId(hashService.hash(status));
-    return status;
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping resourceMapping,
+                                    Resource parent) {
+    return baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, parent)
+      .map(status -> {
+        var label = ((SimpleIRI) resource).getLocalName();
+        status.setDoc(coreRdf2LdMapper.toJson(Map.of(
+          LABEL.getValue(), List.of(label),
+          LINK.getValue(), List.of(resource.stringValue())
+        )));
+        status.setLabel(label);
+        status.setId(hashService.hash(status));
+        return status;
+      });
   }
 
   @Override

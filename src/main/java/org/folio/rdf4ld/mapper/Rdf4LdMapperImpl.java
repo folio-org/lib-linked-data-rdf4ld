@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
     var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
     return coreRdf2LdMapper.selectSubjectsByType(model, bfTypes)
       .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
       .collect(Collectors.toSet());
   }
 

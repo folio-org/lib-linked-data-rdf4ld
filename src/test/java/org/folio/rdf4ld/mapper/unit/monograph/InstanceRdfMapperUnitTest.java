@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.unit.monograph;
 
+import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
@@ -39,7 +40,7 @@ class InstanceRdfMapperUnitTest {
     var mappedResource = new Resource()
       .setId(123L);
     mappedResource.addOutgoingEdge(new ResourceEdge(mappedResource, createPrimaryTitle(""), TITLE));
-    doReturn(mappedResource).when(baseRdfMapperUnit).mapToLd(model, resource, resourceMapping, null);
+    doReturn(of(mappedResource)).when(baseRdfMapperUnit).mapToLd(model, resource, resourceMapping, null);
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
 
@@ -47,8 +48,9 @@ class InstanceRdfMapperUnitTest {
     var result = instanceRdfMapperUnit.mapToLd(model, resource, resourceMapping, null);
 
     // then
-    assertThat(result.getId()).isEqualTo(newId);
-    assertThat(result.getLabel())
-      .isEqualTo("Title mainTitle 1, Title mainTitle 2, Title subTitle 1, Title subTitle 2");
+    assertThat(result).isPresent()
+      .hasValueSatisfying(i -> assertThat(i.getId()).isEqualTo(newId))
+      .hasValueSatisfying(i -> assertThat(i.getLabel())
+        .isEqualTo("Title mainTitle 1, Title mainTitle 2, Title subTitle 1, Title subTitle 2"));
   }
 }
