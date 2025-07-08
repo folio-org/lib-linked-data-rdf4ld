@@ -5,32 +5,30 @@ import static java.util.Optional.ofNullable;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.StreamSupport.stream;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Spliterator;
-import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.model.BfResourceDef;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
-import org.folio.rdf4ld.model.ResourceMapping;
 
 @UtilityClass
 public class ResourceUtil {
+  private static final String STATUS_CURRENT = "http://id.loc.gov/vocabulary/mstatus/current";
 
   public static String getPrimaryMainTitle(Resource titledRresource) {
     if (isNull(titledRresource) || isNull(titledRresource.getOutgoingEdges())) {
@@ -63,29 +61,6 @@ public class ResourceUtil {
       .collect(joining(", "));
   }
 
-  public static ResourceMapping getEdgeMapping(ResourceInternalMapping resourceMapping, int number) {
-    return ofNullable(resourceMapping)
-      .map(ResourceInternalMapping::getOutgoingEdges)
-      .filter(oe -> oe.size() > number)
-      .map(oe -> oe.toArray(new ResourceMapping[number])[number])
-      .orElse(null);
-  }
-
-  public static String getEdgePredicate(ResourceInternalMapping resourceMapping, int number) {
-    return ofNullable(getEdgeMapping(resourceMapping, number))
-      .map(ResourceMapping::getBfResourceDef)
-      .map(BfResourceDef::getPredicate)
-      .orElse(null);
-  }
-
-  public static Stream<Value> getByPredicate(Model model,
-                                             org.eclipse.rdf4j.model.Resource resource,
-                                             String predicate) {
-    return model.filter(resource, Values.iri(predicate), null)
-      .objects()
-      .stream();
-  }
-
   public static JsonNode copyWithoutPreferred(Resource resource) {
     return ofNullable(resource.getDoc())
       .filter(JsonNode::isObject)
@@ -112,6 +87,30 @@ public class ResourceUtil {
         return d;
       })
       .orElse((ObjectNode) doc);
+  }
+
+  public static Optional<String> getCurrentLccnLink(Resource resource) {
+    return resource.getOutgoingEdges()
+      .stream()
+      .map(ResourceEdge::getTarget)
+      .filter(target -> target.isOfType(ID_LCCN))
+      .filter(ResourceUtil::isCurrent)
+      .map(Resource::getDoc)
+      .map(d -> getPropertiesString(d, LINK))
+      .findFirst();
+  }
+
+  private static boolean isCurrent(Resource resource) {
+    if (resource.getOutgoingEdges().isEmpty()) {
+      return true;
+    }
+    return resource.getOutgoingEdges()
+      .stream()
+      .map(ResourceEdge::getTarget)
+      .filter(target -> target.isOfType(STATUS))
+      .map(Resource::getDoc)
+      .map(d -> getPropertiesString(d, LINK))
+      .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
   }
 
 }

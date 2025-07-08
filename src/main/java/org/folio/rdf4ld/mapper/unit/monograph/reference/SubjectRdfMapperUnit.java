@@ -2,39 +2,52 @@ package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.util.ResourceUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-@RdfMapperDefinition(types = CONCEPT, predicate = SUBJECT)
+@RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
+  private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               Function<String, Optional<Resource>> resourceProvider,
-                              FingerprintHashService hashService) {
+                              FingerprintHashService hashService,
+                              CoreLd2RdfMapper coreLd2RdfMapper) {
     super(baseRdfMapperUnit, resourceProvider);
     this.hashService = hashService;
+    this.coreLd2RdfMapper = coreLd2RdfMapper;
   }
 
   @Override
-  public Resource mapToLd(Model model,
-                          org.eclipse.rdf4j.model.Resource resource,
-                          ResourceMapping resourceMapping,
-                          Resource parent) {
-    var subject = super.mapToLd(model, resource, resourceMapping, parent);
-    return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+  public Optional<Resource> mapToLd(Model model,
+                                    org.eclipse.rdf4j.model.Resource resource,
+                                    ResourceMapping resourceMapping,
+                                    Resource parent) {
+    return super.mapToLd(model, resource, resourceMapping, parent)
+      .map(subject -> subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject));
   }
 
   private Resource wrapWithConcept(Resource subject) {
@@ -46,6 +59,56 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     concept.addOutgoingEdge(new ResourceEdge(concept, subject, FOCUS));
     concept.setId(hashService.hash(concept));
     return concept;
+  }
+
+  @Override
+  public void mapToBibframe(Resource subject,
+                            ModelBuilder modelBuilder,
+                            ResourceMapping mapping,
+                            Resource parent) {
+    boolean directLccnWritten = writeDirectLccn(subject, modelBuilder, mapping, parent);
+    if (!directLccnWritten) {
+      writeConceptSubjectLccn(subject, modelBuilder, mapping, parent);
+    }
+  }
+
+  private boolean writeDirectLccn(Resource subject,
+                                  ModelBuilder modelBuilder,
+                                  ResourceMapping mapping,
+                                  Resource parent) {
+    var currentLccnLink = getCurrentLccnLink(subject);
+    currentLccnLink.ifPresent(writeSubjectLink(modelBuilder, mapping, parent));
+    return currentLccnLink.isPresent();
+  }
+
+  private void writeConceptSubjectLccn(Resource subject,
+                                       ModelBuilder modelBuilder,
+                                       ResourceMapping mapping,
+                                       Resource parent) {
+    Stream.of(subject)
+      .map(Resource::getOutgoingEdges)
+      .filter(noSubFocuses())
+      .flatMap(Set::stream)
+      .filter(oe -> oe.getPredicate() == FOCUS)
+      .map(ResourceEdge::getTarget)
+      .map(ResourceUtil::getCurrentLccnLink)
+      .filter(Optional::isPresent)
+      .flatMap(Optional::stream)
+      .forEach(writeSubjectLink(modelBuilder, mapping, parent));
+  }
+
+  private Predicate<Set<ResourceEdge>> noSubFocuses() {
+    return outgoingEdges -> outgoingEdges.stream().noneMatch(oe -> oe.getPredicate() == SUB_FOCUS);
+  }
+
+  private Consumer<String> writeSubjectLink(ModelBuilder modelBuilder,
+                                            ResourceMapping mapping,
+                                            Resource parent) {
+    return lccnLink -> {
+      var subjectIri = Values.iri(lccnLink);
+      modelBuilder.subject(coreLd2RdfMapper.getResourceIri(parent.getId().toString()));
+      modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
+    };
   }
 
 }

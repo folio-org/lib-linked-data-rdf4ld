@@ -5,14 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.rdf4ld.test.TestUtil.create;
+import static org.folio.rdf4ld.test.MonographUtil.createAgent;
+import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
+import static org.folio.rdf4ld.test.MonographUtil.createInstance;
+import static org.folio.rdf4ld.test.MonographUtil.createTopic;
+import static org.folio.rdf4ld.test.MonographUtil.createWork;
+import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,6 +46,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(classes = SpringTestConfig.class)
 class WorkSubjectConceptMappingIT {
 
+  private static final String SUBJECT_AGENT_LCCN = "n79026681";
+  private static final String SUBJECT_TOPIC_LCCN = "sh85070981";
+  private static final String CONCEPT_AGENT_LCCN = "n123456789";
+  private static final String AGENT_LABEL = "Subject Agent";
+  private static final String TOPIC_LABEL = "Subject Topic";
+  private static final String CONCEPT_AGENT_LABEL = "Subject-concept Agent";
+
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
   @MockitoBean
@@ -50,25 +61,20 @@ class WorkSubjectConceptMappingIT {
   @ParameterizedTest
   @ValueSource(strings = {
     "/rdf/work_subject.json",
-    "/rdf/work_subject_id.json"
+    "/rdf/work_subject_lccn.json"
   })
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    var agentName = "agentName";
-    var subjectAgent = create(2L, agentName, Set.of(PERSON), Map.of(
-      RESOURCE_PREFERRED.getValue(), List.of("true"),
-      NAME.getValue(), List.of(agentName))
-    );
-    var subjectTerm = "subjectTerm";
-    var subjectTopic = create(3L, subjectTerm, Set.of(TOPIC), Map.of(
-      RESOURCE_PREFERRED.getValue(), List.of("false"),
-      TERM.getValue(), List.of(subjectTerm))
-    );
+    var subjectAgent = createAgent(SUBJECT_AGENT_LCCN, true, List.of(PERSON), AGENT_LABEL);
+    var subjectTopic = createTopic(SUBJECT_TOPIC_LCCN, true, TOPIC_LABEL);
+    var conceptAgent = createConceptAgent(CONCEPT_AGENT_LCCN, true, List.of(FAMILY),
+      CONCEPT_AGENT_LABEL);
     var foundByLccnResources = Map.of(
-      "n79026681", subjectAgent,
-      "sh85070981", subjectTopic
+      SUBJECT_AGENT_LCCN, subjectAgent,
+      SUBJECT_TOPIC_LCCN, subjectTopic,
+      CONCEPT_AGENT_LCCN, conceptAgent
     );
     when(resourceProvider.apply(anyString()))
       .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
@@ -84,13 +90,45 @@ class WorkSubjectConceptMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
       work -> {
-        validateOutgoingEdge(work, SUBJECT, Set.of(CONCEPT, PERSON), Map.of(NAME, List.of(agentName)), agentName,
-          concept -> validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectAgent, FOCUS))
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(AGENT_LABEL)),
+          AGENT_LABEL, concept ->
+            validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectAgent, FOCUS))
         );
-        validateOutgoingEdge(work, SUBJECT, Set.of(CONCEPT, TOPIC), Map.of(TERM, List.of(subjectTerm)), subjectTerm,
+        validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), Map.of(LABEL, List.of(TOPIC_LABEL)), TOPIC_LABEL,
           concept -> validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectTopic, FOCUS))
+        );
+        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(CONCEPT_AGENT_LABEL)),
+          CONCEPT_AGENT_LABEL, concept ->
+            validateResourceWithGivenEdges(concept, new ResourceEdge(concept, conceptAgent, FOCUS))
         );
       });
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "/rdf/work_subject_lccn.json"
+  })
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
+    // given
+    var work = createWork("work");
+    var isCurrent = !rdfFile.contains("no_lccn");
+    var agentConcept = createConceptAgent(SUBJECT_AGENT_LCCN, isCurrent, List.of(PERSON), CONCEPT_AGENT_LABEL);
+    var agent = createAgent(CONCEPT_AGENT_LCCN, isCurrent, List.of(FAMILY), AGENT_LABEL);
+    var topic = createTopic(SUBJECT_TOPIC_LCCN, isCurrent, TOPIC_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, agentConcept, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, agent, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
+    var instance = createInstance("instance").setDoc(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    //then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
 }

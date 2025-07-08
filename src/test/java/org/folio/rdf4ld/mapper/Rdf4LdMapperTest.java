@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper;
 
+import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.rdf4ld.test.TestUtil.emptyMapper;
 import static org.mockito.ArgumentMatchers.any;
@@ -7,6 +8,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.stream.Stream;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.mapper.core.CoreRdf2LdMapper;
@@ -55,17 +58,20 @@ class Rdf4LdMapperTest {
   @Test
   void mapBibframe2RdfToLd_shouldReturnSetWithResourcesMappedByAccordingMapper() {
     // given
-    var model = new ModelBuilder().build();
+    var model = mock(Model.class);
+    doReturn(model).when(model).filter(any(), any(), any());
+    var statement = mock(Statement.class);
+    doReturn(Stream.of(statement)).when(model).stream();
+    var resource = mock(org.eclipse.rdf4j.model.Resource.class);
+    doReturn(resource).when(statement).getSubject();
     var resourceMapping = new ResourceMapping()
-      .bfResourceDef(new BfResourceDef())
+      .bfResourceDef(new BfResourceDef().addTypeSetItem("http://aaa.com/bfType"))
       .ldResourceDef(new LdResourceDef());
     doReturn(resourceMapping).when(mappingProfileReader).getBibframe20Profile();
-    var resource = mock(org.eclipse.rdf4j.model.Resource.class);
-    doReturn(Stream.of(resource)).when(coreRdf2LdMapper).selectSubjectsByType(any(), any());
     var mapper = mock(RdfMapperUnit.class);
     doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
     var expectedResource = new Resource().setId(123L);
-    doReturn(expectedResource).when(mapper).mapToLd(any(), any(), any(), any());
+    doReturn(of(expectedResource)).when(mapper).mapToLd(any(), any(), any(), any());
 
     // when
     var result = topMapper.mapBibframe2RdfToLd(model);

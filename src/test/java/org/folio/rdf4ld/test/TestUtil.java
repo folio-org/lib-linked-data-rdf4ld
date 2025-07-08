@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -96,10 +97,10 @@ public class TestUtil {
   public static RdfMapperUnit emptyMapper() {
     return new RdfMapperUnit() {
       @Override
-      public Resource mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
-                              ResourceMapping resourceMapping,
-                              Resource parent) {
-        return new Resource();
+      public Optional<Resource> mapToLd(Model model, org.eclipse.rdf4j.model.Resource resource,
+                                        ResourceMapping resourceMapping,
+                                        Resource parent) {
+        return Optional.of(new Resource());
       }
 
       @Override
