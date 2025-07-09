@@ -39,7 +39,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     var resourceMapping = mapping.getResourceMapping();
     var resource = new Resource();
     resource.setCreatedDate(new Date());
-    resource.setTypes(mapping.getLdResourceDef().getTypeSet());
+    resource.getTypes().addAll(mapping.getLdResourceDef().getTypeSet());
     ofNullable(resourceMapping)
       .ifPresent(rm -> {
         resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));

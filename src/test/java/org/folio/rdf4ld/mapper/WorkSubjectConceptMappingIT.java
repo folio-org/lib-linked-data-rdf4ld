@@ -34,8 +34,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,35 +45,30 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(classes = SpringTestConfig.class)
 class WorkSubjectConceptMappingIT {
 
-  private static final String SUBJECT_AGENT_LCCN = "n79026681";
-  private static final String SUBJECT_TOPIC_LCCN = "sh85070981";
-  private static final String CONCEPT_AGENT_LCCN = "n123456789";
-  private static final String AGENT_LABEL = "Subject Agent";
+  private static final String FAMILY_AGENT_LCCN = "n123456789";
+  private static final String PERSON_AGENT_LCCN = "n79026681";
+  private static final String TOPIC_LCCN = "sh85070981";
+  private static final String FAMILY_AGENT_LABEL = "Family Agent";
+  private static final String PERSON_AGENT_LABEL = "Person Agent";
   private static final String TOPIC_LABEL = "Subject Topic";
-  private static final String CONCEPT_AGENT_LABEL = "Subject-concept Agent";
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
   @MockitoBean
   private Function<String, Optional<Resource>> resourceProvider;
 
-  @ParameterizedTest
-  @ValueSource(strings = {
-    "/rdf/work_subject.json",
-    "/rdf/work_subject_lccn.json"
-  })
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream(rdfFile);
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    var subjectAgent = createAgent(SUBJECT_AGENT_LCCN, true, List.of(PERSON), AGENT_LABEL);
-    var subjectTopic = createTopic(SUBJECT_TOPIC_LCCN, true, TOPIC_LABEL);
-    var conceptAgent = createConceptAgent(CONCEPT_AGENT_LCCN, true, List.of(FAMILY),
-      CONCEPT_AGENT_LABEL);
+    var subjectAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
+    var subjectTopic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
+    var conceptAgent = createConceptAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var foundByLccnResources = Map.of(
-      SUBJECT_AGENT_LCCN, subjectAgent,
-      SUBJECT_TOPIC_LCCN, subjectTopic,
-      CONCEPT_AGENT_LCCN, conceptAgent
+      PERSON_AGENT_LCCN, subjectAgent,
+      TOPIC_LCCN, subjectTopic,
+      FAMILY_AGENT_LCCN, conceptAgent
     );
     when(resourceProvider.apply(anyString()))
       .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
@@ -90,45 +84,108 @@ class WorkSubjectConceptMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
       work -> {
-        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(AGENT_LABEL)),
-          AGENT_LABEL, concept ->
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
+          PERSON_AGENT_LABEL, concept ->
             validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectAgent, FOCUS))
         );
         validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), Map.of(LABEL, List.of(TOPIC_LABEL)), TOPIC_LABEL,
           concept -> validateResourceWithGivenEdges(concept, new ResourceEdge(concept, subjectTopic, FOCUS))
         );
-        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(CONCEPT_AGENT_LABEL)),
-          CONCEPT_AGENT_LABEL, concept ->
-            validateResourceWithGivenEdges(concept, new ResourceEdge(concept, conceptAgent, FOCUS))
+        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(FAMILY_AGENT_LABEL)),
+          FAMILY_AGENT_LABEL, concept -> assertThat(concept).isEqualTo(conceptAgent));
+      });
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithNoLccn() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+      work -> {
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
+          PERSON_AGENT_LABEL, concept ->
+            validateOutgoingEdge(concept, FOCUS, Set.of(PERSON), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
+              PERSON_AGENT_LABEL, c -> {})
+        );
+        validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), Map.of(LABEL, List.of(TOPIC_LABEL)), TOPIC_LABEL,
+          concept -> validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), Map.of(LABEL, List.of(TOPIC_LABEL)),
+            TOPIC_LABEL, c -> {})
+        );
+        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(FAMILY_AGENT_LABEL)),
+          FAMILY_AGENT_LABEL, concept ->
+            validateOutgoingEdge(concept, FOCUS, Set.of(FAMILY), Map.of(LABEL, List.of(FAMILY_AGENT_LABEL)),
+              FAMILY_AGENT_LABEL, c -> {})
         );
       });
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = {
-    "/rdf/work_subject_lccn.json"
-  })
-  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSubjects(String rdfFile) throws IOException {
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
     var work = createWork("work");
-    var isCurrent = !rdfFile.contains("no_lccn");
-    var agentConcept = createConceptAgent(SUBJECT_AGENT_LCCN, isCurrent, List.of(PERSON), CONCEPT_AGENT_LABEL);
-    var agent = createAgent(CONCEPT_AGENT_LCCN, isCurrent, List.of(FAMILY), AGENT_LABEL);
-    var topic = createTopic(SUBJECT_TOPIC_LCCN, isCurrent, TOPIC_LABEL);
+    var agentConcept = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
+    var agent = createAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
+    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, agentConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, agent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
     var instance = createInstance("instance").setDoc(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
-    //then
+    // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
+
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithoutLccn() throws IOException {
+    // given
+    var work = createWork("work");
+    var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, personAgent, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, familyAgent, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
+    var instance = createInstance("instance").setDoc(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")
+      .readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString())
+      .replaceAll("PERSON_AGENT_ID", "_" + personAgent.getId().toString())
+      .replaceAll("PERSON_AGENT_LCCN_ID", personAgent.getOutgoingEdges().iterator().next().getTarget().getId()
+        .toString())
+      .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString())
+      .replaceAll("FAMILY_AGENT_LCCN_ID", familyAgent.getOutgoingEdges().iterator().next().getTarget().getId()
+        .toString())
+      .replaceAll("TOPIC_ID", "_" + topic.getId().toString())
+      .replaceAll("TOPIC_LCCN_ID", topic.getOutgoingEdges().iterator().next().getTarget().getId().toString());
+
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
+
 }

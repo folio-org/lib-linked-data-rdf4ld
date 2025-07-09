@@ -1,0 +1,129 @@
+[
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/INSTANCE_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Instance"
+        ],
+        "http://id.loc.gov/ontologies/bibframe/instanceOf": [
+            {
+                "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID"
+            }
+        ]
+    },
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Work"
+        ],
+        "http://id.loc.gov/ontologies/bibframe/subject": [
+            {
+                "@id": "_:PERSON_AGENT_ID"
+            },
+            {
+                "@id": "_:FAMILY_AGENT_ID"
+            },
+            {
+                "@id": "_:TOPIC_ID"
+            }
+        ]
+    },
+    {
+        "@id": "_:PERSON_AGENT_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Person"
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Person Agent"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
+            {
+                "@id": "http://test-tobe-changed.folio.com/resources/PERSON_AGENT_LCCN_ID"
+            }
+        ]
+    },
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/PERSON_AGENT_LCCN_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Lccn"
+        ],
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+            {
+                "@value": "n79026681"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/status": [
+            {
+                "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
+            }
+        ]
+    },
+    {
+        "@id": "_:FAMILY_AGENT_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Family"
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Family Agent"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
+            {
+                "@id": "http://test-tobe-changed.folio.com/resources/FAMILY_AGENT_LCCN_ID"
+            }
+        ]
+    },
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/FAMILY_AGENT_LCCN_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Lccn"
+        ],
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+            {
+                "@value": "n123456789"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/status": [
+            {
+                "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
+            }
+        ]
+    },
+    {
+        "@id": "_:TOPIC_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Topic"
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Subject Topic"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
+            {
+                "@id": "http://test-tobe-changed.folio.com/resources/TOPIC_LCCN_ID"
+            }
+        ]
+    },
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/TOPIC_LCCN_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Lccn"
+        ],
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+            {
+                "@value": "sh85070981"
+            }
+        ],
+        "http://id.loc.gov/ontologies/bibframe/status": [
+            {
+                "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
+            }
+        ]
+    }
+]

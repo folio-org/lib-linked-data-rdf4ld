@@ -18,6 +18,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -148,9 +149,11 @@ public class MonographUtil {
                                             boolean isCurrent,
                                             List<ResourceTypeDictionary> types,
                                             String label) {
+    var conceptTypes = new LinkedHashSet<>(types);
+    conceptTypes.add(CONCEPT);
     return createResource(
       Map.of(LABEL, List.of(label)),
-      new LinkedHashSet<>(types),
+      conceptTypes,
       Map.of(FOCUS, List.of(createAgent(lccn, isCurrent, types, label)))
     ).setLabel(label);
   }
