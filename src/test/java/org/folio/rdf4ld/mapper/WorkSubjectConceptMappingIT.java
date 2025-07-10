@@ -12,7 +12,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
+import static org.folio.rdf4ld.test.MonographUtil.createConcept;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
+import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -134,11 +136,11 @@ class WorkSubjectConceptMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
     var work = createWork("work");
-    var agentConcept = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
-    var agent = createAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
-    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
-    work.addOutgoingEdge(new ResourceEdge(work, agentConcept, SUBJECT));
-    work.addOutgoingEdge(new ResourceEdge(work, agent, SUBJECT));
+    var personAgent = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
+    var familyAgent = createConceptAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
+    var topic = createConceptTopic(TOPIC_LCCN, true, TOPIC_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, personAgent, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, familyAgent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
     var instance = createInstance("instance").setDoc(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
@@ -161,9 +163,12 @@ class WorkSubjectConceptMappingIT {
     var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
-    work.addOutgoingEdge(new ResourceEdge(work, personAgent, SUBJECT));
-    work.addOutgoingEdge(new ResourceEdge(work, familyAgent, SUBJECT));
-    work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
+    var personConcept = createConcept(List.of(PERSON), List.of(personAgent), List.of(), PERSON_AGENT_LABEL);
+    var familyConcept = createConcept(List.of(FAMILY), List.of(familyAgent), List.of(), FAMILY_AGENT_LABEL);
+    var topicConcept = createConcept(List.of(TOPIC), List.of(topic), List.of(), TOPIC_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, personConcept, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, familyConcept, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, topicConcept, SUBJECT));
     var instance = createInstance("instance").setDoc(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")

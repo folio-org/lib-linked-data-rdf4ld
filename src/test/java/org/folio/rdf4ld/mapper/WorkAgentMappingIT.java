@@ -201,7 +201,7 @@ class WorkAgentMappingIT {
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
-    //then
+    // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }

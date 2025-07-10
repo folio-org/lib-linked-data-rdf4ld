@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -149,12 +150,25 @@ public class MonographUtil {
                                             boolean isCurrent,
                                             List<ResourceTypeDictionary> types,
                                             String label) {
+    return createConcept(types, List.of(createAgent(lccn, isCurrent, types, label)), List.of(), label);
+  }
+
+  public static Resource createConceptTopic(String lccn,
+                                            boolean isCurrent,
+                                            String label) {
+    return createConcept(List.of(TOPIC), List.of(createTopic(lccn, isCurrent, label)), List.of(), label);
+  }
+
+  public static Resource createConcept(List<ResourceTypeDictionary> types,
+                                       List<Resource> focuses,
+                                       List<Resource> subFocuses,
+                                       String label) {
     var conceptTypes = new LinkedHashSet<>(types);
     conceptTypes.add(CONCEPT);
     return createResource(
       Map.of(LABEL, List.of(label)),
       conceptTypes,
-      Map.of(FOCUS, List.of(createAgent(lccn, isCurrent, types, label)))
+      Map.of(FOCUS, focuses, SUB_FOCUS, subFocuses)
     ).setLabel(label);
   }
 

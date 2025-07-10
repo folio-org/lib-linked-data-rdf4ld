@@ -2,10 +2,12 @@ package org.folio.rdf4ld.util;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
@@ -40,6 +42,8 @@ public class RdfUtil {
       .put(MEETING, "http://id.loc.gov/ontologies/bibframe/Meeting")
       .put(JURISDICTION, "http://id.loc.gov/ontologies/bibframe/Jurisdiction")
       .put(TOPIC, "http://id.loc.gov/ontologies/bibframe/Topic")
+      .put(FORM, "http://id.loc.gov/ontologies/bibframe/GenreForm")
+      .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
       .build();
 
   public static Stream<Value> getByPredicate(Model model,

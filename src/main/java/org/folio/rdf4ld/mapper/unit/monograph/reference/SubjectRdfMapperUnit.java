@@ -10,11 +10,8 @@ import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
@@ -26,7 +23,6 @@ import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.model.ResourceMapping;
-import org.folio.rdf4ld.util.ResourceUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -71,14 +67,20 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                             ModelBuilder modelBuilder,
                             ResourceMapping mapping,
                             Resource parent) {
-    if (subject.isOfType(CONCEPT)) {
-      writeSingleSubject(subject, modelBuilder, mapping, parent);
-    } else {
-      writeDirectSubject(subject, modelBuilder, mapping, parent);
+    if (noSubFocuses(subject)) {
+      subject.getOutgoingEdges()
+        .stream()
+        .filter(oe -> oe.getPredicate() == FOCUS)
+        .map(ResourceEdge::getTarget)
+        .forEach(resource -> writeSingleSubject(resource, modelBuilder, mapping, parent));
     }
   }
 
-  private void writeDirectSubject(Resource subject,
+  private boolean noSubFocuses(Resource resource) {
+    return resource.getOutgoingEdges().stream().noneMatch(oe -> oe.getPredicate() == SUB_FOCUS);
+  }
+
+  private void writeSingleSubject(Resource subject,
                                   ModelBuilder modelBuilder,
                                   ResourceMapping mapping,
                                   Resource parent) {
@@ -86,6 +88,16 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       .ifPresentOrElse(writeSubjectLink(modelBuilder, mapping, parent),
         () -> writeBlankNode(subject, modelBuilder, mapping, parent)
       );
+  }
+
+  private Consumer<String> writeSubjectLink(ModelBuilder modelBuilder,
+                                            ResourceMapping mapping,
+                                            Resource parent) {
+    return lccnLink -> {
+      var subjectIri = Values.iri(lccnLink);
+      modelBuilder.subject(coreLd2RdfMapper.getResourceIri(parent.getId().toString()));
+      modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
+    };
   }
 
   private void writeBlankNode(Resource subject, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
@@ -101,36 +113,6 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
     coreLd2RdfMapper.mapProperties(subject, modelBuilder, mapping);
     writeLccn(subject, node, modelBuilder, mapping, LCCN_EDGE_NUMBER, baseRdfMapperUnit, coreLd2RdfMapper);
-  }
-
-  private void writeSingleSubject(Resource subject,
-                                  ModelBuilder modelBuilder,
-                                  ResourceMapping mapping,
-                                  Resource parent) {
-    Stream.of(subject)
-      .map(Resource::getOutgoingEdges)
-      .filter(noSubFocuses())
-      .flatMap(Set::stream)
-      .filter(oe -> oe.getPredicate() == FOCUS)
-      .map(ResourceEdge::getTarget)
-      .map(ResourceUtil::getCurrentLccnLink)
-      .filter(Optional::isPresent)
-      .flatMap(Optional::stream)
-      .forEach(writeSubjectLink(modelBuilder, mapping, parent));
-  }
-
-  private Predicate<Set<ResourceEdge>> noSubFocuses() {
-    return outgoingEdges -> outgoingEdges.stream().noneMatch(oe -> oe.getPredicate() == SUB_FOCUS);
-  }
-
-  private Consumer<String> writeSubjectLink(ModelBuilder modelBuilder,
-                                            ResourceMapping mapping,
-                                            Resource parent) {
-    return lccnLink -> {
-      var subjectIri = Values.iri(lccnLink);
-      modelBuilder.subject(coreLd2RdfMapper.getResourceIri(parent.getId().toString()));
-      modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
-    };
   }
 
 }
