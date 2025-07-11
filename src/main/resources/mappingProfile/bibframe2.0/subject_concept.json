@@ -11,6 +11,22 @@
         "ldProperty": "LABEL",
         "bfProperty": "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"
       }
+    ],
+    "outgoingEdges": [
+      {
+        "bfResourceDef": {
+          "typeSet": "http://www.loc.gov/mads/rdf/v1#ComplexSubject",
+          "predicate": "http://www.loc.gov/mads/rdf/v1#componentList"
+        },
+        "resourceMapping": {
+          "properties": [
+            {
+              "ldProperty": "LABEL",
+              "bfProperty": "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"
+            }
+          ]
+        }
+      }
     ]
   }
 }

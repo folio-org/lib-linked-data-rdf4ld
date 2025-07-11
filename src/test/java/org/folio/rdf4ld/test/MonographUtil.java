@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -163,12 +164,15 @@ public class MonographUtil {
                                        List<Resource> focuses,
                                        List<Resource> subFocuses,
                                        String label) {
+    var edges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    edges.put(FOCUS, focuses);
+    edges.put(SUB_FOCUS, subFocuses);
     var conceptTypes = new LinkedHashSet<>(types);
     conceptTypes.add(CONCEPT);
     return createResource(
       Map.of(LABEL, List.of(label)),
       conceptTypes,
-      Map.of(FOCUS, focuses, SUB_FOCUS, subFocuses)
+      edges
     ).setLabel(label);
   }
 

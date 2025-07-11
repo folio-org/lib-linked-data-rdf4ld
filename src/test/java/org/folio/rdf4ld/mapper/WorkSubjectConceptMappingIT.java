@@ -53,6 +53,7 @@ class WorkSubjectConceptMappingIT {
   private static final String FAMILY_AGENT_LABEL = "Family Agent";
   private static final String PERSON_AGENT_LABEL = "Person Agent";
   private static final String TOPIC_LABEL = "Subject Topic";
+  private static final String COMPLEX_SUBJECT_LABEL = "Complex Subject Label";
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -188,4 +189,31 @@ class WorkSubjectConceptMappingIT {
     assertThat(jsonLdString).isEqualTo(expected);
   }
 
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject() throws IOException {
+    // given
+    var work = createWork("work");
+    var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
+    var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
+      COMPLEX_SUBJECT_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
+    var instance = createInstance("instance").setDoc(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex.json")
+      .readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString())
+      .replaceAll("COMPLEX_SUBJECT_ID", concept.getId().toString())
+      .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString());
+
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
 }
