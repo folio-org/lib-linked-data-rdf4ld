@@ -1,6 +1,5 @@
 package org.folio.rdf4ld.util;
 
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -9,8 +8,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
-import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
-import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 
 import com.google.common.collect.ImmutableBiMap;
 import java.util.Collection;
@@ -18,18 +15,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
-import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
-import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
-import org.folio.rdf4ld.model.ResourceMapping;
 
 @UtilityClass
 public class RdfUtil {
@@ -68,25 +60,6 @@ public class RdfUtil {
       .map(Statement::getObject)
       .map(Value::stringValue)
       .collect(Collectors.toSet());
-  }
-
-  public static void writeLccn(org.folio.ld.dictionary.model.Resource resource,
-                               BNode node,
-                               ModelBuilder modelBuilder,
-                               ResourceMapping mapping,
-                               int lccnEdgeNumber,
-                               BaseRdfMapperUnit baseRdfMapperUnit,
-                               CoreLd2RdfMapper coreLd2RdfMapper) {
-    var lccnEdgeMapping = getEdgeMapping(mapping.getResourceMapping(), lccnEdgeNumber);
-    var lccnEdgePredicate = getEdgePredicate(mapping.getResourceMapping(), lccnEdgeNumber);
-    resource.getOutgoingEdges()
-      .stream()
-      .filter(oe -> oe.getPredicate() == MAP)
-      .forEach(oe -> {
-        baseRdfMapperUnit.mapToBibframe(oe.getTarget(), modelBuilder, lccnEdgeMapping, null);
-        coreLd2RdfMapper.linkResources(modelBuilder, node,
-          coreLd2RdfMapper.getResourceIri(oe.getTarget().getId().toString()), lccnEdgePredicate);
-      });
   }
 
 }

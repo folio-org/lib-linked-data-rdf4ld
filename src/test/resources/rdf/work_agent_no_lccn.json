@@ -54,27 +54,6 @@
             {
                 "@value": "Creator Agent"
             }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
-            {
-                "@id": "http://test-tobe-changed.folio.com/resources/CREATOR_AGENT_LCCN_ID"
-            }
-        ]
-    },
-    {
-        "@id": "http://test-tobe-changed.folio.com/resources/CREATOR_AGENT_LCCN_ID",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Lccn"
-        ],
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
-            {
-                "@value": "n2021004098"
-            }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/status": [
-            {
-                "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
-            }
         ]
     },
     {
@@ -105,27 +84,6 @@
         "http://www.w3.org/2000/01/rdf-schema#label": [
             {
                 "@value": "Contributor Agent"
-            }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
-            {
-                "@id": "http://test-tobe-changed.folio.com/resources/CONTRIBUTOR_AGENT_LCCN_ID"
-            }
-        ]
-    },
-    {
-        "@id": "http://test-tobe-changed.folio.com/resources/CONTRIBUTOR_AGENT_LCCN_ID",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Lccn"
-        ],
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
-            {
-                "@value": "n2021004092"
-            }
-        ],
-        "http://id.loc.gov/ontologies/bibframe/status": [
-            {
-                "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
             }
         ]
     }

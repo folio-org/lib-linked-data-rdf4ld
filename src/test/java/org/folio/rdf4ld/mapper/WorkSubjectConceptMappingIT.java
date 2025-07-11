@@ -176,13 +176,8 @@ class WorkSubjectConceptMappingIT {
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("PERSON_AGENT_ID", "_" + personAgent.getId().toString())
-      .replaceAll("PERSON_AGENT_LCCN_ID", personAgent.getOutgoingEdges().iterator().next().getTarget().getId()
-        .toString())
       .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString())
-      .replaceAll("FAMILY_AGENT_LCCN_ID", familyAgent.getOutgoingEdges().iterator().next().getTarget().getId()
-        .toString())
-      .replaceAll("TOPIC_ID", "_" + topic.getId().toString())
-      .replaceAll("TOPIC_LCCN_ID", topic.getOutgoingEdges().iterator().next().getTarget().getId().toString());
+      .replaceAll("TOPIC_ID", "_" + topic.getId().toString());
 
 
     // when

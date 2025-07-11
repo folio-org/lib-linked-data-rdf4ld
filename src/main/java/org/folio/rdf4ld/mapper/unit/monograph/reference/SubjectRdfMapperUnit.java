@@ -5,13 +5,13 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
-import static org.folio.rdf4ld.util.RdfUtil.writeLccn;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
-  private static final int LCCN_EDGE_NUMBER = 0;
   private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
@@ -86,7 +85,10 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                   Resource parent) {
     getCurrentLccnLink(subject)
       .ifPresentOrElse(writeSubjectLink(modelBuilder, mapping, parent),
-        () -> writeBlankNode(subject, modelBuilder, mapping, parent)
+        () -> {
+          var node = Values.bnode("_" + subject.getId());
+          writeBlankNode(node, subject, AUTHORITY_RDF_TYPE, modelBuilder, mapping, parent);
+        }
       );
   }
 
@@ -100,19 +102,22 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     };
   }
 
-  private void writeBlankNode(Resource subject, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    var node = Values.bnode("_" + subject.getId());
+  private void writeBlankNode(BNode node,
+                              Resource subject,
+                              String mainType,
+                              ModelBuilder modelBuilder,
+                              ResourceMapping mapping,
+                              Resource parent) {
     coreLd2RdfMapper.linkResources(modelBuilder, coreLd2RdfMapper.getResourceIri(parent.getId().toString()),
       node, mapping.getBfResourceDef().getPredicate());
     modelBuilder.subject(node);
-    modelBuilder.add(RDF.TYPE, Values.iri(AUTHORITY_RDF_TYPE));
+    modelBuilder.add(RDF.TYPE, Values.iri(mainType));
     subject.getTypes()
       .stream()
       .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
       .map(AUTHORITY_LD_TO_BF_TYPES::get)
       .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
     coreLd2RdfMapper.mapProperties(subject, modelBuilder, mapping);
-    writeLccn(subject, node, modelBuilder, mapping, LCCN_EDGE_NUMBER, baseRdfMapperUnit, coreLd2RdfMapper);
   }
 
 }

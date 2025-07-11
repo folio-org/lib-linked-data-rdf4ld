@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
-import static org.folio.rdf4ld.util.RdfUtil.writeLccn;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
@@ -37,7 +36,6 @@ import org.folio.rdf4ld.model.ResourceMapping;
 public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int AGENT_EDGE_NUMBER = 0;
   private static final int ROLE_EDGE_NUMBER = 1;
-  private static final int LCCN_EDGE_NUMBER = 2;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
   private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
   private final CoreLd2RdfMapper coreLd2RdfMapper;
@@ -159,7 +157,6 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .map(AUTHORITY_LD_TO_BF_TYPES::get)
       .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
     coreLd2RdfMapper.mapProperties(agent, modelBuilder, mapping);
-    writeLccn(agent, agentNode, modelBuilder, mapping, LCCN_EDGE_NUMBER, baseRdfMapperUnit, coreLd2RdfMapper);
   }
 
 }
