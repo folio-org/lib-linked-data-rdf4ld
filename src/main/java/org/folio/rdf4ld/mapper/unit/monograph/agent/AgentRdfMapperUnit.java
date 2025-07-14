@@ -27,6 +27,7 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
+import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
@@ -106,17 +107,23 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                             ModelBuilder modelBuilder,
                             ResourceMapping resourceMapping,
                             Resource parent) {
-    var contributionNode = Values.bnode("_" + agent.getId());
+    var nodeId = getNodeId(agent);
+    var contributionNode = Values.bnode(nodeId);
     writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
     getCurrentLccnLink(agent).ifPresentOrElse(lccnLink -> {
         var agentIri = Values.iri(lccnLink);
         writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
       }, () -> {
-        var agentNode = Values.bnode("_" + agent.getId() + "_agent");
+        var agentNode = Values.bnode(nodeId + "_agent");
         writeContributionResource(agent, contributionNode, agentNode, modelBuilder, resourceMapping, parent);
         writeAgentResource(agent, agentNode, modelBuilder, resourceMapping);
       }
     );
+  }
+
+  private String getNodeId(Resource agent) {
+    var predicate = this.getClass().getAnnotation(RdfMapperDefinition.class).predicate().name();
+    return predicate + "_" + agent.getId();
   }
 
   private void writeContributionLink(BNode bnode, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
