@@ -45,7 +45,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class WorkSubjectConceptMappingIT {
+class WorkSubjectMappingIT {
 
   private static final String FAMILY_AGENT_LCCN = "n123456789";
   private static final String PERSON_AGENT_LCCN = "n79026681";

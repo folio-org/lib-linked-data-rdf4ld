@@ -34,13 +34,17 @@
         ],
         "http://www.loc.gov/mads/rdf/v1#componentList": [
             {
-                "@id": "http://id.loc.gov/authorities/subjects/sh85070981"
-            },
-            {
-                "@id": "http://id.loc.gov/rwo/agents/n79026681"
-            },
-            {
-                "@id": "_:FAMILY_AGENT_ID"
+                "@list": [
+                    {
+                        "@id": "http://id.loc.gov/authorities/subjects/sh85070981"
+                    },
+                    {
+                        "@id": "http://id.loc.gov/rwo/agents/n79026681"
+                    },
+                    {
+                        "@id": "_:FAMILY_AGENT_ID"
+                    }
+                ]
             }
         ]
     },

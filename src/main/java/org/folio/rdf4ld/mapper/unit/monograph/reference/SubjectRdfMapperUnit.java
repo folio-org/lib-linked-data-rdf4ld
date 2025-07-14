@@ -1,5 +1,7 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
+import static org.eclipse.rdf4j.model.util.Values.bnode;
+import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
@@ -15,7 +17,7 @@ import java.util.function.Function;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.model.util.Values;
+import org.eclipse.rdf4j.model.util.RDFCollections;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -90,8 +92,9 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     getCurrentLccnLink(subject)
       .ifPresentOrElse(writeSubjectLink(modelBuilder, mapping, parent),
         () -> {
-          var node = Values.bnode("_" + subject.getId());
-          writeBlankNode(node, subject, AUTHORITY_RDF_TYPE, modelBuilder, mapping, parent);
+          var node = bnode("_" + subject.getId());
+          coreLd2RdfMapper.linkResources(modelBuilder, parent, node, mapping.getBfResourceDef().getPredicate());
+          writeBlankNode(node, subject, AUTHORITY_RDF_TYPE, modelBuilder, mapping);
         }
       );
   }
@@ -100,41 +103,58 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                             ResourceMapping mapping,
                                             org.eclipse.rdf4j.model.Resource parent) {
     return lccnLink -> {
-      var subjectIri = Values.iri(lccnLink);
+      var subjectIri = iri(lccnLink);
       modelBuilder.subject(parent);
       modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
     };
   }
 
-  private void writeBlankNode(BNode node,
+  private BNode writeBlankNode(BNode node,
                               Resource subject,
                               String mainType,
                               ModelBuilder modelBuilder,
-                              ResourceMapping mapping,
-                              org.eclipse.rdf4j.model.Resource parent) {
-    coreLd2RdfMapper.linkResources(modelBuilder, parent, node, mapping.getBfResourceDef().getPredicate());
+                              ResourceMapping mapping) {
     modelBuilder.subject(node);
-    modelBuilder.add(RDF.TYPE, Values.iri(mainType));
+    modelBuilder.add(RDF.TYPE, iri(mainType));
     subject.getTypes()
       .stream()
       .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
       .map(AUTHORITY_LD_TO_BF_TYPES::get)
-      .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
+      .forEach(at -> modelBuilder.add(RDF.TYPE, iri(at)));
     coreLd2RdfMapper.mapProperties(subject, modelBuilder, mapping);
+    return node;
   }
 
   private void writeComplexSubject(Resource subject,
                                    ModelBuilder modelBuilder,
                                    ResourceMapping mapping,
                                    org.eclipse.rdf4j.model.Resource parent) {
-    var complexSubjectNode = Values.bnode("_" + subject.getId());
+    var complexSubjectNode = bnode("_" + subject.getId());
     var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
     var complexSubjectType = complexSubjectMapping.getBfResourceDef().getTypeSet().iterator().next();
-    writeBlankNode(complexSubjectNode, subject, complexSubjectType, modelBuilder, mapping, parent);
-    subject.getOutgoingEdges().stream()
+    coreLd2RdfMapper.linkResources(modelBuilder, parent, complexSubjectNode, mapping.getBfResourceDef().getPredicate());
+    writeBlankNode(complexSubjectNode, subject, complexSubjectType, modelBuilder, mapping);
+    writeComponentsList(subject, modelBuilder, complexSubjectMapping, complexSubjectNode);
+  }
+
+  private void writeComponentsList(Resource subject,
+                                   ModelBuilder modelBuilder,
+                                   ResourceMapping mapping,
+                                   BNode complexSubjectNode) {
+    var components = subject.getOutgoingEdges().stream()
       .filter(oe -> oe.getPredicate() == FOCUS || oe.getPredicate() == SUB_FOCUS)
       .map(ResourceEdge::getTarget)
-      .forEach(f -> writeSingleSubject(f, modelBuilder, complexSubjectMapping, complexSubjectNode));
+      .map(f -> getCurrentLccnLink(f)
+        .map(iri -> (org.eclipse.rdf4j.model.Resource) iri(iri))
+        .orElseGet(() -> {
+          var nodeId = "_" + f.getId();
+          return writeBlankNode(bnode(nodeId), f, AUTHORITY_RDF_TYPE, modelBuilder, mapping);
+        }))
+      .toList();
+    var listHead = bnode();
+    RDFCollections.asRDF(components, listHead, modelBuilder.build());
+    var componentListPredicate = mapping.getBfResourceDef().getPredicate();
+    modelBuilder.add(complexSubjectNode, iri(componentListPredicate), listHead);
   }
 
 }
