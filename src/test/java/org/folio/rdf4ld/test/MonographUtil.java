@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -18,6 +19,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -31,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -148,10 +151,28 @@ public class MonographUtil {
                                             boolean isCurrent,
                                             List<ResourceTypeDictionary> types,
                                             String label) {
+    return createConcept(types, List.of(createAgent(lccn, isCurrent, types, label)), List.of(), label);
+  }
+
+  public static Resource createConceptTopic(String lccn,
+                                            boolean isCurrent,
+                                            String label) {
+    return createConcept(List.of(TOPIC), List.of(createTopic(lccn, isCurrent, label)), List.of(), label);
+  }
+
+  public static Resource createConcept(List<ResourceTypeDictionary> types,
+                                       List<Resource> focuses,
+                                       List<Resource> subFocuses,
+                                       String label) {
+    var edges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    edges.put(FOCUS, focuses);
+    edges.put(SUB_FOCUS, subFocuses);
+    var conceptTypes = new LinkedHashSet<>(types);
+    conceptTypes.add(CONCEPT);
     return createResource(
       Map.of(LABEL, List.of(label)),
-      new LinkedHashSet<>(types),
-      Map.of(FOCUS, List.of(createAgent(lccn, isCurrent, types, label)))
+      conceptTypes,
+      edges
     ).setLabel(label);
   }
 

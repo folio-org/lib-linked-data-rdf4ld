@@ -1,5 +1,15 @@
 package org.folio.rdf4ld.util;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
+
+import com.google.common.collect.ImmutableBiMap;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,9 +21,23 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 
 @UtilityClass
 public class RdfUtil {
+
+  public static final ImmutableBiMap<ResourceTypeDictionary, String> AUTHORITY_LD_TO_BF_TYPES =
+    new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
+      .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
+      .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
+      .put(ORGANIZATION, "http://id.loc.gov/ontologies/bibframe/Organization")
+      .put(MEETING, "http://id.loc.gov/ontologies/bibframe/Meeting")
+      .put(JURISDICTION, "http://id.loc.gov/ontologies/bibframe/Jurisdiction")
+      .put(TOPIC, "http://id.loc.gov/ontologies/bibframe/Topic")
+      .put(FORM, "http://id.loc.gov/ontologies/bibframe/GenreForm")
+      .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
+      .build();
+
   public static Stream<Value> getByPredicate(Model model,
                                              Resource rdfResource,
                                              String predicate) {

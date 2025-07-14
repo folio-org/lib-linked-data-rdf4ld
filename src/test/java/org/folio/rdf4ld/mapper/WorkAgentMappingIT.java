@@ -10,17 +10,10 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.rdf4ld.test.MonographUtil.STATUS_CANCELLED;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -99,14 +92,6 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withNoCurrentLccn() throws IOException {
     // given
-    var creatorLabel = "Creator Agent";
-    var creatorLccn = "n2021004098";
-    var contributorLabel = "Contributor Agent";
-    var contributorLccn = "n2021004092";
-    when(resourceProvider.apply(creatorLccn))
-      .thenReturn(Optional.of(createAgent(creatorLccn, false, List.of(PERSON), creatorLabel)));
-    when(resourceProvider.apply(contributorLccn))
-      .thenReturn(Optional.of(createAgent(contributorLccn, false, List.of(FAMILY), contributorLabel)));
     var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
@@ -119,52 +104,34 @@ class WorkAgentMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    var statusLink = "http://id.loc.gov/vocabulary/mstatus/" + STATUS_CANCELLED;
+    var creatorLabel = "Creator Agent";
+    var contributorLabel = "Contributor Agent";
     validateOutgoingEdge(instance, INSTANTIATES, of(WORK), Map.of(), "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
-        validateAgent(work, creatorLabel, creatorLccn, STATUS_CANCELLED, statusLink, CREATOR, PERSON);
-        validateOutgoingEdge(work, AUTHOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel,
-          c -> {});
-        validateOutgoingEdge(work, DEGREE_GRANTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)),
-          creatorLabel, c -> {});
-        validateAgent(work, contributorLabel, contributorLccn, STATUS_CANCELLED, statusLink, CONTRIBUTOR, FAMILY);
-        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
-          contributorLabel, c -> {});
+        validateAgent(work, creatorLabel, CREATOR, PERSON);
+        validateOutgoingEdge(work, AUTHOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
+        validateOutgoingEdge(work, DEGREE_GRANTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
+        validateAgent(work, contributorLabel, CONTRIBUTOR, FAMILY);
+        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)), contributorLabel);
         validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
-          contributorLabel, c -> {});
+          contributorLabel);
       });
   }
 
   private void validateAgent(Resource work,
                              String agentLabel,
-                             String agentLccn,
-                             String status,
-                             String statusLink,
                              PredicateDictionary predicate,
                              ResourceTypeDictionary type) {
     validateOutgoingEdge(work, predicate, of(type), Map.of(LABEL, List.of(agentLabel)), agentLabel,
       agent -> {
         assertThat(agent.getId()).isNotNull();
         assertThat(agent.getIncomingEdges()).isEmpty();
-        assertThat(agent.getOutgoingEdges()).hasSize(1);
-        validateLccn(agent, agentLccn, status, statusLink);
+        assertThat(agent.getOutgoingEdges()).isEmpty();
       }
     );
-  }
-
-  private void validateLccn(Resource agent, String agentLccn, String status, String statusLink) {
-    validateOutgoingEdge(agent, MAP, of(IDENTIFIER, ID_LCCN),
-      Map.of(NAME, List.of(agentLccn)), agentLccn,
-      lccn -> {
-        assertThat(lccn.getId()).isNotNull();
-        assertThat(lccn.getIncomingEdges()).isEmpty();
-        assertThat(lccn.getOutgoingEdges()).hasSize(1);
-        validateOutgoingEdge(lccn, STATUS, of(ResourceTypeDictionary.STATUS),
-          Map.of(LABEL, List.of(status), LINK, List.of(statusLink)), status);
-      });
   }
 
   @ParameterizedTest
@@ -192,16 +159,12 @@ class WorkAgentMappingIT {
       .replaceAll("CREATOR_ID", "_" + creator.getId().toString())
       .replaceAll("CONTRIBUTOR_ID", "_" + contributor.getId().toString())
       .replaceAll("CREATOR_AGENT_ID", "_" + creator.getId().toString() + "_agent")
-      .replaceAll("CONTRIBUTOR_AGENT_ID", "_" + contributor.getId().toString() + "_agent")
-      .replaceAll("CREATOR_AGENT_LCCN_ID", creator.getOutgoingEdges().iterator().next().getTarget().getId()
-        .toString())
-      .replaceAll("CONTRIBUTOR_AGENT_LCCN_ID", contributor.getOutgoingEdges().iterator().next().getTarget()
-        .getId().toString());
+      .replaceAll("CONTRIBUTOR_AGENT_ID", "_" + contributor.getId().toString() + "_agent");
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
-    //then
+    // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }

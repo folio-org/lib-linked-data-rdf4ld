@@ -3,18 +3,11 @@ package org.folio.rdf4ld.mapper.unit.monograph.agent;
 import static java.util.Optional.empty;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
-import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
+import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
-import com.google.common.collect.ImmutableBiMap;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +21,6 @@ import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.RoleDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -44,17 +36,8 @@ import org.folio.rdf4ld.model.ResourceMapping;
 public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int AGENT_EDGE_NUMBER = 0;
   private static final int ROLE_EDGE_NUMBER = 1;
-  private static final int LCCN_EDGE_NUMBER = 2;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
   private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
-  private static final ImmutableBiMap<ResourceTypeDictionary, String> AGENT_LD_TO_BF_TYPES =
-    new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
-      .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
-      .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
-      .put(ORGANIZATION, "http://id.loc.gov/ontologies/bibframe/Organization")
-      .put(MEETING, "http://id.loc.gov/ontologies/bibframe/Meeting")
-      .put(JURISDICTION, "http://id.loc.gov/ontologies/bibframe/Jurisdiction")
-      .build();
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
@@ -96,8 +79,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
           .stream()
           .map(Statement::getObject)
           .map(Value::stringValue)
-          .filter(type -> AGENT_LD_TO_BF_TYPES.inverse().containsKey(type))
-          .map(type -> AGENT_LD_TO_BF_TYPES.inverse().get(type))
+          .filter(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().containsKey(type))
+          .map(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().get(type))
           .forEach(agent::addType);
         agent.setId(hashService.hash(agent));
         return agent;
@@ -170,23 +153,10 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     modelBuilder.add(RDF.TYPE, Values.iri(AGENT_RDF_TYPE));
     agent.getTypes()
       .stream()
-      .filter(AGENT_LD_TO_BF_TYPES::containsKey)
-      .map(AGENT_LD_TO_BF_TYPES::get)
+      .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
+      .map(AUTHORITY_LD_TO_BF_TYPES::get)
       .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
     coreLd2RdfMapper.mapProperties(agent, modelBuilder, mapping);
-    writeIdentifiers(agent, agentNode, modelBuilder, mapping);
   }
 
-  private void writeIdentifiers(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
-    var lccnEdgeMapping = getEdgeMapping(mapping.getResourceMapping(), LCCN_EDGE_NUMBER);
-    var lccnEdgePredicate = getEdgePredicate(mapping.getResourceMapping(), LCCN_EDGE_NUMBER);
-    agent.getOutgoingEdges()
-      .stream()
-      .filter(oe -> oe.getPredicate() == MAP)
-      .forEach(oe -> {
-        baseRdfMapperUnit.mapToBibframe(oe.getTarget(), modelBuilder, lccnEdgeMapping, null);
-        coreLd2RdfMapper.linkResources(modelBuilder, agentNode,
-          coreLd2RdfMapper.getResourceIri(oe.getTarget().getId().toString()), lccnEdgePredicate);
-      });
-  }
 }
