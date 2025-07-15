@@ -156,10 +156,34 @@ class WorkAgentMappingIT {
     var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
-      .replaceAll("CREATOR_ID", "_" + creator.getId().toString())
-      .replaceAll("CONTRIBUTOR_ID", "_" + contributor.getId().toString())
-      .replaceAll("CREATOR_AGENT_ID", "_" + creator.getId().toString() + "_agent")
-      .replaceAll("CONTRIBUTOR_AGENT_ID", "_" + contributor.getId().toString() + "_agent");
+      .replaceAll("CREATOR_ID", "CREATOR_" + creator.getId().toString())
+      .replaceAll("CONTRIBUTOR_ID", "CONTRIBUTOR_" + contributor.getId().toString())
+      .replaceAll("CREATOR_AGENT_ID", "CREATOR_" + creator.getId().toString() + "_agent")
+      .replaceAll("CONTRIBUTOR_AGENT_ID", "CONTRIBUTOR_" + contributor.getId().toString() + "_agent");
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    //then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
+
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnWorkWithSameAgentAsCreatorAndContributorCorrectly() throws IOException {
+    // given
+    var work = createWork("work");
+    var creator = createAgent("n2021004098", true, List.of(PERSON), "Creator Agent");
+    work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
+    var instance = createInstance("instance").setDoc(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_as_creator_and_contributor.json")
+      .readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString())
+      .replaceAll("CREATOR_ID", "CREATOR_" + creator.getId().toString())
+      .replaceAll("CONTRIBUTOR_ID", "CONTRIBUTOR_" + creator.getId().toString());
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
