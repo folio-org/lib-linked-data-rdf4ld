@@ -1,13 +1,15 @@
 package org.folio.rdf4ld.test;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
+import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
@@ -16,7 +18,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
+import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -24,6 +27,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
@@ -39,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
+import org.folio.ld.dictionary.PlaceDictionary;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -55,12 +62,9 @@ public class MonographUtil {
     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
   private static final Random RANDOM = new Random();
 
-  public static Resource createInstance(String label) {
+  public static Resource createInstance(String label, Map<PropertyDictionary, List<String>> properties) {
     var instance = createResource(
-      Map.of(
-        DIMENSIONS, List.of("Instance dimensions 1", "Instance dimensions 2"),
-        STATEMENT_OF_RESPONSIBILITY, List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2")
-      ),
+      properties,
       Set.of(INSTANCE),
       Map.of()
     );
@@ -206,6 +210,36 @@ public class MonographUtil {
     ).setLabel(status);
   }
 
+  public static Resource createProvision(String prefix) {
+    var providerPlaces = Stream.of("kz", "ru")
+      .map(MonographUtil::createProviderPlace)
+      .toList();
+    return createResource(
+      Map.of(
+        PROVIDER_DATE, List.of(prefix + " provider date 1", prefix + " provider date 2"),
+        DATE, List.of(prefix + " simple date 1", prefix + " simple date 2"),
+        NAME, List.of(prefix + " simple agent 1", prefix + " simple agent 2"),
+        SIMPLE_PLACE, List.of(prefix + " simple place 1", prefix + " simple place 2")
+      ),
+      Set.of(PROVIDER_EVENT),
+      Map.of(PROVIDER_PLACE, providerPlaces)
+    ).setLabel(prefix + " simple agent 1 , " + prefix + " simple agent 2");
+  }
+
+  private static Resource createProviderPlace(String code) {
+    var name = PlaceDictionary.getName(code).get();
+    return createResource(
+      Map.of(
+        NAME, List.of(name),
+        LABEL, List.of(name),
+        CODE, List.of(code),
+        LINK, List.of("http://id.loc.gov/vocabulary/countries/" + code)
+      ),
+      Set.of(PLACE),
+      Map.of()
+    ).setLabel(name);
+  }
+
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
                                         Set<ResourceTypeDictionary> types,
                                         Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
@@ -217,8 +251,10 @@ public class MonographUtil {
         .map(target -> new ResourceEdge(resource, target, pred)))
       .forEach(resource::addOutgoingEdge);
 
-    var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
-    resource.setDoc(getJsonNode(properties));
+    ofNullable(propertiesDic).ifPresent(props -> {
+      var properties = props.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
+      resource.setDoc(getJsonNode(properties));
+    });
     resource.setTypes(types);
     resource.setId(randomLong());
     return resource;

@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.mapper.unit.monograph.title;
 
+import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
@@ -9,14 +10,13 @@ import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import com.google.common.collect.ImmutableBiMap;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
-import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -38,7 +38,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
     .put("http://id.loc.gov/vocabulary/vartitletype/run", "7")
     .put("http://id.loc.gov/vocabulary/vartitletype/spi", "8")
     .build();
-  private final CoreLd2RdfMapper coreLd2RdfMapper;
+  private final Supplier<String> baseUrlProvider;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
 
@@ -77,11 +77,11 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
 
   private void addVariantTypes(Resource resource, ModelBuilder modelBuilder) {
     if (resource.getDoc().has(VARIANT_TYPE.getValue())) {
-      var resourceIri = coreLd2RdfMapper.getResourceIri(resource.getId().toString());
+      var resourceIri = iri(baseUrlProvider.get(), resource.getId().toString());
       resource.getDoc().get(VARIANT_TYPE.getValue()).iterator().forEachRemaining(
         textNode -> {
           if (TYPES_BI_MAP.inverse().containsKey(textNode.asText())) {
-            modelBuilder.add(resourceIri, RDF.TYPE, Values.iri(TYPES_BI_MAP.inverse().get(textNode.asText())));
+            modelBuilder.add(resourceIri, RDF.TYPE, iri(TYPES_BI_MAP.inverse().get(textNode.asText())));
           }
         }
       );
@@ -91,8 +91,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
   private void removeVariantTypeProperty(ModelBuilder modelBuilder, ResourceMapping mapping, String id) {
     var property = ((LinkedHashSet<PropertyMapping>) mapping.getResourceMapping().getProperties()).getLast()
       .getBfProperty();
-    var resourceIri = coreLd2RdfMapper.getResourceIri(id);
-    modelBuilder.build().remove(resourceIri, Values.iri(property), null);
+    modelBuilder.build().remove(iri(baseUrlProvider.get(), id), iri(property), null);
   }
 
 }

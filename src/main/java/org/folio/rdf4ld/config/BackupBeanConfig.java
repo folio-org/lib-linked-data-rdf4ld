@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import org.folio.ld.dictionary.model.Resource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -27,4 +28,11 @@ public class BackupBeanConfig {
   public Function<String, Optional<Resource>> dummyResourceProvider() {
     return s -> Optional.empty();
   }
+
+  @Bean
+  @ConditionalOnMissingBean(name = "baseUrlProvider")
+  public Supplier<String> dummyBaseUrlProvider() {
+    return () -> "http://test-tobe-changed.folio.com/resources/";
+  }
+
 }

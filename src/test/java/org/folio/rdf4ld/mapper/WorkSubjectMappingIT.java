@@ -143,7 +143,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, personAgent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, familyAgent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
-    var instance = createInstance("instance").setDoc(null);
+    var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
@@ -170,7 +170,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, personConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, familyConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topicConcept, SUBJECT));
-    var instance = createInstance("instance").setDoc(null);
+    var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")
       .readAllBytes())
@@ -199,7 +199,7 @@ class WorkSubjectMappingIT {
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
       COMPLEX_SUBJECT_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
-    var instance = createInstance("instance").setDoc(null);
+    var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex.json")
       .readAllBytes())
