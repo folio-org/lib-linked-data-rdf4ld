@@ -81,7 +81,11 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
         .map(ResourceEdge::getTarget)
         .forEach(resource -> writeSingleSubject(resource, modelBuilder, mapping, parentIri));
     } else {
-      writeComplexSubject(subject, modelBuilder, mapping, parentIri);
+      var predicate = mapping.getBfResourceDef().getPredicate();
+      getCurrentLccnLink(subject)
+        .ifPresentOrElse(link -> linkResources(parentIri, iri(link), predicate, modelBuilder),
+          () -> writeComplexSubject(subject, modelBuilder, mapping, parentIri)
+        );
     }
   }
 
@@ -105,10 +109,10 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   }
 
   private BNode writeBlankNode(BNode node,
-                              Resource subject,
-                              String mainType,
-                              ModelBuilder modelBuilder,
-                              ResourceMapping mapping) {
+                               Resource subject,
+                               String mainType,
+                               ModelBuilder modelBuilder,
+                               ResourceMapping mapping) {
     modelBuilder.subject(node);
     modelBuilder.add(RDF.TYPE, iri(mainType));
     subject.getTypes()

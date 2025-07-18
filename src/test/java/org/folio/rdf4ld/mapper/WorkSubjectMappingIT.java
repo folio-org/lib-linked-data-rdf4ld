@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -16,6 +17,7 @@ import static org.folio.rdf4ld.test.MonographUtil.createConcept;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
+import static org.folio.rdf4ld.test.MonographUtil.createLccn;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
@@ -190,7 +192,7 @@ class WorkSubjectMappingIT {
   }
 
   @Test
-  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject() throws IOException {
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_noLccn() throws IOException {
     // given
     var work = createWork("work");
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
@@ -201,12 +203,40 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_no_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("COMPLEX_SUBJECT_ID", concept.getId().toString())
       .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString());
+
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
+  }
+
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_withLccn() throws IOException {
+    // given
+    var work = createWork("work");
+    var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
+    var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
+      COMPLEX_SUBJECT_LABEL);
+    var conceptLccn = createLccn("sh111222333", "http://id.loc.gov/authorities/subjects/", true);
+    concept.addOutgoingEdge(new ResourceEdge(concept, conceptLccn, MAP));
+    work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
+    var instance = createInstance("instance", null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_with_lccn.json")
+      .readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString());
 
 
     // when
