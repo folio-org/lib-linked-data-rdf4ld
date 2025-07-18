@@ -13,6 +13,7 @@ import static org.folio.rdf4ld.test.TestUtil.validateResourceWithTitles;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -60,7 +61,11 @@ class InstanceTitlesMappingIT {
     var primaryTitle = createPrimaryTitle("");
     var parallelTitle = createParallelTitle("");
     var variantTitle = createVariantTitle("");
-    var instance = MonographUtil.createInstance(primaryTitle.getLabel());
+    var properties = Map.of(
+      DIMENSIONS, List.of("Instance dimensions 1", "Instance dimensions 2"),
+      STATEMENT_OF_RESPONSIBILITY, List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2")
+    );
+    var instance = MonographUtil.createInstance(primaryTitle.getLabel(), properties);
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));

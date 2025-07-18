@@ -151,7 +151,7 @@ class WorkAgentMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, contributor, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, ILLUSTRATOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
-    var instance = createInstance("instance").setDoc(null);
+    var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
@@ -176,7 +176,7 @@ class WorkAgentMappingIT {
     var creator = createAgent("n2021004098", true, List.of(PERSON), "Creator Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
-    var instance = createInstance("instance").setDoc(null);
+    var instance = createInstance("instance", null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_as_creator_and_contributor.json")
       .readAllBytes())

@@ -60,7 +60,7 @@ class WorkTitlesMappingIT {
     var primaryTitle = createPrimaryTitle("");
     var parallelTitle = createParallelTitle("");
     var variantTitle = createVariantTitle("");
-    var instance = createInstance(primaryTitle.getLabel()).setDoc(null);
+    var instance = createInstance(primaryTitle.getLabel(), null);
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));

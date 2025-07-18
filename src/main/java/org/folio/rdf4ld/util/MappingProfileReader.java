@@ -18,16 +18,20 @@ public class MappingProfileReader {
   public static final String BASE_PATH = "mappingProfile/bibframe2.0/";
   public static final String INSTANCE = "instance.json";
   public static final String WORK = "work.json";
-  public static final String TITLE = "title.json";
-  public static final String TITLE_PARALLEL = "title_parallel.json";
-  public static final String TITLE_VARIANT = "title_variant.json";
-  public static final String CONTRIBUTOR = "contributor.json";
-  public static final String CREATOR = "creator.json";
-  public static final String GENRE_FORM = "genre_form.json";
-  public static final String SUBJECT_CONCEPT = "subject_concept.json";
-  public static final String LCCN = "lccn.json";
-  public static final String ISBN = "isbn.json";
-  public static final String EAN = "ean.json";
+  public static final String TITLE = "title/title.json";
+  public static final String TITLE_PARALLEL = "title/title_parallel.json";
+  public static final String TITLE_VARIANT = "title/title_variant.json";
+  public static final String CONTRIBUTOR = "authority/contributor.json";
+  public static final String CREATOR = "authority/creator.json";
+  public static final String GENRE_FORM = "authority/genre_form.json";
+  public static final String SUBJECT_CONCEPT = "authority/subject_concept.json";
+  public static final String LCCN = "identifier/lccn.json";
+  public static final String ISBN = "identifier/isbn.json";
+  public static final String EAN = "identifier/ean.json";
+  public static final String DISTRIBUTION = "provision/distribution.json";
+  public static final String MANUFACTURE = "provision/manufacture.json";
+  public static final String PRODUCTION = "provision/production.json";
+  public static final String PUBLICATION = "provision/publication.json";
   private final ObjectMapper objectMapper;
 
   public ResourceMapping getBibframe20Profile() {
@@ -44,6 +48,10 @@ public class MappingProfileReader {
         readResourceMapping(LCCN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(ISBN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(EAN).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(DISTRIBUTION).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(MANUFACTURE).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(PRODUCTION).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(PUBLICATION).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         getWorkMapping().ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         return im;
       });

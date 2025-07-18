@@ -8,12 +8,13 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
+import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -32,16 +33,19 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
+  private final Supplier<String> baseUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               Function<String, Optional<Resource>> resourceProvider,
                               FingerprintHashService hashService,
-                              CoreLd2RdfMapper coreLd2RdfMapper) {
+                              CoreLd2RdfMapper coreLd2RdfMapper,
+                              Supplier<String> baseUrlProvider) {
     super(baseRdfMapperUnit, hashService, resourceProvider);
     this.hashService = hashService;
     this.coreLd2RdfMapper = coreLd2RdfMapper;
+    this.baseUrlProvider = baseUrlProvider;
   }
 
   @Override
@@ -69,7 +73,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                             ModelBuilder modelBuilder,
                             ResourceMapping mapping,
                             Resource parent) {
-    var parentIri = coreLd2RdfMapper.getResourceIri(parent.getId().toString());
+    var parentIri = iri(baseUrlProvider.get(), parent.getId().toString());
     if (noSubFocuses(subject)) {
       subject.getOutgoingEdges()
         .stream()
@@ -89,24 +93,15 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                   ModelBuilder modelBuilder,
                                   ResourceMapping mapping,
                                   org.eclipse.rdf4j.model.Resource parent) {
+    var predicate = mapping.getBfResourceDef().getPredicate();
     getCurrentLccnLink(subject)
-      .ifPresentOrElse(writeSubjectLink(modelBuilder, mapping, parent),
+      .ifPresentOrElse(link -> linkResources(parent, iri(link), predicate, modelBuilder),
         () -> {
           var node = bnode("_" + subject.getId());
-          coreLd2RdfMapper.linkResources(modelBuilder, parent, node, mapping.getBfResourceDef().getPredicate());
+          linkResources(parent, node, predicate, modelBuilder);
           writeBlankNode(node, subject, AUTHORITY_RDF_TYPE, modelBuilder, mapping);
         }
       );
-  }
-
-  private Consumer<String> writeSubjectLink(ModelBuilder modelBuilder,
-                                            ResourceMapping mapping,
-                                            org.eclipse.rdf4j.model.Resource parent) {
-    return lccnLink -> {
-      var subjectIri = iri(lccnLink);
-      modelBuilder.subject(parent);
-      modelBuilder.add(mapping.getBfResourceDef().getPredicate(), subjectIri);
-    };
   }
 
   private BNode writeBlankNode(BNode node,
@@ -132,7 +127,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     var complexSubjectNode = bnode("_" + subject.getId());
     var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
     var complexSubjectType = complexSubjectMapping.getBfResourceDef().getTypeSet().iterator().next();
-    coreLd2RdfMapper.linkResources(modelBuilder, parent, complexSubjectNode, mapping.getBfResourceDef().getPredicate());
+    linkResources(parent, complexSubjectNode, mapping.getBfResourceDef().getPredicate(), modelBuilder);
     writeBlankNode(complexSubjectNode, subject, complexSubjectType, modelBuilder, mapping);
     writeComponentsList(subject, modelBuilder, complexSubjectMapping, complexSubjectNode);
   }

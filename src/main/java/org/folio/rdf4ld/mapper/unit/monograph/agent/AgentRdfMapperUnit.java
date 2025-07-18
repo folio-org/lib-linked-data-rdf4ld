@@ -1,15 +1,18 @@
 package org.folio.rdf4ld.mapper.unit.monograph.agent;
 
 import static java.util.Optional.empty;
+import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
+import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
@@ -39,6 +42,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int ROLE_EDGE_NUMBER = 1;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
   private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
+  private final Supplier<String> baseUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
@@ -111,7 +115,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     var contributionNode = Values.bnode(nodeId);
     writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
     getCurrentLccnLink(agent).ifPresentOrElse(lccnLink -> {
-        var agentIri = Values.iri(lccnLink);
+        var agentIri = iri(lccnLink);
         writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
       }, () -> {
         var agentNode = Values.bnode(nodeId + "_agent");
@@ -127,8 +131,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   }
 
   private void writeContributionLink(BNode bnode, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    coreLd2RdfMapper.linkResources(modelBuilder, coreLd2RdfMapper.getResourceIri(parent.getId().toString()), bnode,
-      mapping.getBfResourceDef().getPredicate());
+    linkResources(iri(baseUrlProvider.get(), parent.getId().toString()), bnode,
+      mapping.getBfResourceDef().getPredicate(), modelBuilder);
   }
 
   private void writeContributionResource(Resource agent,
@@ -138,7 +142,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                                          ResourceMapping mapping,
                                          Resource parent) {
     modelBuilder.subject(contributionNode);
-    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
+    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
     var agentPredicate = getEdgePredicate(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
     modelBuilder.add(agentPredicate, agentRdf);
     writeRoles(agent, modelBuilder, mapping, parent);
@@ -152,17 +156,17 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .filter(e -> e.getPredicate() != CREATOR && e.getPredicate() != CONTRIBUTOR)
       .map(ResourceEdge::getPredicate)
       .map(RoleDictionary::getCode)
-      .forEach(rc -> modelBuilder.add(rolePredicate, Values.iri(ROLES_NAMESPACE, rc)));
+      .forEach(rc -> modelBuilder.add(rolePredicate, iri(ROLES_NAMESPACE, rc)));
   }
 
   private void writeAgentResource(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
     modelBuilder.subject(agentNode);
-    modelBuilder.add(RDF.TYPE, Values.iri(AGENT_RDF_TYPE));
+    modelBuilder.add(RDF.TYPE, iri(AGENT_RDF_TYPE));
     agent.getTypes()
       .stream()
       .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
       .map(AUTHORITY_LD_TO_BF_TYPES::get)
-      .forEach(at -> modelBuilder.add(RDF.TYPE, Values.iri(at)));
+      .forEach(at -> modelBuilder.add(RDF.TYPE, iri(at)));
     coreLd2RdfMapper.mapProperties(agent, modelBuilder, mapping);
   }
 

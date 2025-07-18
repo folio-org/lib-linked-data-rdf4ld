@@ -1,0 +1,45 @@
+{
+  "ldResourceDef": {
+    "typeSet": "PROVIDER_EVENT",
+    "predicate": "PE_PUBLICATION"
+  },
+  "bfResourceDef": {
+    "typeSet": [
+      "http://id.loc.gov/ontologies/bibframe/ProvisionActivity",
+      "http://id.loc.gov/ontologies/bibframe/Publication"
+    ],
+    "predicate": "http://id.loc.gov/ontologies/bibframe/provisionActivity"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "PROVIDER_DATE",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/date"
+      },
+      {
+        "ldProperty": "DATE",
+        "bfProperty": "http://id.loc.gov/ontologies/bflc/simpleDate"
+      },
+      {
+        "ldProperty": "NAME",
+        "bfProperty": "http://id.loc.gov/ontologies/bflc/simpleAgent"
+      },
+      {
+        "ldProperty": "SIMPLE_PLACE",
+        "bfProperty": "http://id.loc.gov/ontologies/bflc/simplePlace"
+      }
+    ],
+    "outgoingEdges": [
+      {
+        "bfResourceDef": {
+          "predicate": "http://id.loc.gov/ontologies/bibframe/place"
+        },
+        "ldResourceDef": {
+          "predicate": "PROVIDER_PLACE",
+          "typeSet": "PLACE"
+        }
+      }
+    ],
+    "label": "NAME"
+  }
+}

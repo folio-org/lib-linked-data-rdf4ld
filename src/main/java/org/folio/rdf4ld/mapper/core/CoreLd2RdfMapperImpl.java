@@ -3,11 +3,13 @@ package org.folio.rdf4ld.mapper.core;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.eclipse.rdf4j.model.util.Values.iri;
+import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -23,13 +25,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
-  private static final String LD_NAMESPACE = "http://test-tobe-changed.folio.com/resources/";
+  private final Supplier<String> baseUrlProvider;
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
-
-  @Override
-  public IRI getResourceIri(String id) {
-    return Values.iri(LD_NAMESPACE, id);
-  }
 
   @Override
   public void mapProperties(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping) {
@@ -63,15 +60,6 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       );
   }
 
-  @Override
-  public void linkResources(ModelBuilder modelBuilder,
-                            org.eclipse.rdf4j.model.Resource source,
-                            org.eclipse.rdf4j.model.Resource target,
-                            String bfPredicate) {
-    modelBuilder.subject(source);
-    modelBuilder.add(bfPredicate, target);
-  }
-
   private String generateId(Resource resource,
                             org.folio.rdf4ld.model.PropertyMapping p,
                             Map<PropertyDictionary, Integer> idMap) {
@@ -100,18 +88,17 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                                             Map<PropertyDictionary, Integer> idMap) {
     ofNullable(resource.getDoc())
       .map(doc -> doc.get(pm.getLdProperty().getValue()))
-      .ifPresent(propertyArray ->
+      .ifPresent(propertyArray -> {
+        var predicate = pm.getEdgeParentBfDef().getPredicate();
         propertyArray.forEach(node -> {
           var id = generateId(resource, pm, idMap);
           var blankNode = Values.bnode(id);
           modelBuilder.subject(blankNode);
-          pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, Values.iri(type)));
+          pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
-          linkResources(modelBuilder, getResourceIri(resource.getId().toString()), blankNode,
-            pm.getEdgeParentBfDef().getPredicate()
-          );
-        })
-      );
+          linkResources(iri(baseUrlProvider.get(), resource.getId().toString()), blankNode, predicate, modelBuilder);
+        });
+      });
   }
 
 }

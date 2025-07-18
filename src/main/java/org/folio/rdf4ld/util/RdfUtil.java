@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -60,6 +61,14 @@ public class RdfUtil {
       .map(Statement::getObject)
       .map(Value::stringValue)
       .collect(Collectors.toSet());
+  }
+
+  public static void linkResources(Resource from,
+                                   Resource to,
+                                   String bfPredicate,
+                                   ModelBuilder modelBuilder) {
+    modelBuilder.subject(from);
+    modelBuilder.add(bfPredicate, to);
   }
 
 }
