@@ -40,7 +40,7 @@
                 "@id": "http://id.loc.gov/vocabulary/relators/aut"
             },
             {
-                "@id": "http://id.loc.gov/vocabulary/relators/295"
+                "@id": "http://id.loc.gov/vocabulary/relators/pbd"
             }
         ]
     },
@@ -59,7 +59,7 @@
                 "@id": "http://id.loc.gov/vocabulary/relators/ill"
             },
             {
-                "@id": "http://id.loc.gov/vocabulary/relators/205"
+                "@id": "http://id.loc.gov/vocabulary/relators/clb"
             }
         ]
     }

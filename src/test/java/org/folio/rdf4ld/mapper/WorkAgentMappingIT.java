@@ -7,9 +7,9 @@ import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COLLABORATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.PUBLISHING_DIRECTOR;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -82,7 +82,7 @@ class WorkAgentMappingIT {
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
         new ResourceEdge(work, creator, AUTHOR),
-        new ResourceEdge(work, creator, DEGREE_GRANTOR),
+        new ResourceEdge(work, creator, PUBLISHING_DIRECTOR),
         new ResourceEdge(work, contributor, CONTRIBUTOR),
         new ResourceEdge(work, contributor, ILLUSTRATOR),
         new ResourceEdge(work, contributor, COLLABORATOR)
@@ -113,7 +113,7 @@ class WorkAgentMappingIT {
         assertThat(work.getOutgoingEdges()).hasSize(6);
         validateAgent(work, creatorLabel, CREATOR, PERSON);
         validateOutgoingEdge(work, AUTHOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
-        validateOutgoingEdge(work, DEGREE_GRANTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
+        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
         validateAgent(work, contributorLabel, CONTRIBUTOR, FAMILY);
         validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)), contributorLabel);
         validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
@@ -147,7 +147,7 @@ class WorkAgentMappingIT {
     var contributor = createAgent("n2021004092", isCurrent, List.of(FAMILY), "Contributor Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
-    work.addOutgoingEdge(new ResourceEdge(work, creator, DEGREE_GRANTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, PUBLISHING_DIRECTOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, ILLUSTRATOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
