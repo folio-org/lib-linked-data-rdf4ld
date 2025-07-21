@@ -12,6 +12,14 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.rdf4ld.test.MonographUtil.STATUS_BASE_URI;
+import static org.folio.rdf4ld.test.MonographUtil.STATUS_CANCELLED;
+import static org.folio.rdf4ld.test.MonographUtil.STATUS_CURRENT;
+import static org.folio.rdf4ld.test.MonographUtil.createEan;
+import static org.folio.rdf4ld.test.MonographUtil.createInstance;
+import static org.folio.rdf4ld.test.MonographUtil.createIsbn;
+import static org.folio.rdf4ld.test.MonographUtil.createLccn;
+import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
 import java.io.IOException;
@@ -21,6 +29,7 @@ import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -33,6 +42,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = SpringTestConfig.class)
 class InstanceIdentifiersMappingIT {
 
+  private static final String EXPECTED_EAN = "780696204364";
+  private static final String EXPECTED_ISBN = "0850598370";
+  private static final String EXPECTED_LCCN = "  2010470075";
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
 
@@ -41,13 +53,6 @@ class InstanceIdentifiersMappingIT {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_identifiers.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    final var expectedLccn = "  2010470075";
-    final var expectedIsbn = "0850598370";
-    final var expectedEan = "780696204364";
-    final var currentStatusLabel = "current";
-    final var currentStatusLink = "http://id.loc.gov/vocabulary/mstatus/current";
-    final var cancelledStatusLabel = "cancinv";
-    final var cancelledStatusLink = "http://id.loc.gov/vocabulary/mstatus/cancinv";
 
     // when
     var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
@@ -57,18 +62,42 @@ class InstanceIdentifiersMappingIT {
     var instance = result.iterator().next();
     assertThat(instance.getOutgoingEdges()).hasSize(3);
     validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_LCCN),
-      Map.of(NAME, List.of(expectedLccn)), expectedLccn,
+      Map.of(NAME, List.of(EXPECTED_LCCN)), EXPECTED_LCCN,
       identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
-        Map.of(LABEL, List.of(currentStatusLabel), LINK, List.of(currentStatusLink)), currentStatusLabel)
+        Map.of(LABEL, List.of(STATUS_CURRENT), LINK, List.of(STATUS_BASE_URI + STATUS_CURRENT)), STATUS_CURRENT)
     );
     validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_ISBN),
-      Map.of(NAME, List.of(expectedIsbn), QUALIFIER, List.of("pbk")), expectedIsbn,
+      Map.of(NAME, List.of(EXPECTED_ISBN), QUALIFIER, List.of("pbk")), EXPECTED_ISBN,
       identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
-        Map.of(LABEL, List.of(cancelledStatusLabel), LINK, List.of(cancelledStatusLink)), cancelledStatusLabel)
+        Map.of(LABEL, List.of(STATUS_CANCELLED), LINK, List.of(STATUS_BASE_URI + STATUS_CANCELLED)), STATUS_CANCELLED)
     );
     validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_EAN),
-      Map.of(EAN_VALUE, List.of(expectedEan), QUALIFIER, List.of("abc")), expectedEan, null
+      Map.of(EAN_VALUE, List.of(EXPECTED_EAN), QUALIFIER, List.of("abc")), EXPECTED_EAN, null
     );
+  }
+
+  @Test
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithIdentifiers() throws IOException {
+    // given
+    var ean = createEan(EXPECTED_EAN);
+    var isbn = createIsbn(EXPECTED_ISBN, false);
+    var lccn = createLccn(EXPECTED_LCCN, "", true);
+    var instance = createInstance("instance", null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, ean, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, isbn, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, lccn, MAP));
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance_identifiers.json").readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("EAN_ID", ean.getId().toString())
+      .replaceAll("ISBN_ID", isbn.getId().toString())
+      .replaceAll("LCCN_ID", lccn.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString).isEqualTo(expected);
   }
 
 }
