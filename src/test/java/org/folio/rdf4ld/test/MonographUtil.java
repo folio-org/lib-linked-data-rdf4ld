@@ -10,6 +10,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
@@ -19,11 +20,14 @@ import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
@@ -56,6 +60,7 @@ public class MonographUtil {
 
   public static final String STATUS_CURRENT = "current";
   public static final String STATUS_CANCELLED = "cancinv";
+  public static final String STATUS_BASE_URI = "http://id.loc.gov/vocabulary/mstatus/";
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
     .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -190,6 +195,22 @@ public class MonographUtil {
     ).setLabel(label);
   }
 
+  public static Resource createEan(String ean) {
+    return createResource(
+      Map.of(EAN_VALUE, List.of(ean), QUALIFIER, List.of("abc")),
+      Set.of(IDENTIFIER, ID_EAN),
+      Map.of()
+    ).setLabel(ean);
+  }
+
+  public static Resource createIsbn(String isbn, boolean isCurrent) {
+    return createResource(
+      Map.of(NAME, List.of(isbn), QUALIFIER, List.of("pbk")),
+      Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(STATUS, List.of(createStatus(isCurrent)))
+    ).setLabel(isbn);
+  }
+
   public static Resource createLccn(String lccn, String lccnNameSpace, boolean isCurrent) {
     return createResource(
       Map.of(NAME, List.of(lccn), LINK, List.of(lccnNameSpace + lccn)),
@@ -203,7 +224,7 @@ public class MonographUtil {
     return createResource(
       Map.of(
         LABEL, List.of(status),
-        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + status)
+        LINK, List.of(STATUS_BASE_URI + status)
       ),
       Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
