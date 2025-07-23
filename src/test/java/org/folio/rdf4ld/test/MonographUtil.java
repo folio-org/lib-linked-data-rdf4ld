@@ -57,7 +57,8 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 
 public class MonographUtil {
-
+  public static final String AGENTS_NAMESPACE = "http://id.loc.gov/authorities/";
+  public static final String SUBJECTS_NAMESPACE = "http://id.loc.gov/authorities/subjects/";
   public static final String STATUS_CURRENT = "current";
   public static final String STATUS_CANCELLED = "cancinv";
   public static final String STATUS_BASE_URI = "http://id.loc.gov/vocabulary/mstatus/";
@@ -152,7 +153,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       new LinkedHashSet<>(types),
-      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/authorities/", isCurrent)))
+      Map.of(MAP, List.of(createLccn(lccn, AGENTS_NAMESPACE, isCurrent)))
     ).setLabel(label);
   }
 
@@ -191,7 +192,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       Set.of(TOPIC),
-      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/authorities/subjects/", isCurrent)))
+      Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
     ).setLabel(label);
   }
 
