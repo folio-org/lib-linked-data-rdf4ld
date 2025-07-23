@@ -9,8 +9,14 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.rdf4ld.util.RdfUtil.toAgentRwoLink;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -90,6 +96,7 @@ public class ResourceUtil {
   }
 
   public static Optional<String> getCurrentLccnLink(Resource resource) {
+    var isAgent = isAgent(resource);
     return resource.getOutgoingEdges()
       .stream()
       .map(ResourceEdge::getTarget)
@@ -97,7 +104,16 @@ public class ResourceUtil {
       .filter(ResourceUtil::isCurrent)
       .map(Resource::getDoc)
       .map(d -> getPropertiesString(d, LINK))
+      .map(lccnLink -> isAgent ? toAgentRwoLink(lccnLink) : lccnLink)
       .findFirst();
+  }
+
+  private static boolean isAgent(Resource resource) {
+    return resource.isOfType(FAMILY)
+      || resource.isOfType(JURISDICTION)
+      || resource.isOfType(MEETING)
+      || resource.isOfType(ORGANIZATION)
+      || resource.isOfType(PERSON);
   }
 
   private static boolean isCurrent(Resource resource) {

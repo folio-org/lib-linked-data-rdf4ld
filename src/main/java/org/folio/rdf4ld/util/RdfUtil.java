@@ -71,4 +71,8 @@ public class RdfUtil {
     modelBuilder.add(bfPredicate, to);
   }
 
+  public static String toAgentRwoLink(String lccnLink) {
+    return "http://id.loc.gov/rwo/agents/" + lccnLink.substring(lccnLink.lastIndexOf("/") + 1);
+  }
+
 }

@@ -152,7 +152,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       new LinkedHashSet<>(types),
-      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/rwo/agents/", isCurrent)))
+      Map.of(MAP, List.of(createLccn(lccn, "http://id.loc.gov/authorities/", isCurrent)))
     ).setLabel(label);
   }
 
