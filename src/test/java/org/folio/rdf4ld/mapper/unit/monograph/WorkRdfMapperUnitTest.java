@@ -7,7 +7,9 @@ import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.function.Supplier;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
@@ -30,6 +32,8 @@ class WorkRdfMapperUnitTest {
   private BaseRdfMapperUnit baseRdfMapperUnit;
   @Mock
   private FingerprintHashService hashService;
+  @Mock
+  private Supplier<String> baseUrlProvider;
 
   @Test
   void mapToLd_shouldSetLabelAndRecalculateId() {
@@ -43,6 +47,7 @@ class WorkRdfMapperUnitTest {
     doReturn(of(mappedResource)).when(baseRdfMapperUnit).mapToLd(model, resource, mapping, null);
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
+    doReturn(model).when(model).filter(resource, RDF.TYPE, null);
 
     // when
     var result = workRdfMapperUnit.mapToLd(model, resource, mapping, null);

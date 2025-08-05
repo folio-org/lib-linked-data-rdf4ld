@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,9 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 @UtilityClass
 public class ResourceUtil {
   private static final String STATUS_CURRENT = "http://id.loc.gov/vocabulary/mstatus/current";
+  private static final Set<ResourceTypeDictionary> AGENT_TYPES = Set.of(
+    FAMILY, JURISDICTION, MEETING, ORGANIZATION, PERSON
+  );
 
   public static String getPrimaryMainTitle(Resource titledRresource) {
     if (isNull(titledRresource) || isNull(titledRresource.getOutgoingEdges())) {
@@ -109,11 +113,9 @@ public class ResourceUtil {
   }
 
   private static boolean isAgent(Resource resource) {
-    return resource.isOfType(FAMILY)
-      || resource.isOfType(JURISDICTION)
-      || resource.isOfType(MEETING)
-      || resource.isOfType(ORGANIZATION)
-      || resource.isOfType(PERSON);
+    return AGENT_TYPES
+      .stream()
+      .anyMatch(resource::isOfType);
   }
 
   private static boolean isCurrent(Resource resource) {

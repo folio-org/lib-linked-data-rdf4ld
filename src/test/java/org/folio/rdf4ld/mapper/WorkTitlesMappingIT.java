@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createParallelTitle;
@@ -49,7 +50,7 @@ class WorkTitlesMappingIT {
     var instance = result.iterator().next();
     validateResourceWithTitles(instance, "");
     assertThat(instance.getOutgoingEdges()).hasSize(4);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK),
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, CONTINUING_RESOURCES),
       Map.of(), getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ")
     );
   }
@@ -67,7 +68,7 @@ class WorkTitlesMappingIT {
     var primaryWorkTitle = createPrimaryTitle("Work ");
     var parallelWorkTitle = createParallelTitle("Work ");
     var variantWorkTitle = createVariantTitle("Work ");
-    var work = createWork(primaryWorkTitle.getLabel());
+    var work = createWork(primaryWorkTitle.getLabel(), CONTINUING_RESOURCES);
     work.addOutgoingEdge(new ResourceEdge(work, primaryWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, parallelWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, variantWorkTitle, TITLE));

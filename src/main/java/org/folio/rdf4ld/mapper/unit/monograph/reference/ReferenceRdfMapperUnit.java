@@ -1,7 +1,7 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
 import static java.util.Optional.empty;
-import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
+import static org.folio.rdf4ld.util.RdfUtil.readExtraTypes;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -42,13 +39,7 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   }
 
   private Resource addExtraTypes(Model model, BNode node, Resource mapped) {
-    model.filter(node, RDF.TYPE, null)
-      .stream()
-      .map(Statement::getObject)
-      .map(Value::stringValue)
-      .filter(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().containsKey(type))
-      .map(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().get(type))
-      .forEach(mapped::addType);
+    readExtraTypes(model, node, mapped);
     mapped.setId(hashService.hash(mapped));
     return mapped;
   }
