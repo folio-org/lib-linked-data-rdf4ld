@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.PUBLISHING_DIRECTOR;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -78,7 +79,7 @@ class WorkAgentMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
         new ResourceEdge(work, creator, AUTHOR),
@@ -106,7 +107,7 @@ class WorkAgentMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     var creatorLabel = "Creator Agent";
     var contributorLabel = "Contributor Agent";
-    validateOutgoingEdge(instance, INSTANTIATES, of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), Map.of(), "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();

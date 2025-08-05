@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -90,7 +91,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
           PERSON_AGENT_LABEL, concept ->
@@ -119,7 +120,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
           PERSON_AGENT_LABEL, concept ->
@@ -165,7 +166,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();

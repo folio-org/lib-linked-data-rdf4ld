@@ -1,5 +1,7 @@
 package org.folio.rdf4ld.util;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -37,6 +39,12 @@ public class RdfUtil {
       .put(TOPIC, "http://id.loc.gov/ontologies/bibframe/Topic")
       .put(FORM, "http://id.loc.gov/ontologies/bibframe/GenreForm")
       .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
+      .build();
+
+  public static final ImmutableBiMap<ResourceTypeDictionary, String> WORK_LD_TO_BF_TYPES =
+    new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
+      .put(BOOKS, "http://id.loc.gov/ontologies/bibframe/Monograph")
+      .put(CONTINUING_RESOURCES, "http://id.loc.gov/ontologies/bibframe/Serial")
       .build();
 
   public static Stream<Value> getByPredicate(Model model,

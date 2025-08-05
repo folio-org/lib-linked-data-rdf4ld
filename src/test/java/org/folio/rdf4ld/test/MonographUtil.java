@@ -24,6 +24,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -139,7 +140,7 @@ public class MonographUtil {
   public static Resource createWork(String label) {
     var work = createResource(
       Map.of(),
-      Set.of(WORK),
+      Set.of(WORK, BOOKS),
       Map.of()
     );
     work.setLabel(label);
