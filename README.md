@@ -4,7 +4,14 @@ Copyright (C) 2025 The Open Library Foundation
 This software is distributed under the terms of the Apache License, Version 2.0.
 See the file "[LICENSE](LICENSE)" for more information.
 
-This software uses a BSD-3-Clause licensed software library: [rdf4j](https://github.com/eclipse-rdf4j/rdf4j)
+## Third party libraries used in this software
+This software uses the following BSD-3-Clause licensed software library:
+- [rdf4j](https://github.com/eclipse-rdf4j/rdf4j)
+
+This software uses the following Weak Copyleft (Eclipse Public License 1.0 / 2.0) licensed software libraries:
+- [jakarta.annotation-api](http://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api)
+- [jakarta.json-api](https://github.com/jakartaee/jsonp-api)
+- [junit](https://junit.org/)
 
 ## Purpose
 Lib-linked-data-rdf4ld is a Java library designed for converting RDF files with BIBFRAME records to Linked Data Graphs and vice versa.
