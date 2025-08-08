@@ -9,7 +9,7 @@ This software uses the following BSD-3-Clause licensed software library:
 - [rdf4j](https://github.com/eclipse-rdf4j/rdf4j)
 
 This software uses the following Weak Copyleft (Eclipse Public License 1.0 / 2.0) licensed software libraries:
-- [jakarta.annotation-api](http://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api)
+- [jakarta.annotation-api](https://projects.eclipse.org/projects/ee4j.ca)
 - [jakarta.json-api](https://github.com/jakartaee/jsonp-api)
 - [junit](https://junit.org/)
 
