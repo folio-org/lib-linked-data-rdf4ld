@@ -2,6 +2,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.util.ResourceUtil.addWorkType;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
     return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
       .map(work -> {
         work.setLabel(getPrimaryMainTitle(work));
+        addWorkType(work);
         work.setId(hashService.hash(work));
         return work;
       });

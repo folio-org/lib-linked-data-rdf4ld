@@ -5,10 +5,13 @@ import static java.util.Optional.ofNullable;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.StreamSupport.stream;
+import static org.folio.ld.dictionary.PredicateDictionary.CHARACTERISTIC;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +39,12 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 @UtilityClass
 public class ResourceUtil {
   private static final String STATUS_CURRENT = "http://id.loc.gov/vocabulary/mstatus/current";
+  private static final Set<ResourceTypeDictionary> AGENT_TYPES = Set.of(
+    FAMILY, JURISDICTION, MEETING, ORGANIZATION, PERSON
+  );
+  private static final Set<PredicateDictionary> SERIAL_PREDICATES = Set.of(
+    CHARACTERISTIC
+  );
 
   public static String getPrimaryMainTitle(Resource titledRresource) {
     if (isNull(titledRresource) || isNull(titledRresource.getOutgoingEdges())) {
@@ -108,12 +118,18 @@ public class ResourceUtil {
       .findFirst();
   }
 
+  public static void addWorkType(Resource work) {
+    if (containsSerialEdge(work)) {
+      work.addType(CONTINUING_RESOURCES);
+    } else {
+      work.addType(BOOKS);
+    }
+  }
+
   private static boolean isAgent(Resource resource) {
-    return resource.isOfType(FAMILY)
-      || resource.isOfType(JURISDICTION)
-      || resource.isOfType(MEETING)
-      || resource.isOfType(ORGANIZATION)
-      || resource.isOfType(PERSON);
+    return AGENT_TYPES
+      .stream()
+      .anyMatch(resource::isOfType);
   }
 
   private static boolean isCurrent(Resource resource) {
@@ -127,6 +143,12 @@ public class ResourceUtil {
       .map(Resource::getDoc)
       .map(d -> getPropertiesString(d, LINK))
       .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
+  }
+
+  private static boolean containsSerialEdge(Resource work) {
+    return work.getOutgoingEdges()
+      .stream()
+      .anyMatch(oe -> SERIAL_PREDICATES.contains(oe.getPredicate()));
   }
 
 }

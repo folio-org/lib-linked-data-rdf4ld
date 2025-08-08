@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createParallelTitle;
@@ -49,7 +50,7 @@ class WorkTitlesMappingIT {
     var instance = result.iterator().next();
     validateResourceWithTitles(instance, "");
     assertThat(instance.getOutgoingEdges()).hasSize(4);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK),
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS),
       Map.of(), getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ")
     );
   }
