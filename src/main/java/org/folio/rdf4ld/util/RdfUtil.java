@@ -1,5 +1,8 @@
 package org.folio.rdf4ld.util;
 
+import static org.eclipse.rdf4j.model.util.Values.iri;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -11,6 +14,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 
 import com.google.common.collect.ImmutableBiMap;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +31,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 @UtilityClass
 public class RdfUtil {
 
-  public static final ImmutableBiMap<ResourceTypeDictionary, String> AUTHORITY_LD_TO_BF_TYPES =
+  private static final ImmutableBiMap<ResourceTypeDictionary, String> LD_TO_BF_EXTRA_TYPES =
     new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
       .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
       .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
@@ -37,6 +41,8 @@ public class RdfUtil {
       .put(TOPIC, "http://id.loc.gov/ontologies/bibframe/Topic")
       .put(FORM, "http://id.loc.gov/ontologies/bibframe/GenreForm")
       .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
+      .put(BOOKS, "http://id.loc.gov/ontologies/bibframe/Monograph")
+      .put(CONTINUING_RESOURCES, "http://id.loc.gov/ontologies/bibframe/Serial")
       .build();
 
   public static Stream<Value> getByPredicate(Model model,
@@ -73,6 +79,30 @@ public class RdfUtil {
 
   public static String toAgentRwoLink(String lccnLink) {
     return "http://id.loc.gov/rwo/agents/" + lccnLink.substring(lccnLink.lastIndexOf("/") + 1);
+  }
+
+  public static void readExtraTypes(Model model,
+                                     Resource rdfResource,
+                                     org.folio.ld.dictionary.model.Resource resource) {
+    model.filter(rdfResource, RDF.TYPE, null)
+      .stream()
+      .map(Statement::getObject)
+      .map(Value::stringValue)
+      .filter(type -> LD_TO_BF_EXTRA_TYPES.inverse().containsKey(type))
+      .map(type -> LD_TO_BF_EXTRA_TYPES.inverse().get(type))
+      .forEach(resource::addType);
+  }
+
+  public static void writeExtraTypes(ModelBuilder modelBuilder,
+                                     org.folio.ld.dictionary.model.Resource resource,
+                                     Resource rdfResource) {
+    modelBuilder.subject(rdfResource);
+    resource.getTypes()
+      .stream()
+      .filter(LD_TO_BF_EXTRA_TYPES::containsKey)
+      .map(LD_TO_BF_EXTRA_TYPES::get)
+      .filter(Objects::nonNull)
+      .forEach(t -> modelBuilder.add(RDF.TYPE, iri(t)));
   }
 
 }

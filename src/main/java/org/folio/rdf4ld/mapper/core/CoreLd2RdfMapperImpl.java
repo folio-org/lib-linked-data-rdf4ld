@@ -51,7 +51,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       .ifPresent(m -> m.getOutgoingEdges().stream()
         .filter(oem -> nonNull(oem.getLdResourceDef()))
         .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
-          || edge.getTarget().getTypes().equals(oem.getLdResourceDef().getTypeSet()))
+          || edge.getTarget().getTypes().containsAll(oem.getLdResourceDef().getTypeSet()))
           && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
         .forEach(oem -> {
           var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());

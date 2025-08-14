@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -90,7 +91,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
           PERSON_AGENT_LABEL, concept ->
@@ -119,7 +120,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
           PERSON_AGENT_LABEL, concept ->
@@ -165,7 +166,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
@@ -185,7 +186,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
-    var work = createWork("work");
+    var work = createWork("work", BOOKS);
     var personAgent = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
     var familyAgent = createConceptAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
     var topic = createConceptTopic(TOPIC_LCCN, true, TOPIC_LABEL);
@@ -209,7 +210,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithoutLccn() throws IOException {
     // given
-    var work = createWork("work");
+    var work = createWork("work", BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
@@ -241,7 +242,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_noLccn() throws IOException {
     // given
-    var work = createWork("work");
+    var work = createWork("work", BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
@@ -269,7 +270,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_withLccn() throws IOException {
     // given
-    var work = createWork("work");
+    var work = createWork("work", BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);

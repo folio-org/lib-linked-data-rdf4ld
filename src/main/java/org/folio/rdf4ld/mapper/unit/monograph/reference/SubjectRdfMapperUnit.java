@@ -7,8 +7,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
-import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
+import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
@@ -115,11 +115,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                ResourceMapping mapping) {
     modelBuilder.subject(node);
     modelBuilder.add(RDF.TYPE, iri(mainType));
-    subject.getTypes()
-      .stream()
-      .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
-      .map(AUTHORITY_LD_TO_BF_TYPES::get)
-      .forEach(at -> modelBuilder.add(RDF.TYPE, iri(at)));
+    writeExtraTypes(modelBuilder, subject, node);
     coreLd2RdfMapper.mapProperties(subject, modelBuilder, mapping);
     return node;
   }

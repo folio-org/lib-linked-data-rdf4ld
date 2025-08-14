@@ -5,9 +5,10 @@ import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
-import static org.folio.rdf4ld.util.RdfUtil.AUTHORITY_LD_TO_BF_TYPES;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
+import static org.folio.rdf4ld.util.RdfUtil.readExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
@@ -18,8 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
@@ -80,13 +79,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private Optional<Resource> mapAgent(Model model, BNode agentNode, ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
       .map(agent -> {
-        model.filter(agentNode, RDF.TYPE, null)
-          .stream()
-          .map(Statement::getObject)
-          .map(Value::stringValue)
-          .filter(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().containsKey(type))
-          .map(type -> AUTHORITY_LD_TO_BF_TYPES.inverse().get(type))
-          .forEach(agent::addType);
+        readExtraTypes(model, agentNode, agent);
         agent.setId(hashService.hash(agent));
         return agent;
       });
@@ -162,11 +155,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private void writeAgentResource(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
     modelBuilder.subject(agentNode);
     modelBuilder.add(RDF.TYPE, iri(AGENT_RDF_TYPE));
-    agent.getTypes()
-      .stream()
-      .filter(AUTHORITY_LD_TO_BF_TYPES::containsKey)
-      .map(AUTHORITY_LD_TO_BF_TYPES::get)
-      .forEach(at -> modelBuilder.add(RDF.TYPE, iri(at)));
+    writeExtraTypes(modelBuilder, agent, agentNode);
     coreLd2RdfMapper.mapProperties(agent, modelBuilder, mapping);
   }
 
