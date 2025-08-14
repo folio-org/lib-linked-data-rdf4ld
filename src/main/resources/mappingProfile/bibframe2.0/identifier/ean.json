@@ -1,6 +1,6 @@
 {
   "ldResourceDef": {
-    "typeSet": ["IDENTIFIER", "ID_EAN"],
+    "typeSet": ["IDENTIFIER", "ID_IAN"],
     "predicate": "MAP"
   },
   "bfResourceDef": {
@@ -10,7 +10,7 @@
   "resourceMapping": {
     "properties": [
       {
-        "ldProperty": "EAN_VALUE",
+        "ldProperty": "NAME",
         "bfProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
       },
       {
@@ -18,6 +18,6 @@
         "bfProperty": "http://id.loc.gov/ontologies/bibframe/qualifier"
       }
     ],
-    "label": "EAN_VALUE"
+    "label": "NAME"
   }
 }

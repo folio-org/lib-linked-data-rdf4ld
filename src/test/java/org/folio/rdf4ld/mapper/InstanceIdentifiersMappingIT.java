@@ -2,13 +2,12 @@ package org.folio.rdf4ld.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
@@ -71,8 +70,8 @@ class InstanceIdentifiersMappingIT {
       identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
         Map.of(LABEL, List.of(STATUS_CANCELLED), LINK, List.of(STATUS_BASE_URI + STATUS_CANCELLED)), STATUS_CANCELLED)
     );
-    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_EAN),
-      Map.of(EAN_VALUE, List.of(EXPECTED_EAN), QUALIFIER, List.of("abc")), EXPECTED_EAN, null
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_IAN),
+      Map.of(NAME, List.of(EXPECTED_EAN), QUALIFIER, List.of("abc")), EXPECTED_EAN, null
     );
   }
 
