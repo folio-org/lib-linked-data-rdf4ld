@@ -23,9 +23,9 @@ import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.folio.ld.dictionary.RoleDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.ld.dictionary.specific.RoleDictionary;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -94,7 +94,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     getByPredicate(model, contributionResource, rolePredicate)
       .map(SimpleIRI.class::cast)
       .map(SimpleIRI::getLocalName)
-      .map(RoleDictionary::getRole)
+      .map(RoleDictionary::getValue)
+      .flatMap(Optional::stream)
       .map(p -> new ResourceEdge(parent, agent, p))
       .forEach(parent::addOutgoingEdge);
   }
@@ -149,6 +150,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .filter(e -> e.getPredicate() != CREATOR && e.getPredicate() != CONTRIBUTOR)
       .map(ResourceEdge::getPredicate)
       .map(RoleDictionary::getCode)
+      .flatMap(Optional::stream)
       .forEach(rc -> modelBuilder.add(rolePredicate, iri(ROLES_NAMESPACE, rc)));
   }
 
