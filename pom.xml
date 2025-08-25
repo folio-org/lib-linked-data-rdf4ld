@@ -39,7 +39,7 @@
     <folio-spring-base.version>9.1.0</folio-spring-base.version>
 
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-    <maven-openapi-generator-plugin.version>7.14.0</maven-openapi-generator-plugin.version>
+    <maven-openapi-generator-plugin.version>7.15.0</maven-openapi-generator-plugin.version>
     <checkstyle.version>11.0.0</checkstyle.version>
   </properties>
 
