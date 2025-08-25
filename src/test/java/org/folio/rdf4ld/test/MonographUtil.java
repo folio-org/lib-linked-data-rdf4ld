@@ -48,12 +48,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.folio.ld.dictionary.PlaceDictionary;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.ld.dictionary.specific.PlaceDictionary;
 
 public class MonographUtil {
   public static final String AGENTS_NAMESPACE = "http://id.loc.gov/authorities/";
@@ -248,7 +248,7 @@ public class MonographUtil {
   }
 
   private static Resource createProviderPlace(String code) {
-    var name = PlaceDictionary.getName(code).get();
+    var name = PlaceDictionary.getValue(code).get();
     return createResource(
       Map.of(
         NAME, List.of(name),

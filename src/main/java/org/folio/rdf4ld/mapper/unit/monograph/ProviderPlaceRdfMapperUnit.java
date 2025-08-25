@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.folio.ld.dictionary.PlaceDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.dictionary.specific.PlaceDictionary;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
@@ -60,7 +60,7 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
           if (isNull(r.getDoc())) {
             r.setDoc(objectMapper.createObjectNode());
           }
-          PlaceDictionary.getName(iri.getLocalName())
+          PlaceDictionary.getValue(iri.getLocalName())
             .ifPresent(name -> r
               .setDoc(addProperty(r.getDoc(), NAME, name))
               .setDoc(addProperty(r.getDoc(), LABEL, name))
