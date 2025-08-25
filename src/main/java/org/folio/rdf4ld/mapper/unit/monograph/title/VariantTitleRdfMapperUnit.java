@@ -10,7 +10,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import com.google.common.collect.ImmutableBiMap;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -38,9 +38,9 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
     .put("http://id.loc.gov/vocabulary/vartitletype/run", "7")
     .put("http://id.loc.gov/vocabulary/vartitletype/spi", "8")
     .build();
-  private final Supplier<String> baseUrlProvider;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<Long, String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -62,7 +62,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
                             Resource parent) {
     baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, mapping, parent);
     addVariantTypes(resource, modelBuilder);
-    removeVariantTypeProperty(modelBuilder, mapping, resource.getId().toString());
+    removeVariantTypeProperty(modelBuilder, mapping, resource.getId());
   }
 
   private void mapVariantTypeToProperty(Model model, Resource variantTitle,
@@ -77,7 +77,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
 
   private void addVariantTypes(Resource resource, ModelBuilder modelBuilder) {
     if (resource.getDoc().has(VARIANT_TYPE.getValue())) {
-      var resourceIri = iri(baseUrlProvider.get(), resource.getId().toString());
+      var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
       resource.getDoc().get(VARIANT_TYPE.getValue()).iterator().forEachRemaining(
         textNode -> {
           if (TYPES_BI_MAP.inverse().containsKey(textNode.asText())) {
@@ -88,10 +88,10 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
     }
   }
 
-  private void removeVariantTypeProperty(ModelBuilder modelBuilder, ResourceMapping mapping, String id) {
+  private void removeVariantTypeProperty(ModelBuilder modelBuilder, ResourceMapping mapping, Long id) {
     var property = ((LinkedHashSet<PropertyMapping>) mapping.getResourceMapping().getProperties()).getLast()
       .getBfProperty();
-    modelBuilder.build().remove(iri(baseUrlProvider.get(), id), iri(property), null);
+    modelBuilder.build().remove(iri(resourceUrlProvider.apply(id)), iri(property), null);
   }
 
 }

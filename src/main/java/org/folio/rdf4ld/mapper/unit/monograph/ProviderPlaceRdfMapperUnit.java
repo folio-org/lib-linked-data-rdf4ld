@@ -15,7 +15,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
@@ -35,9 +35,9 @@ import org.springframework.stereotype.Component;
 public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
 
   private final ObjectMapper objectMapper;
-  private final Supplier<String> baseUrlProvider;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<Long, String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -79,7 +79,7 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
                             ModelBuilder modelBuilder,
                             ResourceMapping mapping,
                             Resource parent) {
-    var parentIri = iri(baseUrlProvider.get(), parent.getId().toString());
+    var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     var link = getPropertyString(resource.getDoc(), LINK);
     linkResources(parentIri, iri(link), mapping.getBfResourceDef().getPredicate(), modelBuilder);
   }

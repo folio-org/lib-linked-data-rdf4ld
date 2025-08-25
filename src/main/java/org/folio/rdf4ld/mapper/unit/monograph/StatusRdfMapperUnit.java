@@ -10,7 +10,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
@@ -30,10 +30,10 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(types = STATUS, predicate = PredicateDictionary.STATUS)
 public class StatusRdfMapperUnit implements RdfMapperUnit {
 
-  private final Supplier<String> baseUrlProvider;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<Long, String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -59,7 +59,7 @@ public class StatusRdfMapperUnit implements RdfMapperUnit {
                             ResourceMapping mapping,
                             Resource parent) {
     var statusLink = getPropertyString(resource.getDoc(), LINK);
-    linkResources(iri(baseUrlProvider.get(), String.valueOf(parent.getId())),
+    linkResources(iri(resourceUrlProvider.apply(parent.getId())),
       iri(statusLink), mapping.getBfResourceDef().getPredicate(), modelBuilder);
 
   }

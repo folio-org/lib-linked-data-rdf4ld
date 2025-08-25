@@ -13,7 +13,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
@@ -41,10 +40,10 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int ROLE_EDGE_NUMBER = 1;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
   private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
-  private final Supplier<String> baseUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
+  private final Function<Long, String> resourceUrlProvider;
   private final Function<String, Optional<Resource>> resourceProvider;
 
   @Override
@@ -125,7 +124,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   }
 
   private void writeContributionLink(BNode bnode, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    linkResources(iri(baseUrlProvider.get(), parent.getId().toString()), bnode,
+    linkResources(iri(resourceUrlProvider.apply(parent.getId())), bnode,
       mapping.getBfResourceDef().getPredicate(), modelBuilder);
   }
 

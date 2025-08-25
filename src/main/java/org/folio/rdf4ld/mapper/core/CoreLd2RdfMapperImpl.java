@@ -8,7 +8,7 @@ import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
-  private final Supplier<String> baseUrlProvider;
+  private final Function<Long, String> resourceUrlProvider;
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
@@ -96,7 +96,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
           modelBuilder.subject(blankNode);
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
           modelBuilder.add(pm.getBfProperty(), node.asText());
-          linkResources(iri(baseUrlProvider.get(), resource.getId().toString()), blankNode, predicate, modelBuilder);
+          linkResources(iri(resourceUrlProvider.apply(resource.getId())), blankNode, predicate, modelBuilder);
         });
       });
   }
