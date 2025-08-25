@@ -1,6 +1,5 @@
 package org.folio.rdf4ld.mapper.unit;
 
-import static java.lang.String.valueOf;
 import static java.util.Optional.ofNullable;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -10,7 +9,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -29,10 +28,10 @@ import org.springframework.stereotype.Component;
 public class BaseRdfMapperUnit implements RdfMapperUnit {
 
   private static final PropertyDictionary[] DEFAULT_LABELS = {LABEL, LABEL_RDF};
-  private final Supplier<String> baseUrlProvider;
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
+  private final Function<Long, String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -66,7 +65,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
 
   @Override
   public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    var resourceIri = iri(baseUrlProvider.get(), valueOf(resource.getId()));
+    var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
     modelBuilder.subject(resourceIri);
     mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
     coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
@@ -74,7 +73,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
       coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
     );
     ofNullable(parent)
-      .ifPresent(p -> linkResources(iri(baseUrlProvider.get(), String.valueOf(p.getId())),
+      .ifPresent(p -> linkResources(iri(resourceUrlProvider.apply(p.getId())),
         resourceIri, mapping.getBfResourceDef().getPredicate(), modelBuilder)
       );
   }

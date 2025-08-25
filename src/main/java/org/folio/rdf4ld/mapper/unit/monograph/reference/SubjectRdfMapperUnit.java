@@ -14,7 +14,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -33,7 +32,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
-  private final Supplier<String> baseUrlProvider;
+  private final Function<Long, String> resourceUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
 
@@ -41,11 +40,11 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                               Function<String, Optional<Resource>> resourceProvider,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
-                              Supplier<String> baseUrlProvider) {
+                              Function<Long, String> resourceUrlProvider) {
     super(baseRdfMapperUnit, hashService, resourceProvider);
     this.hashService = hashService;
     this.coreLd2RdfMapper = coreLd2RdfMapper;
-    this.baseUrlProvider = baseUrlProvider;
+    this.resourceUrlProvider = resourceUrlProvider;
   }
 
   @Override
@@ -73,7 +72,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                             ModelBuilder modelBuilder,
                             ResourceMapping mapping,
                             Resource parent) {
-    var parentIri = iri(baseUrlProvider.get(), parent.getId().toString());
+    var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     if (noSubFocuses(subject)) {
       subject.getOutgoingEdges()
         .stream()
