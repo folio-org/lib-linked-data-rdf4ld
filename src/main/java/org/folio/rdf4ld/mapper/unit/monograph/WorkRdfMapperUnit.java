@@ -1,6 +1,5 @@
 package org.folio.rdf4ld.mapper.unit.monograph;
 
-import static java.lang.String.valueOf;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -9,7 +8,7 @@ import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -27,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class WorkRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final FingerprintHashService hashService;
-  private final Supplier<String> baseUrlProvider;
+  private final Function<Long, String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -49,7 +48,7 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
                             ResourceMapping resourceMapping,
                             Resource parent) {
     baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
-    writeExtraTypes(modelBuilder, resource, iri(baseUrlProvider.get(), valueOf(resource.getId())));
+    writeExtraTypes(modelBuilder, resource, iri(resourceUrlProvider.apply(resource.getId())));
   }
 
 }
