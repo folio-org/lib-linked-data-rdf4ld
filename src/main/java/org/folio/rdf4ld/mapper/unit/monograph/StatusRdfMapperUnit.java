@@ -10,7 +10,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
@@ -33,7 +33,7 @@ public class StatusRdfMapperUnit implements RdfMapperUnit {
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,

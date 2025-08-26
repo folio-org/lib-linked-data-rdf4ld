@@ -14,6 +14,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.LongFunction;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
 
@@ -40,7 +41,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                               Function<String, Optional<Resource>> resourceProvider,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
-                              Function<Long, String> resourceUrlProvider) {
+                              LongFunction<String> resourceUrlProvider) {
     super(baseRdfMapperUnit, hashService, resourceProvider);
     this.hashService = hashService;
     this.coreLd2RdfMapper = coreLd2RdfMapper;

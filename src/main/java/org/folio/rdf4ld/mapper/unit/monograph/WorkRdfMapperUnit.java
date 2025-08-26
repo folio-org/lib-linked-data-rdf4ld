@@ -8,7 +8,7 @@ import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class WorkRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final FingerprintHashService hashService;
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,

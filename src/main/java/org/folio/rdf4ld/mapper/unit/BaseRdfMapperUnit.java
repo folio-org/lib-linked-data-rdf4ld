@@ -9,7 +9,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getPropertiesString;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -31,7 +31,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
   private final CoreRdf2LdMapper coreRdf2LdMapper;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
