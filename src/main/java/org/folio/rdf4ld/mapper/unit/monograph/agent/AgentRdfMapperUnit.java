@@ -13,6 +13,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
@@ -43,7 +44,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
   private final Function<String, Optional<Resource>> resourceProvider;
 
   @Override

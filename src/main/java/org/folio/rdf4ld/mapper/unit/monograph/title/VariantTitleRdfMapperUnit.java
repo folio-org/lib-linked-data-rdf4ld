@@ -10,7 +10,7 @@ import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import com.google.common.collect.ImmutableBiMap;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -40,7 +40,7 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
     .build();
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
-  private final Function<Long, String> resourceUrlProvider;
+  private final LongFunction<String> resourceUrlProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,

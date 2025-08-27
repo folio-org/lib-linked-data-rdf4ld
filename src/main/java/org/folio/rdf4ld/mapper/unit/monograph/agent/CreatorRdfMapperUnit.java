@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.LongFunction;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(predicate = CREATOR)
 public class CreatorRdfMapperUnit extends AgentRdfMapperUnit {
 
-  public CreatorRdfMapperUnit(Function<Long, String> resourceUrlProvider,
+  public CreatorRdfMapperUnit(LongFunction<String> resourceUrlProvider,
                               CoreLd2RdfMapper coreLd2RdfMapper,
                               FingerprintHashService hashService,
                               BaseRdfMapperUnit baseRdfMapperUnit,
