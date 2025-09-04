@@ -7,8 +7,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.util.Set;
+import lombok.SneakyThrows;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -28,6 +30,8 @@ class Rdf4LdServiceTest {
 
   @Mock
   private Rdf4LdMapper rdf4LdMapper;
+  @Mock
+  private ObjectMapper objectMapper;
   @InjectMocks
   private Rdf4LdServiceImpl rdf4LdService;
 
@@ -176,4 +180,25 @@ class Rdf4LdServiceTest {
     assertThat(result.size()).isGreaterThan(0);
   }
 
+  @Test
+  @SneakyThrows
+  void mapLdToBibframe2Rdf_returnsSerializedModel_forStringInput() {
+    // given
+    var input = """
+        {
+          "id": "1",
+          "label": "a"
+        }
+        """;
+    var format = RDFFormat.JSONLD;
+    var model = new ModelBuilder().build();
+    when(rdf4LdMapper.mapLdToBibframe2Rdf(any())).thenReturn(model);
+
+    // when
+    var result = rdf4LdService.mapLdToBibframe2Rdf(input, format);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.size()).isGreaterThan(0);
+  }
 }

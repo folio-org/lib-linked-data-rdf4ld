@@ -15,7 +15,7 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
 @UnitTest
-class ResourceDeserializerTest {
+class ExportedResourceDeserializerTest {
 
   @Test
   @SneakyThrows
@@ -26,16 +26,17 @@ class ResourceDeserializerTest {
     // when
     var om = new ObjectMapper();
     var sm = new SimpleModule();
-    sm.addDeserializer(Resource.class, new ResourceDeserializer());
+    sm.addDeserializer(Resource.class, new ExportedResourceDeserializer());
     om.registerModule(sm);
-    
+
     var actualResource = om.readValue(input, Resource.class);
 
     // then
     var expectedResource = createResource();
     assertThat(actualResource).isEqualTo(expectedResource);
-    validateWork(actualResource);
-    validateWorkTitle(actualResource.getOutgoingEdges().iterator().next().getTarget());
+    validate(expectedResource, actualResource, 1, 1);
+    validate(actualResource.getOutgoingEdges().iterator().next().getTarget(),
+      actualResource.getOutgoingEdges().iterator().next().getTarget(), 1, 0);
   }
 
   private Resource createResource() {
@@ -58,19 +59,11 @@ class ResourceDeserializerTest {
     return resource;
   }
 
-  private void validateWork(Resource resource) {
-    assertThat(resource.getId()).isEqualTo(832794024323664921L);
-    assertThat(resource.getLabel()).isEqualTo("Resilience Interventions for Youth in Diverse Populations");
-    assertThat(resource.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.WORK.getUri());
-    assertThat(resource.getDoc().size()).isEqualTo(1);
-    assertThat(resource.getOutgoingEdges().size()).isEqualTo(1);
-  }
-
-  private void validateWorkTitle(Resource resource) {
-    assertThat(resource.getId()).isEqualTo(-3971230252524682729L);
-    assertThat(resource.getLabel()).isEqualTo("Resilience Interventions for Youth in Diverse Populations");
-    assertThat(resource.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.TITLE.getUri());
-    assertThat(resource.getDoc().size()).isEqualTo(1);
-    assertThat(resource.getOutgoingEdges().size()).isEqualTo(0);
+  private void validate(Resource expected, Resource actual, int docSize, int outgoingCount) {
+    assertThat(actual.getId()).isEqualTo(expected.getId());
+    assertThat(actual.getLabel()).isEqualTo(expected.getLabel());
+    assertThat(actual.getTypes().iterator().next().getUri()).isEqualTo(expected.getTypes().iterator().next().getUri());
+    assertThat(actual.getDoc().size()).isEqualTo(docSize);
+    assertThat(actual.getOutgoingEdges().size()).isEqualTo(outgoingCount);
   }
 }

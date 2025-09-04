@@ -15,7 +15,7 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 /**
  * Convert database export JSON to Resource.
  */
-public class ResourceDeserializer extends StdDeserializer<Resource> {
+public class ExportedResourceDeserializer extends StdDeserializer<Resource> {
 
   private static final String FIELD_ID = "id";
   private static final String FIELD_LABEL = "label";
@@ -23,11 +23,11 @@ public class ResourceDeserializer extends StdDeserializer<Resource> {
   private static final String FIELD_TYPES = "types";
   private static final String FIELD_OUTGOING_EDGES = "outgoingEdges";
 
-  public ResourceDeserializer() {
+  public ExportedResourceDeserializer() {
     this(null);
   }
 
-  public ResourceDeserializer(Class<?> vc) {
+  public ExportedResourceDeserializer(Class<?> vc) {
     super(vc);
   }
 
@@ -71,7 +71,7 @@ public class ResourceDeserializer extends StdDeserializer<Resource> {
   private void deserializeTypes(JsonNode node, Resource resource) {
     if (node.has(FIELD_TYPES) && node.get(FIELD_TYPES).isArray()) {
       var types = node.withArray(FIELD_TYPES);
-      StreamSupport.stream(types.spliterator(), false) 
+      StreamSupport.stream(types.spliterator(), false)
         .map(type -> ResourceTypeDictionary.fromUri(type.asText()))
         .filter(Optional::isPresent)
         .forEach(dictType -> resource.addType(dictType.get()));
