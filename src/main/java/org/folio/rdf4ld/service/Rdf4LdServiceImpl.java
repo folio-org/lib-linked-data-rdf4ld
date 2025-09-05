@@ -2,6 +2,8 @@ package org.folio.rdf4ld.service;
 
 import static java.util.Objects.isNull;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class Rdf4LdServiceImpl implements Rdf4LdService {
 
   private final Rdf4LdMapper rdf4LdMapper;
+  private final ObjectMapper objectMapper;
 
   @Override
   public Set<Resource> mapRdfToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
@@ -44,6 +47,13 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   public ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat) {
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(resource);
     return writeModel(model, rdfFormat);
+  }
+
+  @Override
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat)
+    throws JsonProcessingException {
+    var resource = objectMapper.readValue(input, Resource.class);
+    return mapLdToBibframe2Rdf(resource, rdfFormat);
   }
 
   private Model readModel(InputStream input, String contentType) {
