@@ -1,6 +1,6 @@
 package org.folio.rdf4ld.util;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -63,7 +63,7 @@ class ExportedResourceDeserializerTest {
     assertThat(actual.getId()).isEqualTo(expected.getId());
     assertThat(actual.getLabel()).isEqualTo(expected.getLabel());
     assertThat(actual.getTypes().iterator().next().getUri()).isEqualTo(expected.getTypes().iterator().next().getUri());
-    assertThat(actual.getDoc().size()).isEqualTo(docSize);
-    assertThat(actual.getOutgoingEdges().size()).isEqualTo(outgoingCount);
+    assertThat(actual.getDoc()).hasSize(docSize);
+    assertThat(actual.getOutgoingEdges()).hasSize(outgoingCount);
   }
 }
