@@ -10,17 +10,17 @@
     "http://bibfra.me/vocab/lite/Work"
   ],
   "outgoingEdges": {
-    "http://bibfra.me/vocab/marc/title": [
+    "http://bibfra.me/vocab/library/title": [
       {
         "id": "-3971230252524682729",
         "doc": {
-          "http://bibfra.me/vocab/marc/mainTitle": [
+          "http://bibfra.me/vocab/library/mainTitle": [
             "Resilience Interventions for Youth in Diverse Populations"
           ]
         },
         "label": "Resilience Interventions for Youth in Diverse Populations",
         "types": [
-          "http://bibfra.me/vocab/marc/Title"
+          "http://bibfra.me/vocab/library/Title"
         ],
         "outgoingEdges": {}
       }
