@@ -34,7 +34,7 @@
 
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
-    <rdf4j.version>5.1.4</rdf4j.version>
+    <rdf4j.version>5.1.5</rdf4j.version>
 
     <folio-spring-base.version>9.1.0</folio-spring-base.version>
 
