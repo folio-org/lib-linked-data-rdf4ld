@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Set;
@@ -17,4 +18,5 @@ public interface Rdf4LdService {
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat);
 
+  ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat) throws JsonProcessingException;
 }
