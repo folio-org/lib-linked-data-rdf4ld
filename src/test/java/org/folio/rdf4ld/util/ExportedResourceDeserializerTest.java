@@ -34,9 +34,9 @@ class ExportedResourceDeserializerTest {
     // then
     var expectedResource = createResource();
     assertThat(actualResource).isEqualTo(expectedResource);
-    validate(expectedResource, actualResource, 1, 1);
-    validate(actualResource.getOutgoingEdges().iterator().next().getTarget(),
-      actualResource.getOutgoingEdges().iterator().next().getTarget(), 1, 0);
+    validate(expectedResource, actualResource);
+    validate(expectedResource.getOutgoingEdges().iterator().next().getTarget(),
+      actualResource.getOutgoingEdges().iterator().next().getTarget());
   }
 
   private Resource createResource() {
@@ -53,17 +53,24 @@ class ExportedResourceDeserializerTest {
       .addType(ResourceTypeDictionary.TITLE);
     var titleDoc = JsonNodeFactory.instance.objectNode();
     titleDoc.put(PropertyDictionary.MAIN_TITLE.getValue(), "Resilience Interventions for Youth in Diverse Populations");
+    title.setDoc(titleDoc);
     resource.addOutgoingEdge(new ResourceEdge(
       resource, title, PredicateDictionary.TITLE));
 
     return resource;
   }
 
-  private void validate(Resource expected, Resource actual, int docSize, int outgoingCount) {
+  private void validate(Resource expected, Resource actual) {
     assertThat(actual.getId()).isEqualTo(expected.getId());
     assertThat(actual.getLabel()).isEqualTo(expected.getLabel());
     assertThat(actual.getTypes().iterator().next().getUri()).isEqualTo(expected.getTypes().iterator().next().getUri());
-    assertThat(actual.getDoc()).hasSize(docSize);
-    assertThat(actual.getOutgoingEdges()).hasSize(outgoingCount);
+
+    if (expected.getDoc() == null) {
+      assertThat(actual.getDoc()).isNull();
+    } else {
+      assertThat(actual.getDoc()).hasSize(expected.getDoc().size());
+    }
+
+    assertThat(actual.getOutgoingEdges()).hasSize(expected.getOutgoingEdges().size());
   }
 }
