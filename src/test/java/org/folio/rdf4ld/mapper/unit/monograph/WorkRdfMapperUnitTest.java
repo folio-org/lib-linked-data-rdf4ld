@@ -7,8 +7,11 @@ import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.Set;
 import java.util.function.LongFunction;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -48,6 +51,11 @@ class WorkRdfMapperUnitTest {
     long newId = 789L;
     doReturn(newId).when(hashService).hash(mappedResource);
     doReturn(model).when(model).filter(resource, RDF.TYPE, null);
+    var statement = mock(Statement.class);
+    var value = mock(Value.class);
+    doReturn("http://id.loc.gov/ontologies/bibframe/Monograph").when(value).stringValue();
+    doReturn(value).when(statement).getObject();
+    doReturn(Set.of(statement).stream()).when(model).stream();
 
     // when
     var result = workRdfMapperUnit.mapToLd(model, resource, mapping, null);

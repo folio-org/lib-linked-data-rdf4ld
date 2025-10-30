@@ -27,12 +27,13 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
 public class RdfUtil {
 
-  private static final ImmutableBiMap<ResourceTypeDictionary, String> LD_TO_BF_EXTRA_TYPES =
-    new ImmutableBiMap.Builder<ResourceTypeDictionary, String>()
+  private static final ImmutableBiMap<@NotNull ResourceTypeDictionary, @NotNull String> LD_TO_BF_EXTRA_TYPES =
+    new ImmutableBiMap.Builder<@NotNull ResourceTypeDictionary, @NotNull String>()
       .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
       .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
       .put(ORGANIZATION, "http://id.loc.gov/ontologies/bibframe/Organization")
@@ -81,16 +82,18 @@ public class RdfUtil {
     return "http://id.loc.gov/rwo/agents/" + lccnLink.substring(lccnLink.lastIndexOf("/") + 1);
   }
 
-  public static void readExtraTypes(Model model,
-                                     Resource rdfResource,
-                                     org.folio.ld.dictionary.model.Resource resource) {
-    model.filter(rdfResource, RDF.TYPE, null)
-      .stream()
-      .map(Statement::getObject)
-      .map(Value::stringValue)
+  public static Set<ResourceTypeDictionary> readSupportedExtraTypes(Model model, Resource rdfResource) {
+    return readAllTypes(model, rdfResource)
       .filter(type -> LD_TO_BF_EXTRA_TYPES.inverse().containsKey(type))
       .map(type -> LD_TO_BF_EXTRA_TYPES.inverse().get(type))
-      .forEach(resource::addType);
+      .collect(Collectors.toSet());
+  }
+
+  public static Stream<String> readAllTypes(Model model, Resource rdfResource) {
+    return model.filter(rdfResource, RDF.TYPE, null)
+      .stream()
+      .map(Statement::getObject)
+      .map(Value::stringValue);
   }
 
   public static void writeExtraTypes(ModelBuilder modelBuilder,

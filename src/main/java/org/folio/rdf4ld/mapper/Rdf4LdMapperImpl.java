@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
@@ -14,6 +15,7 @@ import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.util.MappingProfileReader;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class Rdf4LdMapperImpl implements Rdf4LdMapper {
@@ -27,13 +29,18 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapRdfToLd(Model model, ResourceMapping resourceMapping) {
-    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
-    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
-    return selectSubjectsByType(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .collect(Collectors.toSet());
+    try {
+      var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
+      var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
+      return selectSubjectsByType(model, bfTypes)
+        .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toSet());
+    } catch (Exception e) {
+      log.warn("Exception occurred during RDF -> LD mapping. Returning empty result.", e);
+      return Set.of();
+    }
   }
 
   @Override

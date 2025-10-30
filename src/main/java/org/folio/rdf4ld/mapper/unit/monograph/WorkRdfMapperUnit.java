@@ -1,19 +1,24 @@
 package org.folio.rdf4ld.mapper.unit.monograph;
 
+import static java.util.stream.Collectors.toSet;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.rdf4ld.util.RdfUtil.readExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.readAllTypes;
+import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.mapper.Rdf2LdMappingException;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -27,6 +32,7 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final FingerprintHashService hashService;
   private final LongFunction<String> resourceUrlProvider;
+  private final Supplier<Optional<ResourceTypeDictionary>> defaultWorkTypeProvider;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -36,10 +42,24 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
     return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
       .map(work -> {
         work.setLabel(getPrimaryMainTitle(work));
-        readExtraTypes(model, resource, work);
+        setExtraTypes(model, resource, work);
         work.setId(hashService.hash(work));
         return work;
       });
+  }
+
+  private void setExtraTypes(Model model, org.eclipse.rdf4j.model.Resource resource, Resource work) {
+    var supportedExtraTypes = readSupportedExtraTypes(model, resource);
+    if (!supportedExtraTypes.isEmpty()) {
+      supportedExtraTypes.forEach(work::addType);
+    } else {
+      var allTypes = readAllTypes(model, resource).collect(toSet());
+      if (allTypes.size() == 1) {
+        defaultWorkTypeProvider.get().ifPresent(work::addType);
+      } else {
+        throw new Rdf2LdMappingException("Not supported Work type set: " + allTypes);
+      }
+    }
   }
 
   @Override
