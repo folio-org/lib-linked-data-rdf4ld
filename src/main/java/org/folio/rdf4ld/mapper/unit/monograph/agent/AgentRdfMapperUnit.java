@@ -7,7 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
-import static org.folio.rdf4ld.util.RdfUtil.readExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
@@ -79,7 +79,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private Optional<Resource> mapAgent(Model model, BNode agentNode, ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
       .map(agent -> {
-        readExtraTypes(model, agentNode, agent);
+        readSupportedExtraTypes(model, agentNode).forEach(agent::addType);
         agent.setId(hashService.hash(agent));
         return agent;
       });

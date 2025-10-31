@@ -1,7 +1,7 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
 import static java.util.Optional.empty;
-import static org.folio.rdf4ld.util.RdfUtil.readExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -39,7 +39,7 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   }
 
   private Resource addExtraTypes(Model model, BNode node, Resource mapped) {
-    readExtraTypes(model, node, mapped);
+    readSupportedExtraTypes(model, node).forEach(mapped::addType);
     mapped.setId(hashService.hash(mapped));
     return mapped;
   }
