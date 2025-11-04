@@ -37,8 +37,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
@@ -54,6 +52,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.dictionary.specific.PlaceDictionary;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 
 public class MonographUtil {
   public static final String AGENTS_NAMESPACE = "http://id.loc.gov/authorities/";
@@ -61,10 +60,7 @@ public class MonographUtil {
   public static final String STATUS_CURRENT = "current";
   public static final String STATUS_CANCELLED = "cancinv";
   public static final String STATUS_BASE_URI = "http://id.loc.gov/vocabulary/mstatus/";
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-    .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+  private static final ObjectMapper OBJECT_MAPPER = new Rdf4LdObjectMapper();
   private static final Random RANDOM = new Random();
 
   public static Resource createInstance(String label, Map<PropertyDictionary, List<String>> properties) {

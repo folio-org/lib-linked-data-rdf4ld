@@ -4,9 +4,6 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.LongFunction;
@@ -21,15 +18,6 @@ import org.springframework.context.annotation.Configuration;
 @Log4j2
 @Configuration
 public class BackupBeanConfig {
-
-  @Bean
-  @ConditionalOnMissingBean
-  public ObjectMapper objectMapper() {
-    return new ObjectMapper()
-      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-  }
 
   @Bean
   @ConditionalOnMissingBean(name = "lccnResourceProvider")

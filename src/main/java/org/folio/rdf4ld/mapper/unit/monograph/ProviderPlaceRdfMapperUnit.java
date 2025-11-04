@@ -13,7 +13,6 @@ import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertyString;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.specific.PlaceDictionary;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(types = PLACE, predicate = PROVIDER_PLACE)
 public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
 
-  private final ObjectMapper objectMapper;
+  private final Rdf4LdObjectMapper objectMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final LongFunction<String> resourceUrlProvider;

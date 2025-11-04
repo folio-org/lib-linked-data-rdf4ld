@@ -1,10 +1,10 @@
 package org.folio.rdf4ld.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.core.io.ClassPathResource;
@@ -32,7 +32,7 @@ public class MappingProfileReader {
   public static final String MANUFACTURE = "provision/manufacture.json";
   public static final String PRODUCTION = "provision/production.json";
   public static final String PUBLICATION = "provision/publication.json";
-  private final ObjectMapper objectMapper;
+  private final Rdf4LdObjectMapper objectMapper;
 
   public ResourceMapping getBibframe20Profile() {
     return getInstanceMapping()

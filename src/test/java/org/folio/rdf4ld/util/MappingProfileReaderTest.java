@@ -6,9 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
@@ -26,7 +26,7 @@ class MappingProfileReaderTest {
   @InjectMocks
   private MappingProfileReader mappingProfileReader;
   @Mock
-  private ObjectMapper objectMapper;
+  private Rdf4LdObjectMapper objectMapper;
 
   @Test
   void getBibframe20Profile_shouldReturnMappingProfileWhenFilesAreValid() throws Exception {

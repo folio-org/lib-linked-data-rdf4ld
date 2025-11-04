@@ -3,7 +3,6 @@ package org.folio.rdf4ld.service;
 import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +13,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class Rdf4LdServiceImpl implements Rdf4LdService {
 
   private final Rdf4LdMapper rdf4LdMapper;
-  private final ObjectMapper objectMapper;
+  private final Rdf4LdObjectMapper objectMapper;
 
   @Override
   public Set<Resource> mapRdfToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
