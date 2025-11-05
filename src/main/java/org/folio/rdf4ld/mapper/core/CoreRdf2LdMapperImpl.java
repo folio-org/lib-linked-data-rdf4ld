@@ -8,7 +8,6 @@ import static java.util.stream.Collectors.toSet;
 import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +23,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.PropertyMapping;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
-  private final ObjectMapper objectMapper;
+  private final Rdf4LdObjectMapper objectMapper;
 
   @Override
   public JsonNode mapDoc(org.eclipse.rdf4j.model.Resource resource, Model model,
