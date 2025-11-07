@@ -35,7 +35,7 @@ public class RdfMapperUnitProviderImpl implements RdfMapperUnitProvider {
       })
       .findFirst()
       .orElseGet(() -> {
-        log.info("No mapper found for resource types [{}]{}, using BaseMapperUnit",
+        log.debug("No mapper found for resource types [{}]{}, using BaseMapperUnit",
           ldResourceDef.getTypeSet().stream().map(ResourceTypeDictionary::getUri).collect(joining(", ")),
           ldResourceDef.getPredicate() != null
             ? " and predicate [" + ldResourceDef.getPredicate().getUri() + "]" : null);
