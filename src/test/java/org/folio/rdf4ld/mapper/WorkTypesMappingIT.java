@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -77,10 +78,9 @@ class WorkTypesMappingIT {
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
-    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
-
-    // then
-    assertThat(result).isEmpty();
+    assertThatThrownBy(() -> rdf4LdMapper.mapBibframe2RdfToLd(model))
+      //then
+      .isInstanceOf(Rdf2LdMappingException.class);
   }
 
 }

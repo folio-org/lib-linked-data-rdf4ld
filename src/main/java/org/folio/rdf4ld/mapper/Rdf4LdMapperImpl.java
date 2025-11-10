@@ -29,18 +29,13 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
 
   @Override
   public Set<Resource> mapRdfToLd(Model model, ResourceMapping resourceMapping) {
-    try {
-      var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
-      var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
-      return selectSubjectsByType(model, bfTypes)
-        .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .collect(Collectors.toSet());
-    } catch (Exception e) {
-      log.warn("Exception occurred during RDF -> LD mapping. Returning empty result.", e);
-      return Set.of();
-    }
+    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
+    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
+    return selectSubjectsByType(model, bfTypes)
+      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .collect(Collectors.toSet());
   }
 
   @Override
