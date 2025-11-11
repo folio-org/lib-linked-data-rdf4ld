@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.WriterConfig;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.model.ResourceMapping;
 
@@ -18,5 +19,11 @@ public interface Rdf4LdService {
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat);
 
-  ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat) throws JsonProcessingException;
+  ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat, WriterConfig outputConfig);
+
+  ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat)
+      throws JsonProcessingException;
+
+  ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat, WriterConfig outputConfig)
+      throws JsonProcessingException;
 }
