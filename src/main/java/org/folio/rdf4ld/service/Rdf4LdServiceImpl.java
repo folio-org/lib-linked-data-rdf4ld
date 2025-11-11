@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.WriterConfig;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
@@ -40,20 +41,33 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   @Override
   public ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, ResourceMapping resourceMapping) {
     var model = rdf4LdMapper.mapLdToRdf(resource, resourceMapping);
-    return writeModel(model, rdfFormat);
+    return writeModel(model, rdfFormat, new WriterConfig());
   }
 
   @Override
   public ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat) {
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(resource);
-    return writeModel(model, rdfFormat);
+    return writeModel(model, rdfFormat, new WriterConfig());
+  }
+
+  @Override
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat, WriterConfig outputConfig) {
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(resource);
+    return writeModel(model, rdfFormat, outputConfig);
   }
 
   @Override
   public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat)
-    throws JsonProcessingException {
+      throws JsonProcessingException {
     var resource = objectMapper.readValue(input, Resource.class);
     return mapLdToBibframe2Rdf(resource, rdfFormat);
+  }
+
+  @Override
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat, WriterConfig outputConfig)
+      throws JsonProcessingException {
+    var resource = objectMapper.readValue(input, Resource.class);
+    return mapLdToBibframe2Rdf(resource, rdfFormat, outputConfig);
   }
 
   private Model readModel(InputStream input, String contentType) {
@@ -75,9 +89,9 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
     return model;
   }
 
-  private ByteArrayOutputStream writeModel(Model model, RDFFormat rdfFormat) {
+  private ByteArrayOutputStream writeModel(Model model, RDFFormat rdfFormat, WriterConfig outputConfig) {
     var out = new ByteArrayOutputStream();
-    Rio.write(model, out, rdfFormat);
+    Rio.write(model, out, rdfFormat, outputConfig);
     return out;
   }
 
