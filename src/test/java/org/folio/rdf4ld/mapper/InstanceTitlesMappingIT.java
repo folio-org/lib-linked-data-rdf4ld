@@ -51,7 +51,7 @@ class InstanceTitlesMappingIT {
     validateProperty(instance.getDoc(), STATEMENT_OF_RESPONSIBILITY.getValue(),
       List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2")
     );
-    validateResourceWithTitles(instance, "");
+    validateResourceWithTitles(instance, "", "http://test-tobe-changed.folio.com/resources/INSTANCE_ID");
     assertThat(instance.getOutgoingEdges()).hasSize(3);
   }
 

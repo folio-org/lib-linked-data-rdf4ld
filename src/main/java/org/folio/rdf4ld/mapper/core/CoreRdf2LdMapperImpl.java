@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
+import static org.folio.rdf4ld.util.RdfUtil.IRI;
 import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,12 +57,17 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
                                  Model model,
                                  PropertyMapping pm,
                                  Map<String, List<String>> doc) {
-    model.getStatements(resource, Values.iri(pm.getBfProperty()), null)
-      .forEach(st -> {
-          var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
-          props.add(st.getObject().stringValue());
-        }
-      );
+    if (IRI.equals(pm.getBfProperty())) {
+      addProperty(pm, doc, resource.stringValue());
+    } else {
+      model.getStatements(resource, Values.iri(pm.getBfProperty()), null)
+        .forEach(st -> addProperty(pm, doc, st.getObject().stringValue()));
+    }
+  }
+
+  private void addProperty(PropertyMapping pm, Map<String, List<String>> doc, String value) {
+    var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
+    props.add(value);
   }
 
   @Override
