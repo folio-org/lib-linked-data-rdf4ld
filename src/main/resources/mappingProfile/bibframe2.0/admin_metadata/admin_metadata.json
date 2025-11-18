@@ -1,0 +1,10 @@
+{
+  "ldResourceDef": {
+    "typeSet": "ANNOTATION",
+    "predicate": "ADMIN_METADATA"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/AdminMetadata",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/adminMetadata"
+  }
+}
