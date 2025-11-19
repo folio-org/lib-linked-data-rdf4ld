@@ -28,11 +28,12 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   }
 
   @Override
-  public Set<Resource> mapRdfToLd(Model model, ResourceMapping resourceMapping) {
-    var mapper = rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef());
-    var bfTypes = resourceMapping.getBfResourceDef().getTypeSet();
+  public Set<Resource> mapRdfToLd(Model model, ResourceMapping rm) {
+    var ldResourceDef = rm.getLdResourceDef();
+    var mapper = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());
+    var bfTypes = rm.getBfResourceDef().getTypeSet();
     return selectSubjectsByType(model, bfTypes)
-      .map(resource -> mapper.mapToLd(model, resource, resourceMapping, null))
+      .map(resource -> mapper.mapToLd(model, resource, rm, null))
       .filter(Optional::isPresent)
       .map(Optional::get)
       .collect(Collectors.toSet());
@@ -44,10 +45,10 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   }
 
   @Override
-  public Model mapLdToRdf(Resource resource, ResourceMapping resourceMapping) {
+  public Model mapLdToRdf(Resource resource, ResourceMapping rm) {
     var modelBuilder = new ModelBuilder();
-    rdfMapperUnitProvider.getMapper(resourceMapping.getLdResourceDef())
-      .mapToBibframe(resource, modelBuilder, resourceMapping, null);
+    rdfMapperUnitProvider.getMapper(rm.getLdResourceDef().getTypeSet(), rm.getLdResourceDef().getPredicate())
+      .mapToBibframe(resource, modelBuilder, rm, null);
     return modelBuilder.build();
   }
 

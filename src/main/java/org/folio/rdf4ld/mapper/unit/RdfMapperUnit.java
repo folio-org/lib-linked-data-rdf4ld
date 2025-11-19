@@ -17,4 +17,9 @@ public interface RdfMapperUnit {
                      ModelBuilder modelBuilder,
                      ResourceMapping resourceMapping,
                      Resource parent);
+
+
+  default Resource enrichUnMockedResource(Resource resource) {
+    return resource;
+  }
 }

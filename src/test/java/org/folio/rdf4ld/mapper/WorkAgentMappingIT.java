@@ -1,6 +1,5 @@
 package org.folio.rdf4ld.mapper;
 
-import static java.util.Optional.ofNullable;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
@@ -18,18 +17,15 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
+import static org.folio.rdf4ld.test.TestUtil.mockLccnResource;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -44,7 +40,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 @EnableConfigurationProperties
@@ -53,22 +48,12 @@ class WorkAgentMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
-  @MockitoBean
-  private Function<String, Optional<Resource>> resourceProvider;
 
   @Test
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withCurrentLccn() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgentMocks() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-    var creator = new Resource().setId(1L).setLabel("creator");
-    var contributor = new Resource().setId(2L).setLabel("contributor");
-    var foundByLccnResources = Map.of(
-      "n2021004098", creator,
-      "n2021004092", contributor
-    );
-    when(resourceProvider.apply(anyString()))
-      .thenAnswer(inv -> ofNullable(foundByLccnResources.get(inv.getArgument(0, String.class))));
 
     // when
     var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
@@ -79,6 +64,8 @@ class WorkAgentMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var creator = mockLccnResource("n2021004098");
+    var contributor = mockLccnResource("n2021004092");
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
