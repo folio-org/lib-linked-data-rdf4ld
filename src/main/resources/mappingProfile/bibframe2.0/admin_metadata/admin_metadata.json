@@ -6,5 +6,13 @@
   "bfResourceDef": {
     "typeSet": "http://id.loc.gov/ontologies/bibframe/AdminMetadata",
     "predicate": "http://id.loc.gov/ontologies/bibframe/adminMetadata"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "CREATED_DATE",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/creationDate"
+      }
+    ]
   }
 }
