@@ -69,7 +69,7 @@ class Rdf4LdMapperTest {
       .ldResourceDef(new LdResourceDef());
     doReturn(resourceMapping).when(mappingProfileReader).getBibframe20Profile();
     var mapper = mock(RdfMapperUnit.class);
-    doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any());
+    doReturn(mapper).when(rdfMapperUnitProvider).getMapper(any(), any());
     var expectedResource = new Resource().setId(123L);
     doReturn(of(expectedResource)).when(mapper).mapToLd(any(), any(), any(), any());
 
@@ -87,7 +87,7 @@ class Rdf4LdMapperTest {
       .bfResourceDef(new BfResourceDef())
       .ldResourceDef(new LdResourceDef());
     doReturn(mappingProfile).when(mappingProfileReader).getBibframe20Profile();
-    doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any());
+    doReturn(emptyMapper()).when(rdfMapperUnitProvider).getMapper(any(), any());
 
     // when
     var result = topMapper.mapLdToBibframe2Rdf(null);

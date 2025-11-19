@@ -4,7 +4,6 @@ import static java.util.Optional.empty;
 import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -15,12 +14,13 @@ import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 
 @RequiredArgsConstructor
 public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   protected final BaseRdfMapperUnit baseRdfMapperUnit;
-  private final FingerprintHashService hashService;
-  private final Function<String, Optional<Resource>> resourceProvider;
+  protected final FingerprintHashService hashService;
+  protected final MockLccnResourceService mockLccnResourceService;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -29,7 +29,7 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
                                     Resource parent) {
     Optional<Resource> resourceOptional = empty();
     if (resource instanceof IRI iri) {
-      resourceOptional = resourceProvider.apply(iri.getLocalName());
+      resourceOptional = Optional.of(mockLccnResourceService.mockLccnResource(iri.getLocalName()));
     }
     if (resource instanceof BNode node) {
       resourceOptional = baseRdfMapperUnit.mapToLd(model, node, mapping, parent)
