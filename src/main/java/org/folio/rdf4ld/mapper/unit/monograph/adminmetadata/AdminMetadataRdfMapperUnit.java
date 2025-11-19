@@ -42,8 +42,11 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
                                     org.eclipse.rdf4j.model.Resource resource,
                                     ResourceMapping resourceMapping,
                                     Resource parent) {
-    // TODO - remove any identifiedBy/Local statements since local IDs are for the original context
-    return baseRdfMapperUnit.mapToLd(model, resource, resourceMapping, parent);
+    // Do not process admin metadata coming from BIBFRAME.
+    // Values currently would either not transfer contexts (like local identifiers
+    // not applying to this system) or would be expected to be overwritten by this
+    // system (like creation date).
+    return Optional.empty();
   }
 
   @Override
