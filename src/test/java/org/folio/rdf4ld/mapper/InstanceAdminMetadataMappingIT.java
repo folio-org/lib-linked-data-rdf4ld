@@ -6,6 +6,8 @@ import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 
 import java.io.IOException;
 import java.util.UUID;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.MonographUtil;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -22,6 +24,24 @@ class InstanceAdminMetadataMappingIT {
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
+
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithTitles() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/instance_admin_metadata.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).isNotEmpty().hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getDoc()).isNull();
+    assertThat(instance.getOutgoingEdges().stream().anyMatch(edge ->
+      edge.getPredicate().equals(ADMIN_METADATA)
+    )).isFalse();
+  }
 
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithAdminMetadata() throws IOException {

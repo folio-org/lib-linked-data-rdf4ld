@@ -10,6 +10,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -262,7 +263,8 @@ public class MonographUtil {
   public static Resource createAdminMetadata(String hrid, String uuid) {
     return createResource(
       Map.of(
-        CONTROL_NUMBER, List.of(hrid, uuid)
+        CONTROL_NUMBER, List.of(hrid, uuid),
+        CREATED_DATE, List.of("2025-11-19")
       ),
       Set.of(ANNOTATION),
       Map.of()
