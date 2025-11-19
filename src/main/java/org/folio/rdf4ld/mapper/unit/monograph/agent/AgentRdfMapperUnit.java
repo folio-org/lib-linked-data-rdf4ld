@@ -12,7 +12,6 @@ import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +32,7 @@ import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final LongFunction<String> resourceUrlProvider;
-  private final Function<String, Optional<Resource>> resourceProvider;
+  private final MockLccnResourceService mockLccnResourceService;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -64,7 +64,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .map(ar -> {
         Optional<Resource> agentOptional = empty();
         if (ar instanceof IRI iri) {
-          agentOptional = resourceProvider.apply(iri.getLocalName());
+          agentOptional = Optional.of(mockLccnResourceService.mockLccnResource(iri.getLocalName()));
         }
         if (ar instanceof BNode node) {
           agentOptional = mapAgent(model, node, mapping, parent);

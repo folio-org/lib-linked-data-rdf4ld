@@ -96,7 +96,8 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
                                        Resource parent,
                                        org.eclipse.rdf4j.model.Resource rdfParent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
-    var mapperUnit = rdfMapperUnitProvider.getMapper(edgeMapping.getLdResourceDef());
+    var ldResourceDef = edgeMapping.getLdResourceDef();
+    var mapperUnit = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef(), rdfParent)
       .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, parent))
       .filter(Optional::isPresent)

@@ -13,7 +13,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.LongFunction;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
@@ -27,6 +26,7 @@ import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,15 +35,13 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
   private final LongFunction<String> resourceUrlProvider;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
-  private final FingerprintHashService hashService;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
-                              Function<String, Optional<Resource>> resourceProvider,
+                              MockLccnResourceService mockLccnResourceService,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
                               LongFunction<String> resourceUrlProvider) {
-    super(baseRdfMapperUnit, hashService, resourceProvider);
-    this.hashService = hashService;
+    super(baseRdfMapperUnit, hashService, mockLccnResourceService);
     this.coreLd2RdfMapper = coreLd2RdfMapper;
     this.resourceUrlProvider = resourceUrlProvider;
   }
@@ -54,10 +52,19 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                     ResourceMapping resourceMapping,
                                     Resource parent) {
     return super.mapToLd(model, resource, resourceMapping, parent)
-      .map(subject -> subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject));
+      .map(subject -> isConceptOrMock(subject) ? subject : wrapWithConcept(subject));
   }
 
-  private Resource wrapWithConcept(Resource subject) {
+  @Override
+  public Resource enrichUnMockedResource(Resource subject) {
+    return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+  }
+
+  private boolean isConceptOrMock(Resource subject) {
+    return subject.isOfType(CONCEPT) || mockLccnResourceService.isMockLccnResource(subject);
+  }
+
+  public Resource wrapWithConcept(Resource subject) {
     var concept = new Resource()
       .setLabel(subject.getLabel())
       .setDoc(copyWithoutPreferred(subject))
