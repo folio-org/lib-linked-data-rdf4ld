@@ -5,7 +5,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -62,7 +61,6 @@ public class MappingProfileReader {
   private Optional<ResourceMapping> getWorkMapping() {
     return readResourceMapping(WORK)
       .map(wm -> {
-        wm.setResourceMapping(new ResourceInternalMapping());
         readResourceMapping(TITLE).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_PARALLEL).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_VARIANT).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);

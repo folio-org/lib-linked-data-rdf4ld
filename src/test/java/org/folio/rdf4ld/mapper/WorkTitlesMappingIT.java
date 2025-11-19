@@ -48,10 +48,11 @@ class WorkTitlesMappingIT {
     // then
     assertThat(result).hasSize(1);
     var instance = result.iterator().next();
-    validateResourceWithTitles(instance, "");
+    validateResourceWithTitles(instance, "", "http://test-tobe-changed.folio.com/resources/INSTANCE_ID");
     assertThat(instance.getOutgoingEdges()).hasSize(4);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, CONTINUING_RESOURCES),
-      Map.of(), getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ")
+      Map.of(), getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ",
+        "http://test-tobe-changed.folio.com/resources/WORK_ID")
     );
   }
 

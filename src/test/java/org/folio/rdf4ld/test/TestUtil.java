@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -112,9 +113,10 @@ public class TestUtil {
     };
   }
 
-  public static void validateResourceWithTitles(Resource resource, String prefix) {
+  public static void validateResourceWithTitles(Resource resource, String prefix, String expectedLink) {
     assertThat(resource.getId()).isNotNull();
     assertThat(resource.getLabel()).isEqualTo(getTitleLabel(prefix, "Title"));
+    validateProperty(resource.getDoc(), LINK.getValue(), List.of(expectedLink));
     assertThat(resource.getIncomingEdges()).isEmpty();
     validateOutgoingEdge(resource, TITLE, Set.of(ResourceTypeDictionary.TITLE),
       Map.of(

@@ -8,6 +8,10 @@
   "resourceMapping": {
     "properties": [
       {
+        "ldProperty": "LINK",
+        "bfProperty": "@iri"
+      },
+      {
         "ldProperty": "DIMENSIONS",
         "bfProperty": "http://id.loc.gov/ontologies/bibframe/dimensions"
       },
