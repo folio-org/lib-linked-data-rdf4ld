@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public class RdfUtil {
 
+  public static final String IRI = "@iri";
+
   private static final ImmutableBiMap<@NotNull ResourceTypeDictionary, @NotNull String> LD_TO_BF_EXTRA_TYPES =
     new ImmutableBiMap.Builder<@NotNull ResourceTypeDictionary, @NotNull String>()
       .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")

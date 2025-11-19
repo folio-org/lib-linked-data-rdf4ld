@@ -7,5 +7,13 @@
     "typeSet": "http://id.loc.gov/ontologies/bibframe/Work",
     "predicate": "http://id.loc.gov/ontologies/bibframe/instanceOf",
     "partialTypesMatch": true
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "LINK",
+        "bfProperty": "@iri"
+      }
+    ]
   }
 }
