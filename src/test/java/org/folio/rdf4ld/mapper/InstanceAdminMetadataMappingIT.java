@@ -26,7 +26,7 @@ class InstanceAdminMetadataMappingIT {
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithTitles() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithoutAdminMetadata() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance_admin_metadata.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
@@ -37,7 +37,7 @@ class InstanceAdminMetadataMappingIT {
     // then
     assertThat(result).isNotEmpty().hasSize(1);
     var instance = result.iterator().next();
-    assertThat(instance.getDoc()).isNull();
+    assertThat(instance.getDoc()).isNotNull();
     assertThat(instance.getOutgoingEdges().stream().anyMatch(edge ->
       edge.getPredicate().equals(ADMIN_METADATA)
     )).isFalse();
