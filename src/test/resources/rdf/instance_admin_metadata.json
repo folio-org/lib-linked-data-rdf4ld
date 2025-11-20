@@ -22,7 +22,7 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
             {
-                "@id": "_:a"
+                "@id": "_:in00123"
             },
             {
                 "@id": "_:FOLIO_UUID"
@@ -30,23 +30,23 @@
         ]
     },
     {
-        "@id": "_:a",
+        "@id": "_:in00123",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Local"
         ],
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
             {
-                "@value": "a"
+                "@value": "in00123"
             }
         ],
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
-                "@id": "_:note_a"
+                "@id": "_:note_in00123"
             }
         ]
     },
     {
-        "@id": "_:note_a",
+        "@id": "_:note_in00123",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Note"
         ],

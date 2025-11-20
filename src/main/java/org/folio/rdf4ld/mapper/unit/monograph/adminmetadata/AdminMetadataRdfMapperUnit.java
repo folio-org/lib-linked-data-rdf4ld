@@ -8,7 +8,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
@@ -26,6 +25,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @RdfMapperDefinition(predicate = ADMIN_METADATA, types = ANNOTATION)
 public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
+
+  public static final String LD_FOLIO_INVENTORY_ID = "http://bibfra.me/vocab/marc/folioInventoryId";
 
   private static final String BF_IDENTIFIED_BY = "http://id.loc.gov/ontologies/bibframe/identifiedBy";
   private static final String BF_NOTE = "http://id.loc.gov/ontologies/bibframe/note";
@@ -55,38 +56,33 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
                             ResourceMapping resourceMapping,
                             Resource parent) {
     baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
-    addLocalIdentifierAndNote(resource, modelBuilder);
+    addLocalIdentifiers(resource, modelBuilder);
   }
   
-  private void addLocalIdentifierAndNote(Resource resource, ModelBuilder modelBuilder) {
-    if (resource.getDoc().has(CONTROL_NUMBER.getValue())) {
-      var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
-      resource.getDoc().get(CONTROL_NUMBER.getValue()).iterator().forEachRemaining(
-        controlNumberNode -> {
-          var controlNumber = controlNumberNode.asText();
-          var local = bnode(controlNumber);
-          modelBuilder.add(local, RDF.TYPE, iri(BF_LOCAL_TYPE));
-          modelBuilder.add(local, RDF.VALUE, controlNumber);
-          var note = bnode("note_" + controlNumber);
-          modelBuilder.add(note, RDF.TYPE, iri(BF_NOTE_TYPE));
-          if (isUuid(controlNumber)) {
-            modelBuilder.add(note, RDFS.LABEL, FOLIO_UUID);
-          } else {
-            modelBuilder.add(note, RDFS.LABEL, FOLIO_HRID);
-          }
-          linkResources(local, note, BF_NOTE, modelBuilder);
-          linkResources(resourceIri, local, BF_IDENTIFIED_BY, modelBuilder);
-        }
-      );
-    }
+  private void addLocalIdentifiers(Resource resource, ModelBuilder modelBuilder) {
+    addLocalIdentifierAndNote(resource, modelBuilder, CONTROL_NUMBER.getValue(), FOLIO_HRID);
+    addLocalIdentifierAndNote(resource, modelBuilder, LD_FOLIO_INVENTORY_ID, FOLIO_UUID);
   }
 
-  private boolean isUuid(String id) {
-    try {
-      UUID.fromString(id);
-      return true;
-    } catch (IllegalArgumentException ex) {
-      return false;
+  private void addLocalIdentifierAndNote(Resource resource,
+                                         ModelBuilder modelBuilder,
+                                         String property,
+                                         String note) {
+    if (resource.getDoc().has(property)) {
+      var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
+      resource.getDoc().get(property).iterator().forEachRemaining(
+        identifierNode -> {
+          var identifier = identifierNode.asText();
+          var localNode = bnode(identifier);
+          modelBuilder.add(localNode, RDF.TYPE, iri(BF_LOCAL_TYPE));
+          modelBuilder.add(localNode, RDF.VALUE, identifier);
+          var noteNode = bnode("note_" + identifier);
+          modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
+          modelBuilder.add(noteNode, RDFS.LABEL, note);
+          linkResources(localNode, noteNode, BF_NOTE, modelBuilder);
+          linkResources(resourceIri, localNode, BF_IDENTIFIED_BY, modelBuilder);
+        }
+      );
     }
   }
 }

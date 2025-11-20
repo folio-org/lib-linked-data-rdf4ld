@@ -39,9 +39,11 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.mapper.unit.monograph.adminmetadata.AdminMetadataRdfMapperUnit.LD_FOLIO_INVENTORY_ID;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -261,14 +263,18 @@ public class MonographUtil {
   }
 
   public static Resource createAdminMetadata(String hrid, String uuid) {
-    return createResource(
+    var resource = createResource(
       Map.of(
-        CONTROL_NUMBER, List.of(hrid, uuid),
+        CONTROL_NUMBER, List.of(hrid),
         CREATED_DATE, List.of("2025-11-19")
       ),
       Set.of(ANNOTATION),
       Map.of()
     ).setLabel(hrid);
+    var doc = (ObjectNode) resource.getDoc();
+    doc.putArray(LD_FOLIO_INVENTORY_ID).add(uuid);
+    resource.setDoc(doc);
+    return resource;
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
