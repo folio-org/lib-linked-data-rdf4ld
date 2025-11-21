@@ -170,4 +170,11 @@ public class TestUtil {
       return null;
     }
   }
+
+  public static Resource mockLccnResource(String lccn) {
+    var label = "LCCN_RESOURCE_MOCK_" + lccn;
+    return new Resource()
+      .setId((long) label.hashCode())
+      .setLabel(label);
+  }
 }
