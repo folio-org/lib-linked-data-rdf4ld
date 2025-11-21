@@ -1,9 +1,7 @@
 package org.folio.rdf4ld.service.lccn;
 
-import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -44,16 +42,12 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   }
 
   @Override
-  public Set<Resource> unMockLccnResources(Set<Resource> resources, Function<String, Resource> lccnResourceProvider) {
-    return resources.stream()
-      .map(r -> {
-        if (isMockLccnResource(r)) {
-          return unMockSingleLccnResource(r, lccnResourceProvider, null);
-        }
-        unMockLccnResourceEdgesRecursive(r, lccnResourceProvider);
-        return r;
-      })
-      .collect(toCollection(LinkedHashSet::new));
+  public Resource unMockLccnResource(Resource resource, Function<String, Resource> lccnResourceProvider) {
+    if (isMockLccnResource(resource)) {
+      return unMockSingleLccnResource(resource, lccnResourceProvider, null);
+    }
+    unMockLccnResourceEdgesRecursive(resource, lccnResourceProvider);
+    return resource;
   }
 
   private Stream<String> gatherMockLccnsRecursive(Stream<Resource> resources) {

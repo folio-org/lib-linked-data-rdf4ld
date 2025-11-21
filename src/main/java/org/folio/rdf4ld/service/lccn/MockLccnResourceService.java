@@ -12,5 +12,5 @@ public interface MockLccnResourceService {
 
   Set<String> gatherLccns(Set<Resource> resources);
 
-  Set<Resource> unMockLccnResources(Set<Resource> resources, Function<String, Resource> lccnResourceProvider);
+  Resource unMockLccnResource(Resource resource, Function<String, Resource> lccnResourceProvider);
 }
