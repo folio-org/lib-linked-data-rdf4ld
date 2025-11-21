@@ -92,7 +92,7 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   }
 
   private String getLccn(Resource resource) {
-    return resource.getLabel().replaceAll(LABEL_PREFIX, "");
+    return resource.getLabel().replace(LABEL_PREFIX, "");
   }
 
 }
