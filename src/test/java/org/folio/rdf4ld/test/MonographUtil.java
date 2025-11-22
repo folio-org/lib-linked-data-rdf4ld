@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
@@ -39,7 +40,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.rdf4ld.mapper.unit.monograph.adminmetadata.AdminMetadataRdfMapperUnit.LD_FOLIO_INVENTORY_ID;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -272,7 +272,7 @@ public class MonographUtil {
       Map.of()
     ).setLabel(hrid);
     var doc = (ObjectNode) resource.getDoc();
-    doc.putArray(LD_FOLIO_INVENTORY_ID).add(uuid);
+    doc.putArray(FOLIO_INVENTORY_ID).add(uuid);
     resource.setDoc(doc);
     return resource;
   }

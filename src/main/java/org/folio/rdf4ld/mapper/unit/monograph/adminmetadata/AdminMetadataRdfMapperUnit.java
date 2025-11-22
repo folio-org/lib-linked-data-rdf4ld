@@ -4,6 +4,7 @@ import static org.eclipse.rdf4j.model.util.Values.bnode;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
@@ -25,8 +26,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @RdfMapperDefinition(predicate = ADMIN_METADATA, types = ANNOTATION)
 public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
-
-  public static final String LD_FOLIO_INVENTORY_ID = "http://bibfra.me/vocab/marc/folioInventoryId";
 
   private static final String BF_IDENTIFIED_BY = "http://id.loc.gov/ontologies/bibframe/identifiedBy";
   private static final String BF_NOTE = "http://id.loc.gov/ontologies/bibframe/note";
@@ -61,7 +60,7 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
   
   private void addLocalIdentifiers(Resource resource, ModelBuilder modelBuilder) {
     addLocalIdentifierAndNote(resource, modelBuilder, CONTROL_NUMBER.getValue(), FOLIO_HRID);
-    addLocalIdentifierAndNote(resource, modelBuilder, LD_FOLIO_INVENTORY_ID, FOLIO_UUID);
+    addLocalIdentifierAndNote(resource, modelBuilder, FOLIO_INVENTORY_ID, FOLIO_UUID);
   }
 
   private void addLocalIdentifierAndNote(Resource resource,
