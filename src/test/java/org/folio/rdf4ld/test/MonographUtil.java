@@ -9,7 +9,10 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
@@ -23,6 +26,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
@@ -39,6 +43,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -255,6 +260,21 @@ public class MonographUtil {
       Set.of(PLACE),
       Map.of()
     ).setLabel(name);
+  }
+
+  public static Resource createAdminMetadata(String hrid, String uuid) {
+    var resource = createResource(
+      Map.of(
+        CONTROL_NUMBER, List.of(hrid),
+        CREATED_DATE, List.of("2025-11-19")
+      ),
+      Set.of(ANNOTATION),
+      Map.of()
+    ).setLabel(hrid);
+    var doc = (ObjectNode) resource.getDoc();
+    doc.putArray(FOLIO_INVENTORY_ID).add(uuid);
+    resource.setDoc(doc);
+    return resource;
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,

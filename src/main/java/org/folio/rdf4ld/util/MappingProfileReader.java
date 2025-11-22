@@ -31,6 +31,7 @@ public class MappingProfileReader {
   public static final String MANUFACTURE = "provision/manufacture.json";
   public static final String PRODUCTION = "provision/production.json";
   public static final String PUBLICATION = "provision/publication.json";
+  public static final String ADMIN_METADATA = "admin_metadata/admin_metadata.json";
   private final Rdf4LdObjectMapper objectMapper;
 
   public ResourceMapping getBibframe20Profile() {
@@ -51,6 +52,7 @@ public class MappingProfileReader {
         readResourceMapping(MANUFACTURE).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(PRODUCTION).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(PUBLICATION).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(ADMIN_METADATA).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         getWorkMapping().ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         return im;
       });
