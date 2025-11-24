@@ -8,6 +8,7 @@ import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -20,6 +21,7 @@ import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.PropertyMapping;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.util.RdfUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,13 +35,15 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
     final var idMap = new EnumMap<PropertyDictionary, Integer>(PropertyDictionary.class);
     ofNullable(mapping.getResourceMapping())
       .ifPresent(irm ->
-        irm.getProperties().forEach(p -> {
-          if (isNull(p.getEdgeParentBfDef())) {
-            mapDirectProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty());
-          } else {
-            mapPropertyToAnotherResource(modelBuilder, resource, p, idMap);
-          }
-        })
+        irm.getProperties().stream()
+          .filter(p -> !Objects.equals(RdfUtil.IRI, p.getBfProperty()))
+          .forEach(p -> {
+            if (isNull(p.getEdgeParentBfDef())) {
+              mapDirectProperty(modelBuilder, p.getBfProperty(), resource, p.getLdProperty());
+            } else {
+              mapPropertyToAnotherResource(modelBuilder, resource, p, idMap);
+            }
+          })
       );
   }
 

@@ -142,7 +142,7 @@ class WorkAgentMappingIT {
   })
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var isCurrent = !rdfFile.contains("no_lccn");
     var creator = createAgent("n2021004098", isCurrent, List.of(PERSON), "Creator Agent");
     var contributor = createAgent("n2021004092", isCurrent, List.of(FAMILY), "Contributor Agent");
@@ -173,7 +173,7 @@ class WorkAgentMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnWorkWithSameAgentAsCreatorAndContributorCorrectly() throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var creator = createAgent("n2021004098", true, List.of(PERSON), "Creator Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
