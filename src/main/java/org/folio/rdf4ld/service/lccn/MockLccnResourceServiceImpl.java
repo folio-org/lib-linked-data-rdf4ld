@@ -60,17 +60,20 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   private boolean unMockLccnResourceEdgesRecursive(Resource parent,
                                                    Function<String, Resource> lccnResourceProvider) {
     var isUnMocked = new AtomicBoolean(false);
-    parent.getOutgoingEdges()
-      .forEach(oe -> {
+    var newOutgoingEdges = parent.getOutgoingEdges().stream()
+      .map(oe -> {
         if (isMockLccnResource(oe.getTarget())) {
           var unMockedTarget = unMockSingleLccnResource(oe.getTarget(), lccnResourceProvider, oe.getPredicate());
-          oe.setTarget(unMockedTarget);
           isUnMocked.set(true);
+          return new ResourceEdge(oe.getSource(), unMockedTarget, oe.getPredicate());
         } else {
           isUnMocked.set(unMockLccnResourceEdgesRecursive(oe.getTarget(), lccnResourceProvider));
+          return oe;
         }
-      });
+      })
+      .collect(toSet());
     if (isUnMocked.get()) {
+      parent.setOutgoingEdges(newOutgoingEdges);
       parent.setId(fingerprintHashService.hash(parent));
     }
     return isUnMocked.get();
