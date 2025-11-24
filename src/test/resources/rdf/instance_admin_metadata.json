@@ -22,15 +22,15 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
             {
-                "@id": "_:in00123"
+                "@id": "_:CONTROL_NUMBER_1_ID"
             },
             {
-                "@id": "_:FOLIO_UUID"
+                "@id": "_:FOLIO_INVENTORY_ID_1_ID"
             }
         ]
     },
     {
-        "@id": "_:in00123",
+        "@id": "_:CONTROL_NUMBER_1_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Local"
         ],
@@ -46,18 +46,7 @@
         ]
     },
     {
-        "@id": "_:note_in00123",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/Note"
-        ],
-        "http://www.w3.org/2000/01/rdf-schema#label": [
-            {
-                "@value": "FOLIO HRID"
-            }
-        ]
-    },
-    {
-        "@id": "_:FOLIO_UUID",
+        "@id": "_:FOLIO_INVENTORY_ID_1_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Local"
         ],
@@ -69,6 +58,17 @@
         "http://id.loc.gov/ontologies/bibframe/note": [
             {
                 "@id": "_:note_FOLIO_UUID"
+            }
+        ]
+    },
+    {
+        "@id": "_:note_in00123",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Note"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "FOLIO HRID"
             }
         ]
     },
