@@ -10,8 +10,11 @@ import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
@@ -29,7 +32,6 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
 
   private static final String BF_IDENTIFIED_BY = "http://id.loc.gov/ontologies/bibframe/identifiedBy";
   private static final String BF_NOTE = "http://id.loc.gov/ontologies/bibframe/note";
-  private static final String BF_LOCAL_TYPE = "http://id.loc.gov/ontologies/bibframe/Local";
   private static final String BF_NOTE_TYPE = "http://id.loc.gov/ontologies/bibframe/Note";
   private static final String FOLIO_HRID = "FOLIO HRID";
   private static final String FOLIO_UUID = "FOLIO Inventory UUID";
@@ -59,29 +61,38 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
   }
   
   private void addLocalIdentifiers(Resource resource, ModelBuilder modelBuilder) {
-    addLocalIdentifierAndNote(resource, modelBuilder, CONTROL_NUMBER.getValue(), FOLIO_HRID);
-    addLocalIdentifierAndNote(resource, modelBuilder, FOLIO_INVENTORY_ID, FOLIO_UUID);
+    addLocalIdentifierNote(resource, modelBuilder, CONTROL_NUMBER.getValue(), FOLIO_HRID);
+    addLocalIdentifierNote(resource, modelBuilder, FOLIO_INVENTORY_ID.getValue(), FOLIO_UUID);
   }
 
-  private void addLocalIdentifierAndNote(Resource resource,
-                                         ModelBuilder modelBuilder,
-                                         String property,
-                                         String note) {
+  private void addLocalIdentifierNote(Resource resource,
+                                      ModelBuilder modelBuilder,
+                                      String property,
+                                      String note) {
     if (resource.getDoc().has(property)) {
       var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
       resource.getDoc().get(property).iterator().forEachRemaining(
-        identifierNode -> {
-          var identifier = identifierNode.asText();
-          var localNode = bnode(identifier);
-          modelBuilder.add(localNode, RDF.TYPE, iri(BF_LOCAL_TYPE));
-          modelBuilder.add(localNode, RDF.VALUE, identifier);
-          var noteNode = bnode("note_" + identifier);
-          modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
-          modelBuilder.add(noteNode, RDFS.LABEL, note);
-          linkResources(localNode, noteNode, BF_NOTE, modelBuilder);
-          linkResources(resourceIri, localNode, BF_IDENTIFIED_BY, modelBuilder);
-        }
-      );
+        identifierResource -> {
+          var amNodes = modelBuilder.build().getStatements(
+              resourceIri, iri(BF_IDENTIFIED_BY), null);
+          StreamSupport.stream(amNodes.spliterator(), false)
+            .map(Statement::getObject)
+            .filter(Value::isResource)
+            .map(org.eclipse.rdf4j.model.Resource.class::cast)
+            .forEach(identifierNode -> {
+              var identifiersModel = modelBuilder.build().getStatements(identifierNode, RDF.VALUE, null);
+              StreamSupport.stream(identifiersModel.spliterator(), false)
+                .map(Statement::getObject)
+                .map(Value::stringValue)
+                .filter(objVal -> objVal.equals(identifierResource.asText()))
+                .forEach(id -> {
+                  var noteNode = bnode("note_" + id);
+                  modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
+                  modelBuilder.add(noteNode, RDFS.LABEL, note);
+                  linkResources(identifierNode, noteNode, BF_NOTE, modelBuilder);
+                });
+            });
+        });
     }
   }
 }
