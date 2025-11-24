@@ -131,9 +131,10 @@ public class MonographUtil {
     ).setLabel(mainTitle1 + " " + mainTitle2 + " " + subTitle1 + " " + subTitle2);
   }
 
-  public static Resource createWork(String label, ResourceTypeDictionary workType) {
+  public static Resource createWork(String label, Map<PropertyDictionary, List<String>> properties,
+                                    ResourceTypeDictionary workType) {
     var work = createResource(
-      Map.of(),
+      properties,
       Set.of(WORK, workType),
       Map.of()
     );

@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
@@ -16,8 +17,10 @@ import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithTitles;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -69,7 +72,10 @@ class WorkTitlesMappingIT {
     var primaryWorkTitle = createPrimaryTitle("Work ");
     var parallelWorkTitle = createParallelTitle("Work ");
     var variantWorkTitle = createVariantTitle("Work ");
-    var work = createWork(primaryWorkTitle.getLabel(), CONTINUING_RESOURCES);
+    var workProperties = Map.of(
+      LINK, List.of(UUID.randomUUID().toString())
+    );
+    var work = createWork(primaryWorkTitle.getLabel(), workProperties, CONTINUING_RESOURCES);
     work.addOutgoingEdge(new ResourceEdge(work, primaryWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, parallelWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, variantWorkTitle, TITLE));

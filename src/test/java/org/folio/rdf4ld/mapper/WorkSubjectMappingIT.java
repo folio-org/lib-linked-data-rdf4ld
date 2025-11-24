@@ -186,7 +186,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var personAgent = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
     var familyAgent = createConceptAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
     var topic = createConceptTopic(TOPIC_LCCN, true, TOPIC_LABEL);
@@ -210,7 +210,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithoutLccn() throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
@@ -242,7 +242,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_noLccn() throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
@@ -270,7 +270,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_withLccn() throws IOException {
     // given
-    var work = createWork("work", BOOKS);
+    var work = createWork("work", Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);

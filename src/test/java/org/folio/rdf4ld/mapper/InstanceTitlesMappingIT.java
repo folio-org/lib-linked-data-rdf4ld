@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.rdf4ld.test.MonographUtil.createParallelTitle;
 import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
@@ -14,6 +15,7 @@ import static org.folio.rdf4ld.test.TestUtil.validateResourceWithTitles;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -63,7 +65,8 @@ class InstanceTitlesMappingIT {
     var variantTitle = createVariantTitle("");
     var properties = Map.of(
       DIMENSIONS, List.of("Instance dimensions 1", "Instance dimensions 2"),
-      STATEMENT_OF_RESPONSIBILITY, List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2")
+      STATEMENT_OF_RESPONSIBILITY, List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2"),
+      LINK, List.of(UUID.randomUUID().toString())
     );
     var instance = MonographUtil.createInstance(primaryTitle.getLabel(), properties);
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
