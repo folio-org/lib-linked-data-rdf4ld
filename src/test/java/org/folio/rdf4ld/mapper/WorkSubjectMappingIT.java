@@ -6,6 +6,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
@@ -51,6 +54,9 @@ class WorkSubjectMappingIT {
   private static final String TOPIC_LABEL = "Subject Topic";
   private static final String COMPLEX_SUBJECT_LABEL = "Complex Subject Label";
   private static final String COMPLEX_SUBJECT_LCCN = "sh111222333";
+  private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
+    LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
+  );
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -70,7 +76,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + PERSON_AGENT_LCCN, null);
         validateOutgoingEdge(work, SUBJECT, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + TOPIC_LCCN, null);
@@ -93,20 +99,32 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
+    var expectedPersonProperties = Map.of(
+      LABEL, List.of(PERSON_AGENT_LABEL),
+      NAME, List.of(PERSON_AGENT_LABEL)
+    );
+    var expectedTopicProperties = Map.of(
+      LABEL, List.of(TOPIC_LABEL),
+      NAME, List.of(TOPIC_LABEL)
+    );
+    var expectedFamilyProperties = Map.of(
+      LABEL, List.of(FAMILY_AGENT_LABEL),
+      NAME, List.of(FAMILY_AGENT_LABEL)
+    );
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
-        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), expectedPersonProperties,
           PERSON_AGENT_LABEL, concept ->
-            validateOutgoingEdge(concept, FOCUS, Set.of(PERSON), Map.of(LABEL, List.of(PERSON_AGENT_LABEL)),
+            validateOutgoingEdge(concept, FOCUS, Set.of(PERSON), expectedPersonProperties,
               PERSON_AGENT_LABEL, c -> {})
         );
-        validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), Map.of(LABEL, List.of(TOPIC_LABEL)), TOPIC_LABEL,
-          concept -> validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), Map.of(LABEL, List.of(TOPIC_LABEL)),
+        validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), expectedTopicProperties, TOPIC_LABEL,
+          concept -> validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), expectedTopicProperties,
             TOPIC_LABEL, c -> {})
         );
-        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), Map.of(LABEL, List.of(FAMILY_AGENT_LABEL)),
+        validateOutgoingEdge(work, SUBJECT, Set.of(FAMILY, CONCEPT), expectedFamilyProperties,
           FAMILY_AGENT_LABEL, concept ->
-            validateOutgoingEdge(concept, FOCUS, Set.of(FAMILY), Map.of(LABEL, List.of(FAMILY_AGENT_LABEL)),
+            validateOutgoingEdge(concept, FOCUS, Set.of(FAMILY), expectedFamilyProperties,
               FAMILY_AGENT_LABEL, c -> {})
         );
       });
@@ -127,7 +145,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + COMPLEX_SUBJECT_LCCN, null);
       });

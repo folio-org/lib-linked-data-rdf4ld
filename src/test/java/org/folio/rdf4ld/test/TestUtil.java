@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.test;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -86,6 +87,11 @@ public class TestUtil {
     assertThat(outgoingOrIncoming ? edge.getSource() : edge.getTarget()).isEqualTo(parentResource);
     var resource = outgoingOrIncoming ? edge.getTarget() : edge.getSource();
     assertThat(resource.getId()).isNotNull();
+    if (expectedProperties.isEmpty()) {
+      assertThat(isNull(resource.getDoc()) || resource.getDoc().isEmpty()).isTrue();
+    } else {
+      assertThat(resource.getDoc().size()).isEqualTo(expectedProperties.size());
+    }
     expectedProperties.forEach((key, value) -> validateProperty(resource.getDoc(), key.getValue(), value));
     if (nonNull(extraValidator)) {
       extraValidator.accept(resource);

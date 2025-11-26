@@ -1,5 +1,6 @@
 package org.folio.rdf4ld.util;
 
+import static java.util.Optional.ofNullable;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
+import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -27,6 +29,8 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
+import org.folio.rdf4ld.model.ResourceMapping;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
@@ -108,6 +112,20 @@ public class RdfUtil {
       .map(LD_TO_BF_EXTRA_TYPES::get)
       .filter(Objects::nonNull)
       .forEach(t -> modelBuilder.add(RDF.TYPE, iri(t)));
+  }
+
+  public static BNode writeBlankNode(BNode node,
+                                     org.folio.ld.dictionary.model.Resource resource,
+                                     ModelBuilder modelBuilder,
+                                     ResourceMapping mapping,
+                                     CoreLd2RdfMapper coreLd2RdfMapper) {
+    modelBuilder.subject(node);
+    ofNullable(mapping.getBfResourceDef().getTypeSet())
+      .stream()
+      .flatMap(Collection::stream)
+      .forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
+    coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
+    return node;
   }
 
 }

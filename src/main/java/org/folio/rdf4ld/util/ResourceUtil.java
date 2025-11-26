@@ -71,6 +71,15 @@ public class ResourceUtil {
       .collect(joining(", "));
   }
 
+  public static Optional<String> getFirstPropertyValue(JsonNode doc, PropertyDictionary property) {
+    return ofNullable(doc)
+      .map(d -> d.get(property.getValue()))
+      .filter(JsonNode::isArray)
+      .filter(arr -> !arr.isEmpty())
+      .map(arr -> arr.get(0))
+      .map(JsonNode::asText);
+  }
+
   public static JsonNode copyWithoutPreferred(Resource resource) {
     return ofNullable(resource.getDoc())
       .filter(JsonNode::isObject)

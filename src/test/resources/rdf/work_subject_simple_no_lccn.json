@@ -34,6 +34,11 @@
             "http://www.loc.gov/mads/rdf/v1#Authority",
             "http://id.loc.gov/ontologies/bibframe/Person"
         ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Person Agent"
+            }
+        ],
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
                 "@value": "Person Agent"
@@ -46,6 +51,11 @@
             "http://www.loc.gov/mads/rdf/v1#Authority",
             "http://id.loc.gov/ontologies/bibframe/Family"
         ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Family Agent"
+            }
+        ],
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
                 "@value": "Family Agent"
@@ -57,6 +67,11 @@
         "@type": [
             "http://www.loc.gov/mads/rdf/v1#Authority",
             "http://id.loc.gov/ontologies/bibframe/Topic"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Subject Topic"
+            }
         ],
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {

@@ -3,10 +3,16 @@
     "predicate": "SUBJECT"
   },
   "bfResourceDef": {
-    "predicate": "http://id.loc.gov/ontologies/bibframe/subject"
+    "typeSet": "http://www.loc.gov/mads/rdf/v1#Authority",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/subject",
+    "ignoreTypesMatch": true
   },
   "resourceMapping": {
     "properties": [
+      {
+        "ldProperty": "LABEL",
+        "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+      },
       {
         "ldProperty": "LABEL",
         "bfProperty": "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"
@@ -20,6 +26,10 @@
         },
         "resourceMapping": {
           "properties": [
+            {
+              "ldProperty": "LABEL",
+              "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+            },
             {
               "ldProperty": "LABEL",
               "bfProperty": "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"

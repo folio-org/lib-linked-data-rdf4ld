@@ -1,9 +1,19 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
 import static java.util.Optional.empty;
+import static org.eclipse.rdf4j.model.util.Values.bnode;
+import static org.eclipse.rdf4j.model.util.Values.iri;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
+import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 
 import java.util.Optional;
+import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -11,6 +21,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
@@ -21,6 +32,8 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
   protected final BaseRdfMapperUnit baseRdfMapperUnit;
   protected final FingerprintHashService hashService;
   protected final MockLccnResourceService mockLccnResourceService;
+  protected final LongFunction<String> resourceUrlProvider;
+  protected final CoreLd2RdfMapper coreLd2RdfMapper;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -33,23 +46,34 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
     }
     if (resource instanceof BNode node) {
       resourceOptional = baseRdfMapperUnit.mapToLd(model, node, mapping, parent)
-        .map(mapped -> addExtraTypes(model, node, mapped));
+        .map(mapped -> addExtraPropertiesAndTypes(model, node, mapped));
     }
     return resourceOptional;
   }
 
-  private Resource addExtraTypes(Model model, BNode node, Resource mapped) {
+  private Resource addExtraPropertiesAndTypes(Model model, BNode node, Resource mapped) {
+    getFirstPropertyValue(mapped.getDoc(), LABEL)
+      .ifPresent(label -> mapped.setDoc(addProperty(mapped.getDoc(), NAME, label)));
     readSupportedExtraTypes(model, node).forEach(mapped::addType);
     mapped.setId(hashService.hash(mapped));
     return mapped;
   }
 
   @Override
-  public void mapToBibframe(Resource resource,
+  public void mapToBibframe(Resource reference,
                             ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping,
+                            ResourceMapping mapping,
                             Resource parent) {
-    baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
+    var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
+    var predicate = mapping.getBfResourceDef().getPredicate();
+    getCurrentLccnLink(reference)
+      .ifPresentOrElse(link -> linkResources(parentIri, iri(link), predicate, modelBuilder),
+        () -> {
+          var node = bnode("_" + reference.getId());
+          linkResources(parentIri, node, predicate, modelBuilder);
+          writeBlankNode(node, reference, modelBuilder, mapping, coreLd2RdfMapper);
+        }
+      );
   }
 
 }

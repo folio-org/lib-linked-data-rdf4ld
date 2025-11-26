@@ -7,16 +7,26 @@
     "predicate": "http://id.loc.gov/ontologies/bibframe/contribution"
   },
   "resourceMapping": {
-    "properties": [
-      {
-        "ldProperty": "LABEL",
-        "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
-      }
-    ],
     "outgoingEdges": [
       {
+        "ldResourceDef": {
+          "predicate": "CONTRIBUTOR"
+        },
         "bfResourceDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/Agent",
           "predicate": "http://id.loc.gov/ontologies/bibframe/agent"
+        },
+        "resourceMapping": {
+          "properties": [
+            {
+              "ldProperty": "LABEL",
+              "bfProperty": "http://www.w3.org/2000/01/rdf-schema#label"
+            },
+            {
+              "ldProperty": "LABEL",
+              "bfProperty": "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"
+            }
+          ]
         }
       },
       {

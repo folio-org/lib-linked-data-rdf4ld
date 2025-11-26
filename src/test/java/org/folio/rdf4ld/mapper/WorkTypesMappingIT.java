@@ -3,11 +3,13 @@ package org.folio.rdf4ld.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -42,10 +44,9 @@ class WorkTypesMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
-      work -> {
-        assertThat(work.getId()).isNotNull();
-      }
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS),
+      Map.of(LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")), "",
+      work -> assertThat(work.getId()).isNotNull()
     );
   }
 
@@ -64,7 +65,8 @@ class WorkTypesMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS),
+      Map.of(LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")), "",
       work -> {
         assertThat(work.getId()).isNotNull();
       }

@@ -1,41 +1,37 @@
 [
     {
-        "@id": "http://id.loc.gov/resources/instances/20572081",
+        "@id": "http://test-tobe-changed.folio.com/resources/INSTANCE_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Instance"
         ],
         "http://id.loc.gov/ontologies/bibframe/instanceOf": [
             {
-                "@id": "http://id.loc.gov/resources/works/20572081"
+                "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID"
             }
         ]
     },
     {
-        "@id": "http://id.loc.gov/resources/works/20572081",
+        "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID",
         "@type": [
             "http://id.loc.gov/ontologies/bibframe/Work",
             "http://id.loc.gov/ontologies/bibframe/Monograph"
         ],
         "http://id.loc.gov/ontologies/bibframe/genreForm": [
             {
-                "@id": "http://id.loc.gov/authorities/genreForms/gf2014026339"
+                "@id": "_:GENRE_FORM_ID"
             }
         ]
     },
     {
-        "@id": "http://id.loc.gov/authorities/genreForms/gf2014026339",
-        "@type": [
-            "http://id.loc.gov/ontologies/bibframe/GenreForm"
-        ],
+        "@id": "_:GENRE_FORM_ID",
         "http://www.w3.org/2000/01/rdf-schema#label": [
             {
-                "@language": "en",
                 "@value": "Fiction"
             }
         ],
-        "http://id.loc.gov/ontologies/bflc/marcKey": [
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
-                "@value": "155  $aFiction"
+                "@value": "Fiction"
             }
         ]
     }

@@ -10,6 +10,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.PUBLISHING_DIRECTOR;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -29,6 +31,7 @@ import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
@@ -45,6 +48,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
 class WorkAgentMappingIT {
+  private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
+    LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
+  );
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -66,7 +72,7 @@ class WorkAgentMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     var creator = mockLccnResource("n2021004098");
     var contributor = mockLccnResource("n2021004092");
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), Map.of(), "",
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> validateResourceWithGivenEdges(work,
         new ResourceEdge(work, creator, CREATOR),
         new ResourceEdge(work, creator, AUTHOR),
@@ -94,17 +100,25 @@ class WorkAgentMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     var creatorLabel = "Creator Agent";
     var contributorLabel = "Contributor Agent";
-    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), Map.of(), "",
+    var expectedCreatorProperties = Map.of(
+      LABEL, List.of(creatorLabel),
+      NAME, List.of(creatorLabel)
+    );
+    var expectedContributorProperties = Map.of(
+      LABEL, List.of(contributorLabel),
+      NAME, List.of(contributorLabel)
+    );
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
         validateAgent(work, creatorLabel, CREATOR, PERSON);
-        validateOutgoingEdge(work, AUTHOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
-        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), Map.of(LABEL, List.of(creatorLabel)), creatorLabel);
+        validateOutgoingEdge(work, AUTHOR, of(PERSON), expectedCreatorProperties, creatorLabel);
+        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), expectedCreatorProperties, creatorLabel);
         validateAgent(work, contributorLabel, CONTRIBUTOR, FAMILY);
-        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)), contributorLabel);
-        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), Map.of(LABEL, List.of(contributorLabel)),
+        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorLabel);
+        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
           contributorLabel);
       });
   }
@@ -113,7 +127,11 @@ class WorkAgentMappingIT {
                              String agentLabel,
                              PredicateDictionary predicate,
                              ResourceTypeDictionary type) {
-    validateOutgoingEdge(work, predicate, of(type), Map.of(LABEL, List.of(agentLabel)), agentLabel,
+    var expectedProperties = Map.of(
+      LABEL, List.of(agentLabel),
+      NAME, List.of(agentLabel)
+    );
+    validateOutgoingEdge(work, predicate, of(type), expectedProperties, agentLabel,
       agent -> {
         assertThat(agent.getId()).isNotNull();
         assertThat(agent.getIncomingEdges()).isEmpty();
