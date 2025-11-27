@@ -4,12 +4,18 @@ import static java.util.Optional.empty;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
+import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
+import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -21,7 +27,6 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.SimpleIRI;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.dictionary.specific.RoleDictionary;
@@ -40,7 +45,6 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private static final int AGENT_EDGE_NUMBER = 0;
   private static final int ROLE_EDGE_NUMBER = 1;
   private static final String ROLES_NAMESPACE = "http://id.loc.gov/vocabulary/relators/";
-  private static final String AGENT_RDF_TYPE = "http://id.loc.gov/ontologies/bibframe/Agent";
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
@@ -67,7 +71,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
           agentOptional = Optional.of(mockLccnResourceService.mockLccnResource(iri.getLocalName()));
         }
         if (ar instanceof BNode node) {
-          agentOptional = mapAgent(model, node, mapping, parent);
+          var agentMapping = getEdgeMapping(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
+          agentOptional = mapAgent(model, node, agentMapping, parent);
         }
         agentOptional
           .ifPresent(agent -> addRoles(agent, parent, model, contributionResource, mapping.getResourceMapping()));
@@ -79,6 +84,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
   private Optional<Resource> mapAgent(Model model, BNode agentNode, ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
       .map(agent -> {
+        getFirstPropertyValue(agent.getDoc(), LABEL)
+          .ifPresent(label -> agent.setDoc(addProperty(agent.getDoc(), NAME, label)));
         readSupportedExtraTypes(model, agentNode).forEach(agent::addType);
         agent.setId(hashService.hash(agent));
         return agent;
@@ -129,19 +136,6 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       mapping.getBfResourceDef().getPredicate(), modelBuilder);
   }
 
-  private void writeContributionResource(Resource agent,
-                                         BNode contributionNode,
-                                         org.eclipse.rdf4j.model.Resource agentRdf,
-                                         ModelBuilder modelBuilder,
-                                         ResourceMapping mapping,
-                                         Resource parent) {
-    modelBuilder.subject(contributionNode);
-    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
-    var agentPredicate = getEdgePredicate(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
-    modelBuilder.add(agentPredicate, agentRdf);
-    writeRoles(agent, modelBuilder, mapping, parent);
-  }
-
   private void writeRoles(Resource agent, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
     var rolePredicate = getEdgePredicate(mapping.getResourceMapping(), ROLE_EDGE_NUMBER);
     parent.getOutgoingEdges()
@@ -154,11 +148,22 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .forEach(rc -> modelBuilder.add(rolePredicate, iri(ROLES_NAMESPACE, rc)));
   }
 
+  private void writeContributionResource(Resource agent,
+                                         BNode contributionNode,
+                                         org.eclipse.rdf4j.model.Resource agentRdf,
+                                         ModelBuilder modelBuilder,
+                                         ResourceMapping mapping,
+                                         Resource parent) {
+    writeBlankNode(contributionNode, agent, modelBuilder, mapping, coreLd2RdfMapper);
+    var agentPredicate = getEdgePredicate(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
+    modelBuilder.add(agentPredicate, agentRdf);
+    writeRoles(agent, modelBuilder, mapping, parent);
+  }
+
   private void writeAgentResource(Resource agent, BNode agentNode, ModelBuilder modelBuilder, ResourceMapping mapping) {
-    modelBuilder.subject(agentNode);
-    modelBuilder.add(RDF.TYPE, iri(AGENT_RDF_TYPE));
+    var agentMapping = getEdgeMapping(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
+    writeBlankNode(agentNode, agent, modelBuilder, agentMapping, coreLd2RdfMapper);
     writeExtraTypes(modelBuilder, agent, agentNode);
-    coreLd2RdfMapper.mapProperties(agent, modelBuilder, mapping);
   }
 
 }

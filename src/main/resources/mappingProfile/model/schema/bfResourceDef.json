@@ -16,6 +16,11 @@
       "default": false,
       "description": "Indicates if it's enough for the type set to match partially"
     },
+    "ignoreTypesMatch": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indicates if type set match should not be checked"
+    },
     "predicate": {
       "type": "string",
       "description": "Bibframe resource predicate"

@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
+import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
@@ -18,7 +19,6 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.RDFCollections;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
@@ -32,18 +32,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
-  private static final String AUTHORITY_RDF_TYPE = "http://www.loc.gov/mads/rdf/v1#Authority";
-  private final LongFunction<String> resourceUrlProvider;
-  private final CoreLd2RdfMapper coreLd2RdfMapper;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               MockLccnResourceService mockLccnResourceService,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
                               LongFunction<String> resourceUrlProvider) {
-    super(baseRdfMapperUnit, hashService, mockLccnResourceService);
-    this.coreLd2RdfMapper = coreLd2RdfMapper;
-    this.resourceUrlProvider = resourceUrlProvider;
+    super(baseRdfMapperUnit, hashService, mockLccnResourceService, resourceUrlProvider, coreLd2RdfMapper);
   }
 
   @Override
@@ -110,21 +105,10 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
         () -> {
           var node = bnode("_" + subject.getId());
           linkResources(parent, node, predicate, modelBuilder);
-          writeBlankNode(node, subject, AUTHORITY_RDF_TYPE, modelBuilder, mapping);
+          writeBlankNode(node, subject, modelBuilder, mapping, coreLd2RdfMapper);
+          writeExtraTypes(modelBuilder, subject, node);
         }
       );
-  }
-
-  private BNode writeBlankNode(BNode node,
-                               Resource subject,
-                               String mainType,
-                               ModelBuilder modelBuilder,
-                               ResourceMapping mapping) {
-    modelBuilder.subject(node);
-    modelBuilder.add(RDF.TYPE, iri(mainType));
-    writeExtraTypes(modelBuilder, subject, node);
-    coreLd2RdfMapper.mapProperties(subject, modelBuilder, mapping);
-    return node;
   }
 
   private void writeComplexSubject(Resource subject,
@@ -133,10 +117,10 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                    org.eclipse.rdf4j.model.Resource parent) {
     var complexSubjectNode = bnode("_" + subject.getId());
     var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
-    var complexSubjectType = complexSubjectMapping.getBfResourceDef().getTypeSet().iterator().next();
     linkResources(parent, complexSubjectNode, mapping.getBfResourceDef().getPredicate(), modelBuilder);
-    writeBlankNode(complexSubjectNode, subject, complexSubjectType, modelBuilder, mapping);
-    writeComponentsList(subject, modelBuilder, complexSubjectMapping, complexSubjectNode);
+    writeBlankNode(complexSubjectNode, subject, modelBuilder, complexSubjectMapping, coreLd2RdfMapper);
+    writeExtraTypes(modelBuilder, subject, complexSubjectNode);
+    writeComponentsList(subject, modelBuilder, mapping, complexSubjectNode);
   }
 
   private void writeComponentsList(Resource subject,
@@ -150,12 +134,15 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
         .map(iri -> (org.eclipse.rdf4j.model.Resource) iri(iri))
         .orElseGet(() -> {
           var nodeId = "_" + f.getId();
-          return writeBlankNode(bnode(nodeId), f, AUTHORITY_RDF_TYPE, modelBuilder, mapping);
+          var bnode = writeBlankNode(bnode(nodeId), f, modelBuilder, mapping, coreLd2RdfMapper);
+          writeExtraTypes(modelBuilder, f, bnode(nodeId));
+          return bnode;
         }))
       .toList();
     var listHead = bnode();
     RDFCollections.asRDF(components, listHead, modelBuilder.build());
-    var componentListPredicate = mapping.getBfResourceDef().getPredicate();
+    var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
+    var componentListPredicate = complexSubjectMapping.getBfResourceDef().getPredicate();
     modelBuilder.add(complexSubjectNode, iri(componentListPredicate), listHead);
   }
 

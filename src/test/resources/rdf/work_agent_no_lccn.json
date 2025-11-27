@@ -55,6 +55,11 @@
             {
                 "@value": "Creator Agent"
             }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Creator Agent"
+            }
         ]
     },
     {
@@ -83,6 +88,11 @@
             "http://id.loc.gov/ontologies/bibframe/Family"
         ],
         "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Contributor Agent"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
                 "@value": "Contributor Agent"
             }

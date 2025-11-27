@@ -67,7 +67,9 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   private void addProperty(PropertyMapping pm, Map<String, List<String>> doc, String value) {
     var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
-    props.add(value);
+    if (!props.contains(value)) {
+      props.add(value);
+    }
   }
 
   @Override
@@ -114,6 +116,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .filter(Value::isResource)
       .map(org.eclipse.rdf4j.model.Resource.class::cast)
       .filter(child -> bfResourceDef.getTypeSet().isEmpty()
+        || TRUE.equals(bfResourceDef.getIgnoreTypesMatch())
         || (TRUE.equals(bfResourceDef.getPartialTypesMatch())
         ? getAllTypes(model, child).containsAll(bfResourceDef.getTypeSet())
         : getAllTypes(model, child).equals(bfResourceDef.getTypeSet()))

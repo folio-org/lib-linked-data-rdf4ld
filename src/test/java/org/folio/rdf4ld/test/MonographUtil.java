@@ -28,6 +28,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -61,6 +62,7 @@ import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 public class MonographUtil {
   public static final String AGENTS_NAMESPACE = "http://id.loc.gov/authorities/";
   public static final String SUBJECTS_NAMESPACE = "http://id.loc.gov/authorities/subjects/";
+  public static final String GENRE_FORMS_NAMESPACE = "http://id.loc.gov/authorities/genreForms/";
   public static final String STATUS_CURRENT = "current";
   public static final String STATUS_CANCELLED = "cancinv";
   public static final String STATUS_BASE_URI = "http://id.loc.gov/vocabulary/mstatus/";
@@ -193,6 +195,16 @@ public class MonographUtil {
       Map.of(LABEL, List.of(label)),
       Set.of(TOPIC),
       Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
+    ).setLabel(label);
+  }
+
+  public static Resource createGenreForm(String lccn,
+                                         boolean isCurrent,
+                                         String label) {
+    return createResource(
+      Map.of(LABEL, List.of(label)),
+      Set.of(FORM),
+      Map.of(MAP, List.of(createLccn(lccn, GENRE_FORMS_NAMESPACE, isCurrent)))
     ).setLabel(label);
   }
 

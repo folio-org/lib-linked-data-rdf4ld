@@ -28,6 +28,11 @@
             "http://www.loc.gov/mads/rdf/v1#ComplexSubject",
             "http://id.loc.gov/ontologies/bibframe/Topic"
         ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Complex Subject Label"
+            }
+        ],
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
                 "@value": "Complex Subject Label"
@@ -54,6 +59,11 @@
         "@type": [
             "http://www.loc.gov/mads/rdf/v1#Authority",
             "http://id.loc.gov/ontologies/bibframe/Family"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Family Agent"
+            }
         ],
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
