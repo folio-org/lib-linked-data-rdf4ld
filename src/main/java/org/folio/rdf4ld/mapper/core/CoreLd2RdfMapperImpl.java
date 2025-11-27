@@ -58,7 +58,8 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
           || edge.getTarget().getTypes().containsAll(oem.getLdResourceDef().getTypeSet()))
           && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
         .forEach(oem -> {
-          var mapper = rdfMapperUnitProvider.getMapper(oem.getLdResourceDef());
+          var ldResourceDef = oem.getLdResourceDef();
+          var mapper = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());
           mapper.mapToBibframe(edge.getTarget(), modelBuilder, oem, edge.getSource());
         })
       );

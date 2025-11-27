@@ -1,0 +1,95 @@
+package org.folio.rdf4ld.service.lccn;
+
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.ld.fingerprint.service.FingerprintHashService;
+import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class MockLccnResourceServiceImpl implements MockLccnResourceService {
+  private static final String LABEL_PREFIX = "LCCN_RESOURCE_MOCK_";
+  private final FingerprintHashService fingerprintHashService;
+  private final RdfMapperUnitProvider rdfMapperUnitProvider;
+
+  @Override
+  public Resource mockLccnResource(String lccn) {
+    var label = LABEL_PREFIX + lccn;
+    return new Resource()
+      .setId((long) label.hashCode())
+      .setLabel(label);
+  }
+
+  @Override
+  public boolean isMockLccnResource(Resource resource) {
+    return resource.getLabel().startsWith(LABEL_PREFIX);
+  }
+
+
+  @Override
+  public Set<String> gatherLccns(Set<Resource> resources) {
+    return gatherMockLccnsRecursive(resources.stream())
+      .collect(toSet());
+  }
+
+  @Override
+  public Resource unMockLccnResource(Resource resource, Function<String, Resource> lccnResourceProvider) {
+    if (isMockLccnResource(resource)) {
+      return unMockSingleLccnResource(resource, lccnResourceProvider, null);
+    }
+    unMockLccnResourceEdgesRecursive(resource, lccnResourceProvider);
+    return resource;
+  }
+
+  private Stream<String> gatherMockLccnsRecursive(Stream<Resource> resources) {
+    return resources
+      .flatMap(r -> isMockLccnResource(r)
+        ? Stream.of(getLccn(r))
+        : gatherMockLccnsRecursive(r.getOutgoingEdges().stream().map(ResourceEdge::getTarget)));
+  }
+
+  private boolean unMockLccnResourceEdgesRecursive(Resource parent,
+                                                   Function<String, Resource> lccnResourceProvider) {
+    var isUnMocked = new AtomicBoolean(false);
+    var newOutgoingEdges = parent.getOutgoingEdges().stream()
+      .map(oe -> {
+        if (isMockLccnResource(oe.getTarget())) {
+          var unMockedTarget = unMockSingleLccnResource(oe.getTarget(), lccnResourceProvider, oe.getPredicate());
+          isUnMocked.set(true);
+          return new ResourceEdge(oe.getSource(), unMockedTarget, oe.getPredicate());
+        } else {
+          isUnMocked.set(unMockLccnResourceEdgesRecursive(oe.getTarget(), lccnResourceProvider));
+          return oe;
+        }
+      })
+      .collect(toSet());
+    if (isUnMocked.get()) {
+      parent.setOutgoingEdges(newOutgoingEdges);
+      parent.setId(fingerprintHashService.hash(parent));
+    }
+    return isUnMocked.get();
+  }
+
+
+  private Resource unMockSingleLccnResource(Resource resource,
+                                            Function<String, Resource> lccnResourceProvider,
+                                            PredicateDictionary predicate) {
+    var realResource = lccnResourceProvider.apply(getLccn(resource));
+    var mapperUnit = rdfMapperUnitProvider.getMapper(Set.of(), predicate);
+    return mapperUnit.enrichUnMockedResource(realResource);
+  }
+
+  private String getLccn(Resource resource) {
+    return resource.getLabel().replace(LABEL_PREFIX, "");
+  }
+
+}

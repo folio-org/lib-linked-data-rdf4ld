@@ -7,8 +7,8 @@ import static java.util.stream.Collectors.joining;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.rdf4ld.model.LdResourceDef;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -25,20 +25,19 @@ public class RdfMapperUnitProviderImpl implements RdfMapperUnitProvider {
   }
 
   @Override
-  public RdfMapperUnit getMapper(LdResourceDef ldResourceDef) {
+  public RdfMapperUnit getMapper(Set<ResourceTypeDictionary> typeSet, PredicateDictionary predicate) {
     return rdfMapperUnits.stream()
       .filter(m -> m.getClass().isAnnotationPresent(RdfMapperDefinition.class))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(RdfMapperDefinition.class);
-        return (ldResourceDef.getTypeSet().isEmpty() || ldResourceDef.getTypeSet().equals(toSet(annotation.types())))
-          && (isNull(ldResourceDef.getPredicate()) || ldResourceDef.getPredicate() == annotation.predicate());
+        return (typeSet.isEmpty() || typeSet.equals(toSet(annotation.types())))
+          && (isNull(predicate) || predicate == annotation.predicate());
       })
       .findFirst()
       .orElseGet(() -> {
         log.debug("No mapper found for resource types [{}]{}, using BaseMapperUnit",
-          ldResourceDef.getTypeSet().stream().map(ResourceTypeDictionary::getUri).collect(joining(", ")),
-          ldResourceDef.getPredicate() != null
-            ? " and predicate [" + ldResourceDef.getPredicate().getUri() + "]" : null);
+          typeSet.stream().map(ResourceTypeDictionary::getUri).collect(joining(", ")),
+          predicate != null ? " and predicate [" + predicate.getUri() + "]" : null);
         return baseMapperUnit;
       });
   }

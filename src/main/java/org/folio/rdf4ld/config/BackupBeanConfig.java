@@ -1,16 +1,13 @@
 package org.folio.rdf4ld.config;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.ld.dictionary.model.Resource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @Log4j2
 @Configuration
 public class BackupBeanConfig {
-
-  @Bean
-  @ConditionalOnMissingBean(name = "lccnResourceProvider")
-  public Function<String, Optional<Resource>> dummyResourceProvider() {
-    log.warn("No lccnResourceProvider bean has been found, using the dummy one");
-    return s -> empty();
-  }
 
   @Bean
   @ConditionalOnMissingBean(name = "resourceUrlProvider")
