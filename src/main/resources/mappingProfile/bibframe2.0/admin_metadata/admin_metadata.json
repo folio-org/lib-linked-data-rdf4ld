@@ -1,0 +1,34 @@
+{
+  "ldResourceDef": {
+    "typeSet": "ANNOTATION",
+    "predicate": "ADMIN_METADATA"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/AdminMetadata",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/adminMetadata"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "CREATED_DATE",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/creationDate"
+      },
+      {
+        "ldProperty": "CONTROL_NUMBER",
+        "bfProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
+        "edgeParentBfDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/Local",
+          "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+        }
+      },
+      {
+        "ldProperty": "FOLIO_INVENTORY_ID",
+        "bfProperty": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
+        "edgeParentBfDef": {
+          "typeSet": "http://id.loc.gov/ontologies/bibframe/Local",
+          "predicate": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+        }
+      }
+    ]
+  }
+}
