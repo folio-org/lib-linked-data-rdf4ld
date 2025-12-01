@@ -1,6 +1,6 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
-import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.eclipse.rdf4j.model.util.Values.bnode;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -15,7 +15,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 import java.util.Optional;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -40,18 +39,15 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
                                     org.eclipse.rdf4j.model.Resource resource,
                                     ResourceMapping mapping,
                                     Resource parent) {
-    Optional<Resource> resourceOptional = empty();
+    var mappedOptional = baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
+      .map(mapped -> addExtraPropertiesAndTypes(model, resource, mapped));
     if (resource instanceof IRI iri) {
-      resourceOptional = Optional.of(mockLccnResourceService.mockLccnResource(iri.getLocalName()));
+      mappedOptional = of(mockLccnResourceService.mockLccnResource(mappedOptional.orElse(null), iri.getLocalName()));
     }
-    if (resource instanceof BNode node) {
-      resourceOptional = baseRdfMapperUnit.mapToLd(model, node, mapping, parent)
-        .map(mapped -> addExtraPropertiesAndTypes(model, node, mapped));
-    }
-    return resourceOptional;
+    return mappedOptional;
   }
 
-  private Resource addExtraPropertiesAndTypes(Model model, BNode node, Resource mapped) {
+  private Resource addExtraPropertiesAndTypes(Model model, org.eclipse.rdf4j.model.Resource node, Resource mapped) {
     getFirstPropertyValue(mapped.getDoc(), LABEL)
       .ifPresent(label -> mapped.setDoc(addProperty(mapped.getDoc(), NAME, label)));
     readSupportedExtraTypes(model, node).forEach(mapped::addType);

@@ -1,6 +1,14 @@
 package org.folio.rdf4ld.service.lccn;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.rdf4ld.test.MonographUtil.createAgent;
+import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 import static org.folio.rdf4ld.test.TestUtil.mockLccnResource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -8,10 +16,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
@@ -38,17 +48,36 @@ class MockLccnResourceServiceTest {
   private RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Test
-  void mockLccnResource_shouldReturnMockResource() {
+  void mockLccnResource_shouldReturnNewMockResource_ifNoMappedOne() {
     // given
     var lccn = UUID.randomUUID().toString();
     var expectedLabel = "LCCN_RESOURCE_MOCK_" + lccn;
 
     // when
-    var result = lccnMockResourceService.mockLccnResource(lccn);
+    var result = lccnMockResourceService.mockLccnResource(null, lccn);
 
     // then
     assertThat(result.getId()).isEqualTo(expectedLabel.hashCode());
     assertThat(result.getLabel()).isEqualTo(expectedLabel);
+  }
+
+  @Test
+  void mockLccnResource_shouldReturnSameResourceMocked_ifMappedOneProvided() {
+    // given
+    var lccn = UUID.randomUUID().toString();
+    var expectedLabel = "LCCN_RESOURCE_MOCK_" + lccn;
+    var mapped = createAgent(UUID.randomUUID().toString(), true, List.of(AGENT, PERSON), "agentLabel");
+
+    // when
+    var result = lccnMockResourceService.mockLccnResource(mapped, lccn);
+
+    // then
+    assertThat(result.getId()).isEqualTo(expectedLabel.hashCode());
+    assertThat(result.getLabel()).isEqualTo(expectedLabel);
+    assertThat(result).isEqualTo(mapped);
+    assertThat(result.getDoc()).isNotEmpty();
+    assertThat(result.getTypes()).isNotEmpty();
+    assertThat(result.getOutgoingEdges()).isNotEmpty();
   }
 
   @ParameterizedTest
@@ -87,7 +116,7 @@ class MockLccnResourceServiceTest {
   }
 
   @Test
-  void unMockLccnResources_shouldReplaceAllMockResourceWithRealOnes() {
+  void unMockLccnEdges_shouldReplaceAllMockEdgesWithRealOnes() {
     // given
     var lccn1 = UUID.randomUUID().toString();
     var lccn2 = UUID.randomUUID().toString();
@@ -102,19 +131,19 @@ class MockLccnResourceServiceTest {
       .setId(100L)
       .setLabel("Parent Resource");
 
-    var edge1 = new ResourceEdge(parentResource, mockResource1, PredicateDictionary.MAP);
-    var edge2 = new ResourceEdge(parentResource, mockResource2, PredicateDictionary.MAP);
+    var edge1 = new ResourceEdge(parentResource, mockResource1, MAP);
+    var edge2 = new ResourceEdge(parentResource, mockResource2, MAP);
 
     parentResource.setOutgoingEdges(Set.of(edge1, edge2));
 
-    Function<String, Resource> lccnProvider = lccn -> {
+    Function<String, Optional<Resource>> lccnProvider = lccn -> {
       if (lccn.equals(lccn1)) {
-        return realResource1;
+        return of(realResource1);
       }
       if (lccn.equals(lccn2)) {
-        return realResource2;
+        return of(realResource2);
       }
-      return null;
+      return empty();
     };
 
     var mapperUnit = mock(RdfMapperUnit.class);
@@ -124,7 +153,7 @@ class MockLccnResourceServiceTest {
     when(fingerprintHashService.hash(any())).thenReturn(200L);
 
     // when
-    var result = lccnMockResourceService.unMockLccnResource(parentResource, lccnProvider);
+    var result = lccnMockResourceService.unMockLccnEdges(parentResource, lccnProvider);
 
     // then
     assertThat(result).isEqualTo(parentResource);
@@ -135,17 +164,17 @@ class MockLccnResourceServiceTest {
   }
 
   @Test
-  void unMockLccnResources_shouldReturnResourcesUnchangedWhenNoMockLccns() {
+  void unMockLccnEdges_shouldKeepEdgesUnchangedWhenNoMockLccns() {
     // given
     var regularResource = new Resource()
       .setId(1L)
       .setLabel("Regular Resource")
       .setOutgoingEdges(Set.of());
 
-    Function<String, Resource> lccnProvider = lccn -> null;
+    Function<String, Optional<Resource>> lccnProvider = lccn -> empty();
 
     // when
-    var result = lccnMockResourceService.unMockLccnResource(regularResource, lccnProvider);
+    var result = lccnMockResourceService.unMockLccnEdges(regularResource, lccnProvider);
 
     // then
     assertThat(result).isEqualTo(regularResource);
@@ -153,7 +182,7 @@ class MockLccnResourceServiceTest {
   }
 
   @Test
-  void unMockLccnResources_shouldHandleNestedMockResource() {
+  void unMockLccnEdges_shouldHandleMockEdges() {
     // given
     var lccn = UUID.randomUUID().toString();
     var mockResource = mockLccnResource(lccn);
@@ -162,13 +191,13 @@ class MockLccnResourceServiceTest {
     var childResource = new Resource().setId(10L).setLabel("Child");
     var parentResource = new Resource().setId(100L).setLabel("Parent");
 
-    var edgeToMock = new ResourceEdge(childResource, mockResource, PredicateDictionary.MAP);
+    var edgeToMock = new ResourceEdge(childResource, mockResource, MAP);
     childResource.setOutgoingEdges(Set.of(edgeToMock));
 
-    var edgeToChild = new ResourceEdge(parentResource, childResource, PredicateDictionary.MAP);
+    var edgeToChild = new ResourceEdge(parentResource, childResource, MAP);
     parentResource.setOutgoingEdges(Set.of(edgeToChild));
 
-    Function<String, Resource> lccnProvider = l -> l.equals(lccn) ? realResource : null;
+    Function<String, Optional<Resource>> lccnProvider = l -> l.equals(lccn) ? of(realResource) : empty();
 
     var mapperUnit = mock(RdfMapperUnit.class);
     when(mapperUnit.enrichUnMockedResource(realResource)).thenReturn(realResource);
@@ -177,7 +206,7 @@ class MockLccnResourceServiceTest {
     when(fingerprintHashService.hash(parentResource)).thenReturn(parentResource.getId() + 50);
 
     // when
-    var result = lccnMockResourceService.unMockLccnResource(parentResource, lccnProvider);
+    var result = lccnMockResourceService.unMockLccnEdges(parentResource, lccnProvider);
 
     // then
     assertThat(result).isEqualTo(parentResource);
@@ -186,6 +215,47 @@ class MockLccnResourceServiceTest {
       .containsExactly(realResource);
     verify(fingerprintHashService).hash(childResource);
     verify(fingerprintHashService).hash(parentResource);
+  }
+
+  @Test
+  void unMockLccnEdges_shouldUnMockResourceNotProvidedByLccnButWithLocalData() {
+    // given
+    var lccn = UUID.randomUUID().toString();
+    var realLabel = "real label";
+    var mockResourceDoc = getJsonNode(Map.of(LABEL.getValue(), List.of(realLabel)));
+    var mockResource = mockLccnResource(lccn)
+      .addType(AGENT)
+      .setDoc(mockResourceDoc);
+    var childResource = new Resource().setId(10L).setLabel("Child");
+    mockResource.setOutgoingEdges(Set.of(new ResourceEdge(mockResource, childResource, MAP)));
+    var parentResource = new Resource().setId(100L).setLabel("Parent");
+    parentResource.setOutgoingEdges(Set.of(new ResourceEdge(parentResource, mockResource, MAP)));
+
+    Function<String, Optional<Resource>> lccnProvider = l -> empty();
+
+    var mapperUnit = mock(RdfMapperUnit.class);
+    when(mapperUnit.enrichUnMockedResource(mockResource)).thenReturn(mockResource);
+    when(rdfMapperUnitProvider.getMapper(any(), any())).thenReturn(mapperUnit);
+    when(fingerprintHashService.hash(parentResource)).thenReturn(parentResource.getId() + 50);
+    when(fingerprintHashService.hash(mockResource)).thenReturn(mockResource.getId() + 50);
+
+    // when
+    var result = lccnMockResourceService.unMockLccnEdges(parentResource, lccnProvider);
+
+    // then
+    assertThat(result).isEqualTo(parentResource);
+    assertThat(parentResource.getOutgoingEdges())
+      .extracting(ResourceEdge::getTarget)
+      .containsExactly(mockResource);
+    assertThat(mockResource.getLabel()).isEqualTo(realLabel);
+    assertThat(mockResource.getTypes()).isEqualTo(Set.of(AGENT));
+    assertThat(mockResource.getDoc()).isEqualTo(mockResourceDoc);
+    assertThat(mockResource.getOutgoingEdges())
+      .extracting(ResourceEdge::getTarget)
+      .containsExactly(childResource);
+    verify(fingerprintHashService).hash(parentResource);
+    verify(fingerprintHashService).hash(mockResource);
+    verify(fingerprintHashService, never()).hash(childResource);
   }
 
 }
