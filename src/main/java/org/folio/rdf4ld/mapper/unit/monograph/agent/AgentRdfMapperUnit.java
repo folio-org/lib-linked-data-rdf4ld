@@ -5,8 +5,6 @@ import static java.util.Optional.of;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
@@ -14,9 +12,8 @@ import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
-import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
+import static org.folio.rdf4ld.util.ResourceUtil.copyLongestLabelToName;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
-import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -82,8 +79,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                                       ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
       .map(agent -> {
-        getFirstPropertyValue(agent.getDoc(), LABEL)
-          .ifPresent(label -> agent.setDoc(addProperty(agent.getDoc(), NAME, label)));
+        copyLongestLabelToName(agent);
         readSupportedExtraTypes(model, agentNode).forEach(agent::addType);
         agent.setId(hashService.hash(agent));
         return agent;

@@ -1,8 +1,10 @@
 package org.folio.rdf4ld.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
@@ -161,6 +163,109 @@ class ResourceUtilTest {
     assertThat(result).isNotNull();
     assertThat(result.has("otherProperty")).isTrue();
     assertThat(result.get("otherProperty").asText()).isEqualTo("value");
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldDoNothing_whenDocIsNull() {
+    // given
+    var resource = new Resource();
+    resource.setDoc(null);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc()).isNull();
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldDoNothing_whenLabelPropertyDoesNotExist() {
+    // given
+    var resource = new Resource();
+    var doc = getJsonNode(Map.of("otherProperty", List.of("value")));
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isFalse();
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldDoNothing_whenLabelIsNotArray() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    doc.put(LABEL.getValue(), "single value");
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isFalse();
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldDoNothing_whenLabelArrayIsEmpty() {
+    // given
+    var resource = new Resource();
+    var doc = getJsonNode(Map.of(LABEL.getValue(), List.of()));
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isFalse();
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldCopyLabel_whenSingleLabelExists() {
+    // given
+    var resource = new Resource();
+    var doc = getJsonNode(Map.of(LABEL.getValue(), List.of("Single Label")));
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
+    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("Single Label");
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldCopyLongestLabel_whenMultipleLabelsExist() {
+    // given
+    var resource = new Resource();
+    var doc = getJsonNode(Map.of(LABEL.getValue(), List.of("Short", "Medium Label", "Longest Label Here")));
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
+    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("Longest Label Here");
+  }
+
+  @Test
+  void copyLongestLabelToName_shouldCopyFirstLongest_whenMultipleLabelsHaveSameLength() {
+    // given
+    var resource = new Resource();
+    var doc = getJsonNode(Map.of(LABEL.getValue(), List.of("First", "Other")));
+    resource.setDoc(doc);
+
+    // when
+    ResourceUtil.copyLongestLabelToName(resource);
+
+    // then
+    assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
+    var nameValue = resource.getDoc().get(NAME.getValue()).get(0).asText();
+    assertThat(nameValue).isIn("First", "Other")
+      .hasSize(5);
   }
 
 }
