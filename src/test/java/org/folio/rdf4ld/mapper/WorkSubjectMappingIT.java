@@ -85,6 +85,30 @@ class WorkSubjectMappingIT {
   }
 
   @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMockWithBody() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn_with_body.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var expectedPersonProperties = Map.of(
+      LABEL, List.of(PERSON_AGENT_LABEL),
+      NAME, List.of(PERSON_AGENT_LABEL)
+    );
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> validateOutgoingEdge(work, SUBJECT, Set.of(PERSON), expectedPersonProperties,
+        "LCCN_RESOURCE_MOCK_" + PERSON_AGENT_LCCN, null));
+  }
+
+  @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithNoLccn() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json");

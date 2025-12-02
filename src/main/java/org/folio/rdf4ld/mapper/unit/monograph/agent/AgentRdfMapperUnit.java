@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper.unit.monograph.agent;
 
 import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -66,22 +67,19 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     }
     return agentResourceOptional
       .map(ar -> {
-        Optional<Resource> agentOptional = empty();
+        var agentMapping = getEdgeMapping(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
+        var agentOptional = mapAgent(model, (org.eclipse.rdf4j.model.Resource) ar, agentMapping, parent)
+          .map(agent -> addRoles(agent, parent, model, contributionResource, mapping.getResourceMapping()));
         if (ar instanceof IRI iri) {
-          agentOptional = Optional.of(mockLccnResourceService.mockLccnResource(iri.getLocalName()));
+          agentOptional = of(mockLccnResourceService.mockLccnResource(agentOptional.orElse(null), iri.getLocalName()));
         }
-        if (ar instanceof BNode node) {
-          var agentMapping = getEdgeMapping(mapping.getResourceMapping(), AGENT_EDGE_NUMBER);
-          agentOptional = mapAgent(model, node, agentMapping, parent);
-        }
-        agentOptional
-          .ifPresent(agent -> addRoles(agent, parent, model, contributionResource, mapping.getResourceMapping()));
         return agentOptional;
       })
       .get();
   }
 
-  private Optional<Resource> mapAgent(Model model, BNode agentNode, ResourceMapping mapping, Resource parent) {
+  private Optional<Resource> mapAgent(Model model, org.eclipse.rdf4j.model.Resource agentNode,
+                                      ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
       .map(agent -> {
         getFirstPropertyValue(agent.getDoc(), LABEL)
@@ -92,11 +90,11 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       });
   }
 
-  private void addRoles(Resource agent,
-                        Resource parent,
-                        Model model,
-                        org.eclipse.rdf4j.model.Resource contributionResource,
-                        ResourceInternalMapping resourceMapping) {
+  private Resource addRoles(Resource agent,
+                            Resource parent,
+                            Model model,
+                            org.eclipse.rdf4j.model.Resource contributionResource,
+                            ResourceInternalMapping resourceMapping) {
     var rolePredicate = getEdgePredicate(resourceMapping, ROLE_EDGE_NUMBER);
     getByPredicate(model, contributionResource, rolePredicate)
       .map(SimpleIRI.class::cast)
@@ -105,6 +103,7 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .flatMap(Optional::stream)
       .map(p -> new ResourceEdge(parent, agent, p))
       .forEach(parent::addOutgoingEdge);
+    return agent;
   }
 
   @Override

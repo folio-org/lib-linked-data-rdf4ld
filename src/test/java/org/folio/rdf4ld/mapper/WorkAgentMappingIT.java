@@ -84,6 +84,48 @@ class WorkAgentMappingIT {
   }
 
   @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnWithBodies() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn_with_body.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var creatorLabel = "Creator Agent";
+    var contributorLabel = "Contributor Agent";
+    var expectedCreatorProperties = Map.of(
+      LABEL, List.of(creatorLabel),
+      NAME, List.of(creatorLabel)
+    );
+    var expectedContributorProperties = Map.of(
+      LABEL, List.of(contributorLabel),
+      NAME, List.of(contributorLabel)
+    );
+    String creatorMockLabel = "LCCN_RESOURCE_MOCK_n2021004098";
+    String contributorMockLabel = "LCCN_RESOURCE_MOCK_n2021004092";
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getId()).isNotNull();
+        assertThat(work.getIncomingEdges()).isEmpty();
+        assertThat(work.getOutgoingEdges()).hasSize(6);
+        validateAgent(work, creatorLabel, creatorMockLabel, CREATOR, PERSON);
+        validateOutgoingEdge(work, AUTHOR, of(PERSON), expectedCreatorProperties, creatorMockLabel);
+        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), expectedCreatorProperties, creatorMockLabel);
+        validateAgent(work, contributorLabel, contributorMockLabel, CONTRIBUTOR, FAMILY);
+        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorMockLabel);
+        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
+          contributorMockLabel);
+      });
+  }
+
+  @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withNoCurrentLccn() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");
@@ -113,10 +155,10 @@ class WorkAgentMappingIT {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
-        validateAgent(work, creatorLabel, CREATOR, PERSON);
+        validateAgent(work, creatorLabel, creatorLabel, CREATOR, PERSON);
         validateOutgoingEdge(work, AUTHOR, of(PERSON), expectedCreatorProperties, creatorLabel);
         validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), expectedCreatorProperties, creatorLabel);
-        validateAgent(work, contributorLabel, CONTRIBUTOR, FAMILY);
+        validateAgent(work, contributorLabel, contributorLabel, CONTRIBUTOR, FAMILY);
         validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorLabel);
         validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
           contributorLabel);
@@ -124,14 +166,15 @@ class WorkAgentMappingIT {
   }
 
   private void validateAgent(Resource work,
-                             String agentLabel,
+                             String labelProperty,
+                             String label,
                              PredicateDictionary predicate,
                              ResourceTypeDictionary type) {
     var expectedProperties = Map.of(
-      LABEL, List.of(agentLabel),
-      NAME, List.of(agentLabel)
+      LABEL, List.of(labelProperty),
+      NAME, List.of(labelProperty)
     );
-    validateOutgoingEdge(work, predicate, of(type), expectedProperties, agentLabel,
+    validateOutgoingEdge(work, predicate, of(type), expectedProperties, label,
       agent -> {
         assertThat(agent.getId()).isNotNull();
         assertThat(agent.getIncomingEdges()).isEmpty();
