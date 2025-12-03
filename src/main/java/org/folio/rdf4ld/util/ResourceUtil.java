@@ -1,12 +1,15 @@
 package org.folio.rdf4ld.util;
 
+import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.StreamSupport.stream;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -25,6 +28,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -62,22 +66,13 @@ public class ResourceUtil {
   }
 
   public static String getPropertyString(JsonNode doc, PropertyDictionary property) {
-    return ofNullable(doc)
-      .map(d -> d.get(property.getValue()))
-      .map(JsonNode::elements)
-      .stream()
-      .flatMap(elements -> stream(spliteratorUnknownSize(elements, Spliterator.ORDERED), false))
-      .map(JsonNode::asText)
+    return getPropertiesStream(doc, property)
       .collect(joining(", "));
   }
 
   public static Optional<String> getFirstPropertyValue(JsonNode doc, PropertyDictionary property) {
-    return ofNullable(doc)
-      .map(d -> d.get(property.getValue()))
-      .filter(JsonNode::isArray)
-      .filter(arr -> !arr.isEmpty())
-      .map(arr -> arr.get(0))
-      .map(JsonNode::asText);
+    return getPropertiesStream(doc, property)
+      .findFirst();
   }
 
   public static JsonNode copyWithoutPreferred(Resource resource) {
@@ -121,6 +116,12 @@ public class ResourceUtil {
       .findFirst();
   }
 
+  public static void copyLongestLabelToName(Resource resource) {
+    getPropertiesStream(resource.getDoc(), LABEL)
+      .max(comparingInt(String::length))
+      .ifPresent(label -> resource.setDoc(addProperty(resource.getDoc(), NAME, label)));
+  }
+
   private static boolean isAgent(Resource resource) {
     return AGENT_TYPES
       .stream()
@@ -138,6 +139,15 @@ public class ResourceUtil {
       .map(Resource::getDoc)
       .map(d -> getPropertiesString(d, LINK))
       .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
+  }
+
+  private static Stream<String> getPropertiesStream(JsonNode doc, PropertyDictionary property) {
+    return ofNullable(doc)
+      .map(d -> d.get(property.getValue()))
+      .map(JsonNode::elements)
+      .stream()
+      .flatMap(elements -> stream(spliteratorUnknownSize(elements, Spliterator.ORDERED), false))
+      .map(JsonNode::asText);
   }
 
 }

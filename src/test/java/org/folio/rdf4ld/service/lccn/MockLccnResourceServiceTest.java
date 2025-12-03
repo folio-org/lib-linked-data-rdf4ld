@@ -5,6 +5,7 @@ import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
@@ -222,7 +223,10 @@ class MockLccnResourceServiceTest {
     // given
     var lccn = UUID.randomUUID().toString();
     var realLabel = "real label";
-    var mockResourceDoc = getJsonNode(Map.of(LABEL.getValue(), List.of(realLabel)));
+    var mockResourceDoc = getJsonNode(Map.of(
+      LABEL.getValue(), List.of(realLabel),
+      NAME.getValue(), List.of(realLabel))
+    );
     var mockResource = mockLccnResource(lccn)
       .addType(AGENT)
       .setDoc(mockResourceDoc);
