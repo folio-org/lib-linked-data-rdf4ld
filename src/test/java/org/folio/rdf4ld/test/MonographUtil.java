@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -69,14 +70,12 @@ public class MonographUtil {
   private static final ObjectMapper OBJECT_MAPPER = new Rdf4LdObjectMapper();
   private static final Random RANDOM = new Random();
 
-  public static Resource createInstance(String label, Map<PropertyDictionary, List<String>> properties) {
-    var instance = createResource(
+  public static Resource createInstance(Map<PropertyDictionary, List<String>> properties) {
+    return createResource(
       properties,
       Set.of(INSTANCE),
       Map.of()
     );
-    instance.setLabel(label);
-    return instance;
   }
 
   public static Resource createPrimaryTitle(String prefix) {
@@ -95,7 +94,7 @@ public class MonographUtil {
       ),
       Set.of(TITLE),
       emptyMap()
-    ).setLabel(primaryTitleValue1 + " " + primaryTitleValue2 + " " + subTitleValue1 + " " + subTitleValue2);
+    );
   }
 
   public static Resource createParallelTitle(String prefix) {
@@ -114,7 +113,7 @@ public class MonographUtil {
       ),
       Set.of(PARALLEL_TITLE),
       emptyMap()
-    ).setLabel(mainTitle1 + " " + mainTitle2 + " " + subTitle1 + " " + subTitle2);
+    );
   }
 
   public static Resource createVariantTitle(String prefix) {
@@ -134,18 +133,16 @@ public class MonographUtil {
       ),
       Set.of(VARIANT_TITLE),
       emptyMap()
-    ).setLabel(mainTitle1 + " " + mainTitle2 + " " + subTitle1 + " " + subTitle2);
+    );
   }
 
-  public static Resource createWork(String label, Map<PropertyDictionary, List<String>> properties,
+  public static Resource createWork(Map<PropertyDictionary, List<String>> properties,
                                     ResourceTypeDictionary workType) {
-    var work = createResource(
+    return createResource(
       properties,
       Set.of(WORK, workType),
       Map.of()
     );
-    work.setLabel(label);
-    return work;
   }
 
   public static Resource createAgent(String lccn,
@@ -156,7 +153,7 @@ public class MonographUtil {
       Map.of(LABEL, List.of(label)),
       new LinkedHashSet<>(types),
       Map.of(MAP, List.of(createLccn(lccn, AGENTS_NAMESPACE, isCurrent)))
-    ).setLabel(label);
+    );
   }
 
   public static Resource createConceptAgent(String lccn,
@@ -185,7 +182,7 @@ public class MonographUtil {
       Map.of(LABEL, List.of(label)),
       conceptTypes,
       edges
-    ).setLabel(label);
+    );
   }
 
   public static Resource createTopic(String lccn,
@@ -195,7 +192,7 @@ public class MonographUtil {
       Map.of(LABEL, List.of(label)),
       Set.of(TOPIC),
       Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
-    ).setLabel(label);
+    );
   }
 
   public static Resource createGenreForm(String lccn,
@@ -205,7 +202,7 @@ public class MonographUtil {
       Map.of(LABEL, List.of(label)),
       Set.of(FORM),
       Map.of(MAP, List.of(createLccn(lccn, GENRE_FORMS_NAMESPACE, isCurrent)))
-    ).setLabel(label);
+    );
   }
 
   public static Resource createEan(String ean) {
@@ -213,7 +210,7 @@ public class MonographUtil {
       Map.of(NAME, List.of(ean), QUALIFIER, List.of("abc")),
       Set.of(IDENTIFIER, ID_IAN),
       Map.of()
-    ).setLabel(ean);
+    );
   }
 
   public static Resource createIsbn(String isbn, boolean isCurrent) {
@@ -221,7 +218,7 @@ public class MonographUtil {
       Map.of(NAME, List.of(isbn), QUALIFIER, List.of("pbk")),
       Set.of(IDENTIFIER, ID_ISBN),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
-    ).setLabel(isbn);
+    );
   }
 
   public static Resource createLccn(String lccn, String lccnNameSpace, boolean isCurrent) {
@@ -229,7 +226,7 @@ public class MonographUtil {
       Map.of(NAME, List.of(lccn), LINK, List.of(lccnNameSpace + lccn)),
       Set.of(IDENTIFIER, ID_LCCN),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
-    ).setLabel(lccn);
+    );
   }
 
   private static Resource createStatus(boolean isCurrent) {
@@ -241,7 +238,7 @@ public class MonographUtil {
       ),
       Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
-    ).setLabel(status);
+    );
   }
 
   public static Resource createProvision(String prefix) {
@@ -257,7 +254,7 @@ public class MonographUtil {
       ),
       Set.of(PROVIDER_EVENT),
       Map.of(PROVIDER_PLACE, providerPlaces)
-    ).setLabel(prefix + " simple agent 1 , " + prefix + " simple agent 2");
+    );
   }
 
   private static Resource createProviderPlace(String code) {
@@ -271,7 +268,7 @@ public class MonographUtil {
       ),
       Set.of(PLACE),
       Map.of()
-    ).setLabel(name);
+    );
   }
 
   public static Resource createAdminMetadata(String hrid, String uuid) {
@@ -283,7 +280,7 @@ public class MonographUtil {
       ),
       Set.of(ANNOTATION),
       Map.of()
-    ).setLabel(hrid);
+    );
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
@@ -303,6 +300,7 @@ public class MonographUtil {
     });
     resource.setTypes(types);
     resource.setId(randomLong());
+    resource.setLabel(UUID.randomUUID().toString());
     return resource;
   }
 

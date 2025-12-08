@@ -94,7 +94,7 @@ class InstanceProvisionMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithProvisions() throws IOException {
     // given
-    var instance = MonographUtil.createInstance(null, null);
+    var instance = MonographUtil.createInstance(null);
     var distribution = createProvision("distribution");
     var manufacture = createProvision("manufacture");
     var production = createProvision("production");

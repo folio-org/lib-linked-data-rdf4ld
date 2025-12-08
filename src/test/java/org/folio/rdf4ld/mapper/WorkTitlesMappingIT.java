@@ -66,7 +66,7 @@ class WorkTitlesMappingIT {
     var primaryTitle = createPrimaryTitle("");
     var parallelTitle = createParallelTitle("");
     var variantTitle = createVariantTitle("");
-    var instance = createInstance(primaryTitle.getLabel(), null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));
@@ -76,7 +76,7 @@ class WorkTitlesMappingIT {
     var workProperties = Map.of(
       LINK, List.of(UUID.randomUUID().toString())
     );
-    var work = createWork(primaryWorkTitle.getLabel(), workProperties, CONTINUING_RESOURCES);
+    var work = createWork(workProperties, CONTINUING_RESOURCES);
     work.addOutgoingEdge(new ResourceEdge(work, primaryWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, parallelWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, variantWorkTitle, TITLE));

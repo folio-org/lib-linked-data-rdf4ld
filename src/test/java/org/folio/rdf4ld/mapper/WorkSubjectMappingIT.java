@@ -178,14 +178,14 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var personAgent = createConceptAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), FAMILY_AGENT_LABEL);
     var familyAgent = createConceptAgent(FAMILY_AGENT_LCCN, true, List.of(FAMILY), PERSON_AGENT_LABEL);
     var topic = createConceptTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, personAgent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, familyAgent, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
@@ -202,7 +202,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithoutLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
@@ -212,7 +212,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, personConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, familyConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topicConcept, SUBJECT));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")
       .readAllBytes())
@@ -234,14 +234,14 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_noLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
       COMPLEX_SUBJECT_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_no_lccn.json")
       .readAllBytes())
@@ -262,7 +262,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_withLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
@@ -271,7 +271,7 @@ class WorkSubjectMappingIT {
     var conceptLccn = createLccn(COMPLEX_SUBJECT_LCCN, SUBJECTS_NAMESPACE, true);
     concept.addOutgoingEdge(new ResourceEdge(concept, conceptLccn, MAP));
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_lccn.json")
       .readAllBytes())

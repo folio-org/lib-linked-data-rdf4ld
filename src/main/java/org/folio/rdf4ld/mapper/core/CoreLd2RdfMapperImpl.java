@@ -76,10 +76,6 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
                                  String predicate,
                                  Resource resource,
                                  PropertyDictionary property) {
-    if (property == PropertyDictionary.LABEL) {
-      modelBuilder.add(predicate, resource.getLabel());
-      return;
-    }
     ofNullable(resource.getDoc())
       .map(d -> d.get(property.getValue()))
       .ifPresent(propertyArray ->
