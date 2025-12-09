@@ -68,7 +68,7 @@ class InstanceTitlesMappingIT {
       STATEMENT_OF_RESPONSIBILITY, List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2"),
       LINK, List.of(UUID.randomUUID().toString())
     );
-    var instance = MonographUtil.createInstance(primaryTitle.getLabel(), properties);
+    var instance = MonographUtil.createInstance(properties);
     instance.addOutgoingEdge(new ResourceEdge(instance, primaryTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, parallelTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, variantTitle, TITLE));

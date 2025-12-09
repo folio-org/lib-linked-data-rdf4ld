@@ -190,7 +190,7 @@ class WorkAgentMappingIT {
   })
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var isCurrent = !rdfFile.contains("no_lccn");
     var creator = createAgent("n2021004098", isCurrent, List.of(PERSON), "Creator Agent");
     var contributor = createAgent("n2021004092", isCurrent, List.of(FAMILY), "Contributor Agent");
@@ -200,7 +200,7 @@ class WorkAgentMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, contributor, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, ILLUSTRATOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
@@ -221,11 +221,11 @@ class WorkAgentMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnWorkWithSameAgentAsCreatorAndContributorCorrectly() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var creator = createAgent("n2021004098", true, List.of(PERSON), "Creator Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_as_creator_and_contributor.json")
       .readAllBytes())

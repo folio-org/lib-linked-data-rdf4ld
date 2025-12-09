@@ -50,7 +50,7 @@ class InstanceAdminMetadataMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithAdminMetadata() throws IOException {
     // given
-    var instance = MonographUtil.createInstance(null, null);
+    var instance = MonographUtil.createInstance(null);
     var folioUuid = UUID.randomUUID().toString();
     var adminMetadata = MonographUtil.createAdminMetadata("in00123", folioUuid);
     instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));

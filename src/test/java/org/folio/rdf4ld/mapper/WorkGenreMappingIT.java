@@ -92,10 +92,10 @@ class WorkGenreMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithGenreWithNoLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var genreForm = createGenreForm(GENRE_FORM_LCCN, false, GENRE_FORM_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_genre_no_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
@@ -113,10 +113,10 @@ class WorkGenreMappingIT {
   @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithGenreWithLccn() throws IOException {
     // given
-    var work = createWork("work", Map.of(), BOOKS);
+    var work = createWork(Map.of(), BOOKS);
     var genreForm = createGenreForm(GENRE_FORM_LCCN, true, GENRE_FORM_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_genre_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())

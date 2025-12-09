@@ -81,7 +81,7 @@ class InstanceIdentifiersMappingIT {
     var ean = createEan(EXPECTED_EAN);
     var isbn = createIsbn(EXPECTED_ISBN, false);
     var lccn = createLccn(EXPECTED_LCCN, "", true);
-    var instance = createInstance("instance", null);
+    var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, ean, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, lccn, MAP));
