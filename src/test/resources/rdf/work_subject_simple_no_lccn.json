@@ -25,6 +25,9 @@
             },
             {
                 "@id": "_:TOPIC_ID"
+            },
+            {
+                "@id": "_:TEMPORAL_ID"
             }
         ]
     },
@@ -76,6 +79,23 @@
         "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
             {
                 "@value": "Subject Topic"
+            }
+        ]
+    },
+    {
+        "@id": "_:TEMPORAL_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Temporal"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Subject Temporal"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Subject Temporal"
             }
         ]
     }

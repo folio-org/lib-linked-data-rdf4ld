@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.SUBJECTS_NAMESPACE;
@@ -21,6 +22,7 @@ import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createLccn;
+import static org.folio.rdf4ld.test.MonographUtil.createTemporal;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
@@ -49,9 +51,11 @@ class WorkSubjectMappingIT {
   private static final String FAMILY_AGENT_LCCN = "n123456789";
   private static final String PERSON_AGENT_LCCN = "n79026681";
   private static final String TOPIC_LCCN = "sh85070981";
+  private static final String TEMPORAL_LCCN = "sh85070982";
   private static final String FAMILY_AGENT_LABEL = "Family Agent";
   private static final String PERSON_AGENT_LABEL = "Person Agent";
   private static final String TOPIC_LABEL = "Subject Topic";
+  private static final String TEMPORAL_LABEL = "Subject Temporal";
   private static final String COMPLEX_SUBJECT_LABEL = "Complex Subject Label";
   private static final String COMPLEX_SUBJECT_LCCN = "sh111222333";
   private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
@@ -135,6 +139,10 @@ class WorkSubjectMappingIT {
       LABEL, List.of(FAMILY_AGENT_LABEL),
       NAME, List.of(FAMILY_AGENT_LABEL)
     );
+    var expectedTemporalProperties = Map.of(
+      LABEL, List.of(TEMPORAL_LABEL),
+      NAME, List.of(TEMPORAL_LABEL)
+    );
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
         validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), expectedPersonProperties,
@@ -150,6 +158,11 @@ class WorkSubjectMappingIT {
           FAMILY_AGENT_LABEL, concept ->
             validateOutgoingEdge(concept, FOCUS, Set.of(FAMILY), expectedFamilyProperties,
               FAMILY_AGENT_LABEL, c -> {})
+        );
+        validateOutgoingEdge(work, SUBJECT, Set.of(TEMPORAL, CONCEPT), expectedTemporalProperties,
+          TEMPORAL_LABEL, concept ->
+            validateOutgoingEdge(concept, FOCUS, Set.of(TEMPORAL), expectedTemporalProperties,
+              TEMPORAL_LABEL, c -> {})
         );
       });
   }
@@ -206,12 +219,15 @@ class WorkSubjectMappingIT {
     var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
+    var temporal = createTemporal(TEMPORAL_LCCN, false, TEMPORAL_LABEL);
     var personConcept = createConcept(List.of(PERSON), List.of(personAgent), List.of(), PERSON_AGENT_LABEL);
     var familyConcept = createConcept(List.of(FAMILY), List.of(familyAgent), List.of(), FAMILY_AGENT_LABEL);
     var topicConcept = createConcept(List.of(TOPIC), List.of(topic), List.of(), TOPIC_LABEL);
+    var temporalConcept = createConcept(List.of(TEMPORAL), List.of(temporal), List.of(), TEMPORAL_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, personConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, familyConcept, SUBJECT));
     work.addOutgoingEdge(new ResourceEdge(work, topicConcept, SUBJECT));
+    work.addOutgoingEdge(new ResourceEdge(work, temporalConcept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
     var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")
@@ -220,7 +236,8 @@ class WorkSubjectMappingIT {
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("PERSON_AGENT_ID", "_" + personAgent.getId().toString())
       .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString())
-      .replaceAll("TOPIC_ID", "_" + topic.getId().toString());
+      .replaceAll("TOPIC_ID", "_" + topic.getId().toString())
+      .replaceAll("TEMPORAL_ID", "_" + temporal.getId().toString());
 
 
     // when

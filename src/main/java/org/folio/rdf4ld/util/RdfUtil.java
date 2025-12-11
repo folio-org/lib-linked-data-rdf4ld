@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 
 import com.google.common.collect.ImmutableBiMap;
@@ -50,6 +51,7 @@ public class RdfUtil {
       .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
       .put(BOOKS, "http://id.loc.gov/ontologies/bibframe/Monograph")
       .put(CONTINUING_RESOURCES, "http://id.loc.gov/ontologies/bibframe/Serial")
+      .put(TEMPORAL, "http://id.loc.gov/ontologies/bibframe/Temporal")
       .build();
 
   public static Stream<Value> getByPredicate(Model model,
