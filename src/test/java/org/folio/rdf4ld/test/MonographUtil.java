@@ -37,6 +37,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
@@ -191,6 +192,16 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label)),
       Set.of(TOPIC),
+      Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
+    );
+  }
+
+  public static Resource createTemporal(String lccn,
+                                     boolean isCurrent,
+                                     String label) {
+    return createResource(
+      Map.of(LABEL, List.of(label)),
+      Set.of(TEMPORAL),
       Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
     );
   }
