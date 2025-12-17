@@ -57,7 +57,7 @@ class WorkSubjectMappingIT {
   private static final String TOPIC_LABEL = "Subject Topic";
   private static final String TEMPORAL_LABEL = "Subject Temporal";
   private static final String COMPLEX_SUBJECT_LABEL = "Complex Subject Label";
-  private static final String COMPLEX_SUBJECT_LCCN = "sh111222333";
+  private static final String SIMPLE_SUBJECT_LCCN = "sh111222333";
   private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
     LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
   );
@@ -68,7 +68,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMocks() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work_subjects_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -115,7 +115,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithNoLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work_subjects_simple_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -168,9 +168,9 @@ class WorkSubjectMappingIT {
   }
 
   @Test
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithComplexSubjectMock() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMock() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -184,8 +184,26 @@ class WorkSubjectMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(1);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
-        validateOutgoingEdge(work, SUBJECT, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + COMPLEX_SUBJECT_LCCN, null);
+        validateOutgoingEdge(work, SUBJECT, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + SIMPLE_SUBJECT_LCCN, null);
       });
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithComplexMixedSubject() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+
   }
 
   @Test
@@ -200,7 +218,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subjects_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 
@@ -230,7 +248,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, temporalConcept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_no_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subjects_simple_no_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -249,7 +267,7 @@ class WorkSubjectMappingIT {
   }
 
   @Test
-  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_noLccn() throws IOException {
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubjectMixed() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
@@ -260,7 +278,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_no_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -277,7 +295,7 @@ class WorkSubjectMappingIT {
   }
 
   @Test
-  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubject_withLccn() throws IOException {
+  void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubject_withLccn() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
@@ -285,12 +303,12 @@ class WorkSubjectMappingIT {
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
       COMPLEX_SUBJECT_LABEL);
-    var conceptLccn = createLccn(COMPLEX_SUBJECT_LCCN, SUBJECTS_NAMESPACE, true);
+    var conceptLccn = createLccn(SIMPLE_SUBJECT_LCCN, SUBJECTS_NAMESPACE, true);
     concept.addOutgoingEdge(new ResourceEdge(concept, conceptLccn, MAP));
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
