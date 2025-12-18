@@ -2,6 +2,7 @@ package org.folio.rdf4ld.util;
 
 import static java.util.Optional.ofNullable;
 
+import java.util.Set;
 import lombok.experimental.UtilityClass;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceInternalMapping;
@@ -23,5 +24,12 @@ public class MappingUtil {
       .map(ResourceMapping::getBfResourceDef)
       .map(BfResourceDef::getPredicate)
       .orElse(null);
+  }
+
+  public static Set<String> getEdgeTypeSet(ResourceInternalMapping resourceMapping, int number) {
+    return ofNullable(getEdgeMapping(resourceMapping, number))
+      .map(ResourceMapping::getBfResourceDef)
+      .map(BfResourceDef::getTypeSet)
+      .orElse(Set.of());
   }
 }

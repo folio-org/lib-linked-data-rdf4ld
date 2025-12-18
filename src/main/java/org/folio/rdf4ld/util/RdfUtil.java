@@ -15,7 +15,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 
 import com.google.common.collect.ImmutableBiMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,19 +42,31 @@ public class RdfUtil {
 
   public static final String IRI = "@iri";
 
-  private static final ImmutableBiMap<@NotNull ResourceTypeDictionary, @NotNull String> LD_TO_BF_EXTRA_TYPES =
-    new ImmutableBiMap.Builder<@NotNull ResourceTypeDictionary, @NotNull String>()
-      .put(PERSON, "http://id.loc.gov/ontologies/bibframe/Person")
-      .put(FAMILY, "http://id.loc.gov/ontologies/bibframe/Family")
-      .put(ORGANIZATION, "http://id.loc.gov/ontologies/bibframe/Organization")
-      .put(MEETING, "http://id.loc.gov/ontologies/bibframe/Meeting")
-      .put(JURISDICTION, "http://id.loc.gov/ontologies/bibframe/Jurisdiction")
-      .put(TOPIC, "http://id.loc.gov/ontologies/bibframe/Topic")
-      .put(FORM, "http://id.loc.gov/ontologies/bibframe/GenreForm")
-      .put(PLACE, "http://id.loc.gov/ontologies/bibframe/Place")
-      .put(BOOKS, "http://id.loc.gov/ontologies/bibframe/Monograph")
-      .put(CONTINUING_RESOURCES, "http://id.loc.gov/ontologies/bibframe/Serial")
-      .put(TEMPORAL, "http://id.loc.gov/ontologies/bibframe/Temporal")
+  private static final ImmutableBiMap<@NotNull ResourceTypeDictionary, @NotNull List<String>> LD_TO_BF_EXTRA_TYPES =
+    new ImmutableBiMap.Builder<@NotNull ResourceTypeDictionary, @NotNull List<String>>()
+      .put(PERSON, List.of("http://id.loc.gov/ontologies/bibframe/Person"))
+      .put(FAMILY, List.of("http://id.loc.gov/ontologies/bibframe/Family"))
+      .put(ORGANIZATION, List.of("http://id.loc.gov/ontologies/bibframe/Organization"))
+      .put(MEETING, List.of("http://id.loc.gov/ontologies/bibframe/Meeting"))
+      .put(JURISDICTION, List.of("http://id.loc.gov/ontologies/bibframe/Jurisdiction"))
+      .put(TOPIC, List.of(
+        "http://id.loc.gov/ontologies/bibframe/Topic",
+        "http://www.loc.gov/mads/rdf/v1#Topic")
+      )
+      .put(FORM, List.of(
+        "http://id.loc.gov/ontologies/bibframe/GenreForm",
+        "http://www.loc.gov/mads/rdf/v1#GenreForm")
+      )
+      .put(PLACE, List.of(
+        "http://id.loc.gov/ontologies/bibframe/Place",
+        "http://www.loc.gov/mads/rdf/v1#Geographic")
+      )
+      .put(TEMPORAL, List.of(
+        "http://id.loc.gov/ontologies/bibframe/Temporal",
+        "http://www.loc.gov/mads/rdf/v1#Temporal")
+      )
+      .put(BOOKS, List.of("http://id.loc.gov/ontologies/bibframe/Monograph"))
+      .put(CONTINUING_RESOURCES, List.of("http://id.loc.gov/ontologies/bibframe/Serial"))
       .build();
 
   public static Stream<Value> getByPredicate(Model model,
@@ -92,8 +107,12 @@ public class RdfUtil {
 
   public static Set<ResourceTypeDictionary> readSupportedExtraTypes(Model model, Resource rdfResource) {
     return readAllTypes(model, rdfResource)
-      .filter(type -> LD_TO_BF_EXTRA_TYPES.inverse().containsKey(type))
-      .map(type -> LD_TO_BF_EXTRA_TYPES.inverse().get(type))
+      .flatMap(type -> LD_TO_BF_EXTRA_TYPES.inverse()
+        .entrySet()
+        .stream()
+        .filter(e -> e.getKey().contains(type))
+        .map(Map.Entry::getValue)
+      )
       .collect(Collectors.toSet());
   }
 
@@ -113,6 +132,7 @@ public class RdfUtil {
       .filter(LD_TO_BF_EXTRA_TYPES::containsKey)
       .map(LD_TO_BF_EXTRA_TYPES::get)
       .filter(Objects::nonNull)
+      .map(List::getFirst)
       .forEach(t -> modelBuilder.add(RDF.TYPE, iri(t)));
   }
 
@@ -128,6 +148,29 @@ public class RdfUtil {
       .forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
     coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
     return node;
+  }
+
+  public static List<Resource> extractRdfList(Model model, Resource listHead) {
+    var result = new ArrayList<Resource>();
+    var current = listHead;
+
+    while (current != null && !RDF.NIL.equals(current)) {
+      var firstStatements = model.filter(current, RDF.FIRST, null);
+      if (firstStatements.isEmpty()) {
+        break;
+      }
+      var first = firstStatements.iterator().next().getObject();
+      if (first.isResource()) {
+        result.add((Resource) first);
+      }
+      var restStatements = model.filter(current, RDF.REST, null);
+      if (restStatements.isEmpty()) {
+        break;
+      }
+      var rest = restStatements.iterator().next().getObject();
+      current = rest.isResource() ? (Resource) rest : null;
+    }
+    return result;
   }
 
 }

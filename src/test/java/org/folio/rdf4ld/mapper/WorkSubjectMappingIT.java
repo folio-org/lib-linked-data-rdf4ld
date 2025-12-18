@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -56,7 +57,7 @@ class WorkSubjectMappingIT {
   private static final String PERSON_AGENT_LABEL = "Person Agent";
   private static final String TOPIC_LABEL = "Subject Topic";
   private static final String TEMPORAL_LABEL = "Subject Temporal";
-  private static final String COMPLEX_SUBJECT_LABEL = "Complex Subject Label";
+  private static final String COMPLEX_SUBJECT_TOPIC_LABEL = "Topic name";
   private static final String SIMPLE_SUBJECT_LCCN = "sh111222333";
   private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
     LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
@@ -191,7 +192,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithComplexMixedSubject() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -204,6 +205,35 @@ class WorkSubjectMappingIT {
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
 
+    var expectedConceptLabel = "LCCN_RESOURCE_MOCK_" + TOPIC_LCCN + " -- "
+      + "LCCN_RESOURCE_MOCK_" + PERSON_AGENT_LCCN + " -- "
+      + FAMILY_AGENT_LABEL;
+
+    var expectedConceptProperties = Map.of(
+      LABEL, List.of(expectedConceptLabel),
+      NAME, List.of(COMPLEX_SUBJECT_TOPIC_LABEL)
+    );
+
+    var expectedTopicProperties = Map.of(
+      LABEL, List.of(COMPLEX_SUBJECT_TOPIC_LABEL),
+      NAME, List.of(COMPLEX_SUBJECT_TOPIC_LABEL)
+    );
+
+    var expectedFamilyProperties = Map.of(
+      LABEL, List.of(FAMILY_AGENT_LABEL),
+      NAME, List.of(FAMILY_AGENT_LABEL)
+    );
+
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), expectedConceptProperties,
+        expectedConceptLabel, concept -> {
+          validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), expectedTopicProperties,
+            "LCCN_RESOURCE_MOCK_" + TOPIC_LCCN, null);
+          validateOutgoingEdge(concept, SUB_FOCUS, Set.of(), Map.of(), "LCCN_RESOURCE_MOCK_" + PERSON_AGENT_LCCN, null);
+          validateOutgoingEdge(concept, SUB_FOCUS, Set.of(FAMILY), expectedFamilyProperties,
+            FAMILY_AGENT_LABEL, null);
+        })
+    );
   }
 
   @Test
@@ -270,15 +300,15 @@ class WorkSubjectMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithComplexSubjectMixed() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
+    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
-    var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
-      COMPLEX_SUBJECT_LABEL);
+      COMPLEX_SUBJECT_TOPIC_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -301,8 +331,7 @@ class WorkSubjectMappingIT {
     var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
     var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
-    var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
-      COMPLEX_SUBJECT_LABEL);
+    var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent), "subject label");
     var conceptLccn = createLccn(SIMPLE_SUBJECT_LCCN, SUBJECTS_NAMESPACE, true);
     concept.addOutgoingEdge(new ResourceEdge(concept, conceptLccn, MAP));
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));

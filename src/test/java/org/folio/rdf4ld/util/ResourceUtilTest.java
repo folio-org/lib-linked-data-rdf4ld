@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
@@ -120,7 +121,7 @@ class ResourceUtilTest {
   }
 
   @Test
-  void copyWithoutPreferred_removesPreferredProperty_whenDocContainsPreferred() {
+  void copyExcluding() {
     // given
     var resource = new Resource();
     var doc = JsonNodeFactory.instance.objectNode();
@@ -128,7 +129,7 @@ class ResourceUtilTest {
     resource.setDoc(doc);
 
     // when
-    var result = ResourceUtil.copyWithoutPreferred(resource);
+    var result = ResourceUtil.copyExcluding(resource, RESOURCE_PREFERRED);
 
     // then
     assertThat(result).isNotNull();
@@ -136,13 +137,13 @@ class ResourceUtilTest {
   }
 
   @Test
-  void copyWithoutPreferred_returnsNull_whenDocIsNull() {
+  void copyExcluding_returnsNull_whenDocIsNull() {
     // given
     var resource = new Resource();
     resource.setDoc(null);
 
     // when
-    var result = ResourceUtil.copyWithoutPreferred(resource);
+    var result = ResourceUtil.copyExcluding(resource);
 
     // then
     assertThat(result).isNull();
@@ -157,7 +158,7 @@ class ResourceUtilTest {
     resource.setDoc(doc);
 
     // when
-    var result = ResourceUtil.copyWithoutPreferred(resource);
+    var result = ResourceUtil.copyExcluding(resource);
 
     // then
     assertThat(result).isNotNull();
