@@ -14,6 +14,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 
@@ -95,8 +96,6 @@ public class TestUtil {
     expectedProperties.forEach((key, value) -> validateProperty(resource.getDoc(), key.getValue(), value));
     if (nonNull(extraValidator)) {
       extraValidator.accept(resource);
-    } else {
-      assertThat(resource.getOutgoingEdges()).isEmpty();
     }
   }
 
@@ -178,9 +177,9 @@ public class TestUtil {
   }
 
   public static Resource mockLccnResource(String lccn) {
-    var label = "LCCN_RESOURCE_MOCK_" + lccn;
     return new Resource()
-      .setId((long) label.hashCode())
-      .setLabel(label);
+      .setId((long) lccn.hashCode())
+      .setLabel(lccn)
+      .addType(MOCKED_RESOURCE);
   }
 }

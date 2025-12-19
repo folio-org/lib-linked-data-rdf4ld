@@ -5,6 +5,7 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 
 import java.util.Optional;
@@ -23,22 +24,21 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MockLccnResourceServiceImpl implements MockLccnResourceService {
-  private static final String LABEL_PREFIX = "LCCN_RESOURCE_MOCK_";
   private final FingerprintHashService fingerprintHashService;
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
 
   @Override
   public Resource mockLccnResource(Resource mappedResource, String lccn) {
-    var label = LABEL_PREFIX + lccn;
     return ofNullable(mappedResource)
       .orElseGet(Resource::new)
-      .setId((long) label.hashCode())
-      .setLabel(label);
+      .setId((long) lccn.hashCode())
+      .setLabel(lccn)
+      .addType(MOCKED_RESOURCE);
   }
 
   @Override
   public boolean isMockLccnResource(Resource resource) {
-    return resource.getLabel().startsWith(LABEL_PREFIX);
+    return resource.isOfType(MOCKED_RESOURCE);
   }
 
 
@@ -57,7 +57,7 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   private Stream<String> gatherMockLccnsRecursive(Stream<Resource> resources) {
     return resources
       .flatMap(r -> isMockLccnResource(r)
-        ? Stream.of(getLccn(r))
+        ? Stream.of(r.getLabel())
         : gatherMockLccnsRecursive(r.getOutgoingEdges().stream().map(ResourceEdge::getTarget)));
   }
 
@@ -66,20 +66,20 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
     var isUnMocked = new AtomicBoolean(false);
     var newOutgoingEdges = parent.getOutgoingEdges().stream()
       .map(oe -> {
-        if (isMockLccnResource(oe.getTarget())) {
-          var unMockedTarget = unMockSingleLccnResource(oe.getTarget(), lccnResourceProvider, oe.getPredicate());
+        var target = oe.getTarget();
+        boolean isUnmockedEdges = unMockLccnResourceEdgesRecursive(target, lccnResourceProvider);
+        if (isMockLccnResource(target)) {
           isUnMocked.set(true);
-          return unMockedTarget.map(
-            unMockedResource -> new ResourceEdge(oe.getSource(), unMockedResource, oe.getPredicate())
-          );
+          return unMockSingleLccnResource(target, lccnResourceProvider, oe.getPredicate())
+            .map(unMockedTarget -> new ResourceEdge(parent, unMockedTarget, oe.getPredicate()));
         } else {
-          isUnMocked.set(unMockLccnResourceEdgesRecursive(oe.getTarget(), lccnResourceProvider));
-          return Optional.of(oe);
+          isUnMocked.set(isUnmockedEdges);
+          return isUnMocked.get() ? of(new ResourceEdge(parent, target, oe.getPredicate())) : of(oe);
         }
       })
       .flatMap(Optional::stream)
       .collect(toSet());
-    if (isUnMocked.get()) {
+    if (isUnMocked.get() || !newOutgoingEdges.equals(parent.getOutgoingEdges())) {
       parent.setOutgoingEdges(newOutgoingEdges);
       parent.setId(fingerprintHashService.hash(parent));
     }
@@ -90,26 +90,19 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   private Optional<Resource> unMockSingleLccnResource(Resource resource,
                                                       Function<String, Optional<Resource>> lccnResourceProvider,
                                                       PredicateDictionary predicate) {
-    return lccnResourceProvider.apply(getLccn(resource))
+    return lccnResourceProvider.apply(resource.getLabel())
       .or(() -> unMockWithLocalData(resource))
       .map(realResource -> rdfMapperUnitProvider.getMapper(Set.of(), predicate)
         .enrichUnMockedResource(realResource));
   }
 
-  private String getLccn(Resource resource) {
-    return resource.getLabel().replace(LABEL_PREFIX, "");
-  }
-
   private Optional<Resource> unMockWithLocalData(Resource resource) {
+    resource.getTypes().remove(MOCKED_RESOURCE);
     if (resource.getTypes().isEmpty()) {
       return empty();
     }
-    getFirstPropertyValue(resource.getDoc(), LABEL)
-      .or(() -> of(getLccn(resource)))
-      .ifPresent(label -> {
-        resource.setLabel(label);
-        resource.setId(fingerprintHashService.hash(resource));
-      });
+    getFirstPropertyValue(resource.getDoc(), LABEL).ifPresent(resource::setLabel);
+    resource.setId(fingerprintHashService.hash(resource));
     return of(resource);
   }
 

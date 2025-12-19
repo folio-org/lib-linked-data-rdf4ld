@@ -36,16 +36,16 @@ import org.springframework.stereotype.Component;
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
-  private final ComplexSubjectRdfMapperUnit complexSubjectRdfMapperUnit;
+  private final ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               MockLccnResourceService mockLccnResourceService,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
                               LongFunction<String> resourceUrlProvider,
-                              ComplexSubjectRdfMapperUnit complexSubjectRdfMapperUnit) {
+                              ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit) {
     super(baseRdfMapperUnit, hashService, mockLccnResourceService, resourceUrlProvider, coreLd2RdfMapper);
-    this.complexSubjectRdfMapperUnit = complexSubjectRdfMapperUnit;
+    this.complexSubjectRdfMapperSubUnit = complexSubjectRdfMapperSubUnit;
   }
 
   @Override
@@ -53,8 +53,8 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                     org.eclipse.rdf4j.model.Resource resource,
                                     ResourceMapping resourceMapping,
                                     Resource parent) {
-    if (complexSubjectRdfMapperUnit.isComplexSubject(model, resource, resourceMapping)) {
-      return complexSubjectRdfMapperUnit.processComplexSubject(model, resource, resourceMapping, parent);
+    if (complexSubjectRdfMapperSubUnit.isComplexSubject(model, resource, resourceMapping)) {
+      return complexSubjectRdfMapperSubUnit.readComplexSubject(model, resource, resourceMapping, parent);
     }
     return super.mapToLd(model, resource, resourceMapping, parent)
       .map(subject -> isConceptOrMock(subject) ? subject : wrapWithConcept(subject));
@@ -62,20 +62,22 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
   @Override
   public Resource enrichUnMockedResource(Resource subject) {
-    return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+    if (subject.isOfType(CONCEPT)) {
+      return complexSubjectRdfMapperSubUnit.enrichConceptFromComponents(subject);
+    }
+    return wrapWithConcept(subject);
   }
 
   private boolean isConceptOrMock(Resource subject) {
     return subject.isOfType(CONCEPT) || mockLccnResourceService.isMockLccnResource(subject);
   }
 
-
-  private Resource wrapWithConcept(Resource subject) {
+  private Resource wrapWithConcept(Resource focus) {
     var concept = new Resource()
-      .setDoc(copyExcluding(subject, RESOURCE_PREFERRED, LABEL))
+      .setDoc(copyExcluding(focus, RESOURCE_PREFERRED, LABEL))
       .addType(CONCEPT);
-    subject.getTypes().forEach(concept::addType);
-    concept.addOutgoingEdge(new ResourceEdge(concept, subject, FOCUS));
+    focus.getTypes().forEach(concept::addType);
+    concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
     var label = LabelGenerator.generateLabel(concept);
     concept.setLabel(label);
     addProperty(concept.getDoc(), LABEL, label);
@@ -101,7 +103,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       .anyMatch(oe -> oe.getPredicate() == SUB_FOCUS);
 
     if (hasSubFocus) {
-      complexSubjectRdfMapperUnit.writeComplexSubject(subject, modelBuilder, mapping, parentIri);
+      complexSubjectRdfMapperSubUnit.writeComplexSubject(subject, modelBuilder, mapping, parentIri);
     } else {
       subject.getOutgoingEdges()
         .stream()

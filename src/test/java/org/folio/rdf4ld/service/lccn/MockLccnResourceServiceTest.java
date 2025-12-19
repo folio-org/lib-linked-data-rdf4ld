@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
@@ -31,8 +32,6 @@ import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,49 +51,55 @@ class MockLccnResourceServiceTest {
   void mockLccnResource_shouldReturnNewMockResource_ifNoMappedOne() {
     // given
     var lccn = UUID.randomUUID().toString();
-    var expectedLabel = "LCCN_RESOURCE_MOCK_" + lccn;
 
     // when
     var result = lccnMockResourceService.mockLccnResource(null, lccn);
 
     // then
-    assertThat(result.getId()).isEqualTo(expectedLabel.hashCode());
-    assertThat(result.getLabel()).isEqualTo(expectedLabel);
+    assertThat(result.getId()).isEqualTo(lccn.hashCode());
+    assertThat(result.getLabel()).isEqualTo(lccn);
   }
 
   @Test
   void mockLccnResource_shouldReturnSameResourceMocked_ifMappedOneProvided() {
     // given
     var lccn = UUID.randomUUID().toString();
-    var expectedLabel = "LCCN_RESOURCE_MOCK_" + lccn;
     var mapped = createAgent(UUID.randomUUID().toString(), true, List.of(AGENT, PERSON), "agentLabel");
 
     // when
     var result = lccnMockResourceService.mockLccnResource(mapped, lccn);
 
     // then
-    assertThat(result.getId()).isEqualTo(expectedLabel.hashCode());
-    assertThat(result.getLabel()).isEqualTo(expectedLabel);
+    assertThat(result.getId()).isEqualTo(lccn.hashCode());
+    assertThat(result.getLabel()).isEqualTo(lccn);
     assertThat(result).isEqualTo(mapped);
     assertThat(result.getDoc()).isNotEmpty();
     assertThat(result.getTypes()).isNotEmpty();
     assertThat(result.getOutgoingEdges()).isNotEmpty();
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "LCCN_RESOURCE_MOCK_123, true",
-    "123, false"
-  })
-  void isMockLccnResource_shouldReturnCorrectResult(String label, boolean expected) {
+  @Test
+  void isMockLccnResource_shouldReturnTrue_whenResourceHasMockedType() {
     // given
-    var resource = new Resource().setLabel(label);
+    var resource = new Resource().addType(MOCKED_RESOURCE);
 
     // when
     var result = lccnMockResourceService.isMockLccnResource(resource);
 
     // then
-    assertThat(result).isEqualTo(expected);
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void isMockLccnResource_shouldReturnFalse_whenResourceDoesNotHaveMockedType() {
+    // given
+    var resource = new Resource().addType(AGENT);
+
+    // when
+    var result = lccnMockResourceService.isMockLccnResource(resource);
+
+    // then
+    assertThat(result).isFalse();
   }
 
   @Test
@@ -203,8 +208,10 @@ class MockLccnResourceServiceTest {
     var mapperUnit = mock(RdfMapperUnit.class);
     when(mapperUnit.enrichUnMockedResource(realResource)).thenReturn(realResource);
     when(rdfMapperUnitProvider.getMapper(any(), any())).thenReturn(mapperUnit);
-    when(fingerprintHashService.hash(childResource)).thenReturn(childResource.getId() + 50);
-    when(fingerprintHashService.hash(parentResource)).thenReturn(parentResource.getId() + 50);
+    when(fingerprintHashService.hash(any())).thenAnswer(invocation -> {
+      Resource r = invocation.getArgument(0);
+      return r.getId() + 50;
+    });
 
     // when
     var result = lccnMockResourceService.unMockLccnEdges(parentResource, lccnProvider);

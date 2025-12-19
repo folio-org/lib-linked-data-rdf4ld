@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgePredicate;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeTypeSet;
@@ -46,7 +47,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class ComplexSubjectRdfMapperUnit {
+public class ComplexSubjectRdfMapperSubUnit {
 
   private static final int COMPONENT_LIST_EDGE_NUMBER = 0;
 
@@ -55,10 +56,10 @@ public class ComplexSubjectRdfMapperUnit {
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final MockLccnResourceService mockLccnResourceService;
 
-  public Optional<Resource> processComplexSubject(Model model,
-                                                  org.eclipse.rdf4j.model.Resource resource,
-                                                  ResourceMapping resourceMapping,
-                                                  Resource parent) {
+  public Optional<Resource> readComplexSubject(Model model,
+                                               org.eclipse.rdf4j.model.Resource resource,
+                                               ResourceMapping resourceMapping,
+                                               Resource parent) {
     var components = getComponentList(model, resource, resourceMapping);
     if (components.isEmpty() || components.size() < 2) {
       log.debug("ComplexSubject with invalid component list (empty or single element), skipping. Resource: {}",
@@ -113,6 +114,19 @@ public class ComplexSubjectRdfMapperUnit {
     return mappedOpt.orElse(null);
   }
 
+  public Resource enrichConceptFromComponents(Resource concept) {
+    var focus = concept.getOutgoingEdges().stream()
+      .filter(re -> re.getPredicate() == FOCUS)
+      .map(ResourceEdge::getTarget)
+      .toList()
+      .getFirst();
+    var subFocuses = concept.getOutgoingEdges().stream()
+      .filter(re -> re.getPredicate() == SUB_FOCUS)
+      .map(ResourceEdge::getTarget)
+      .toList();
+    return createConceptFromComponents(focus, subFocuses);
+  }
+
   private Resource createConceptFromComponents(Resource focus, List<Resource> subFocuses) {
     var concept = new Resource()
       .setDoc(copyExcluding(focus, RESOURCE_PREFERRED, LABEL))
@@ -122,6 +136,9 @@ public class ComplexSubjectRdfMapperUnit {
     subFocuses.forEach(sf -> {
       concept.addOutgoingEdge(new ResourceEdge(concept, sf, SUB_FOCUS));
       addProperty(concept.getDoc(), getPropertyForSubFocusType(sf.getTypes()), sf.getLabel());
+      if (sf.isOfType(MOCKED_RESOURCE)) {
+        concept.addType(MOCKED_RESOURCE);
+      }
     });
     var label = LabelGenerator.generateLabel(concept);
     concept.setLabel(label);

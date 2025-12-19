@@ -111,7 +111,12 @@ public class ResourceUtil {
       .map(d -> {
         if (d.has(property.getValue())) {
           var propertyArray = (ArrayNode) d.get(property.getValue());
-          propertyArray.add(value);
+          var valueExists = stream(spliteratorUnknownSize(propertyArray.elements(), Spliterator.ORDERED), false)
+            .map(JsonNode::asText)
+            .anyMatch(value::equals);
+          if (!valueExists) {
+            propertyArray.add(value);
+          }
         } else {
           d.putArray(property.getValue()).add(value);
         }
