@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
@@ -76,30 +75,6 @@ class MockLccnResourceServiceTest {
     assertThat(result.getDoc()).isNotEmpty();
     assertThat(result.getTypes()).isNotEmpty();
     assertThat(result.getOutgoingEdges()).isNotEmpty();
-  }
-
-  @Test
-  void isMockLccnResource_shouldReturnTrue_whenResourceHasMockedType() {
-    // given
-    var resource = new Resource().addType(MOCKED_RESOURCE);
-
-    // when
-    var result = lccnMockResourceService.isMockLccnResource(resource);
-
-    // then
-    assertThat(result).isTrue();
-  }
-
-  @Test
-  void isMockLccnResource_shouldReturnFalse_whenResourceDoesNotHaveMockedType() {
-    // given
-    var resource = new Resource().addType(AGENT);
-
-    // when
-    var result = lccnMockResourceService.isMockLccnResource(resource);
-
-    // then
-    assertThat(result).isFalse();
   }
 
   @Test
@@ -222,7 +197,6 @@ class MockLccnResourceServiceTest {
       .extracting(ResourceEdge::getTarget)
       .containsExactly(realResource);
     verify(fingerprintHashService).hash(childResource);
-    verify(fingerprintHashService).hash(parentResource);
   }
 
   @Test
@@ -247,7 +221,6 @@ class MockLccnResourceServiceTest {
     var mapperUnit = mock(RdfMapperUnit.class);
     when(mapperUnit.enrichUnMockedResource(mockResource)).thenReturn(mockResource);
     when(rdfMapperUnitProvider.getMapper(any(), any())).thenReturn(mapperUnit);
-    when(fingerprintHashService.hash(parentResource)).thenReturn(parentResource.getId() + 50);
     when(fingerprintHashService.hash(mockResource)).thenReturn(mockResource.getId() + 50);
 
     // when
@@ -264,7 +237,6 @@ class MockLccnResourceServiceTest {
     assertThat(mockResource.getOutgoingEdges())
       .extracting(ResourceEdge::getTarget)
       .containsExactly(childResource);
-    verify(fingerprintHashService).hash(parentResource);
     verify(fingerprintHashService).hash(mockResource);
     verify(fingerprintHashService, never()).hash(childResource);
   }

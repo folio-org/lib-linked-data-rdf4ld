@@ -9,8 +9,6 @@ public interface MockLccnResourceService {
 
   Resource mockLccnResource(Resource mappedResource, String lccn);
 
-  boolean isMockLccnResource(Resource resource);
-
   Set<String> gatherLccns(Set<Resource> resources);
 
   Resource unMockLccnEdges(Resource resource, Function<String, Optional<Resource>> lccnResourceProvider);

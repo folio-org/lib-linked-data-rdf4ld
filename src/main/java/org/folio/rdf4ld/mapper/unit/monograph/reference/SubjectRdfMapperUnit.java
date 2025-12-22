@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
@@ -69,7 +70,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
   }
 
   private boolean isConceptOrMock(Resource subject) {
-    return subject.isOfType(CONCEPT) || mockLccnResourceService.isMockLccnResource(subject);
+    return subject.isOfType(CONCEPT) || subject.isOfType(MOCKED_RESOURCE);
   }
 
   private Resource wrapWithConcept(Resource focus) {

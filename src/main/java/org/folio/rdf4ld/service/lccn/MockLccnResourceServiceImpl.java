@@ -10,7 +10,6 @@ import static org.folio.rdf4ld.util.ResourceUtil.getFirstPropertyValue;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +36,6 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
   }
 
   @Override
-  public boolean isMockLccnResource(Resource resource) {
-    return resource.isOfType(MOCKED_RESOURCE);
-  }
-
-
-  @Override
   public Set<String> gatherLccns(Set<Resource> resources) {
     return gatherMockLccnsRecursive(resources.stream())
       .collect(toSet());
@@ -56,34 +49,64 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
 
   private Stream<String> gatherMockLccnsRecursive(Stream<Resource> resources) {
     return resources
-      .flatMap(r -> isMockLccnResource(r)
+      .flatMap(r -> r.isOfType(MOCKED_RESOURCE)
         ? Stream.of(r.getLabel())
         : gatherMockLccnsRecursive(r.getOutgoingEdges().stream().map(ResourceEdge::getTarget)));
   }
 
-  private boolean unMockLccnResourceEdgesRecursive(Resource parent,
-                                                   Function<String, Optional<Resource>> lccnResourceProvider) {
-    var isUnMocked = new AtomicBoolean(false);
+  private void unMockLccnResourceEdgesRecursive(Resource parent,
+                                                Function<String, Optional<Resource>> lccnResourceProvider) {
     var newOutgoingEdges = parent.getOutgoingEdges().stream()
-      .map(oe -> {
-        var target = oe.getTarget();
-        boolean isUnmockedEdges = unMockLccnResourceEdgesRecursive(target, lccnResourceProvider);
-        if (isMockLccnResource(target)) {
-          isUnMocked.set(true);
-          return unMockSingleLccnResource(target, lccnResourceProvider, oe.getPredicate())
-            .map(unMockedTarget -> new ResourceEdge(parent, unMockedTarget, oe.getPredicate()));
-        } else {
-          isUnMocked.set(isUnmockedEdges);
-          return isUnMocked.get() ? of(new ResourceEdge(parent, target, oe.getPredicate())) : of(oe);
-        }
-      })
+      .map(edge -> processEdge(edge, parent, lccnResourceProvider))
       .flatMap(Optional::stream)
       .collect(toSet());
-    if (isUnMocked.get() || !newOutgoingEdges.equals(parent.getOutgoingEdges())) {
+
+    updateParentIfEdgesChanged(parent, newOutgoingEdges);
+  }
+
+  private Optional<ResourceEdge> processEdge(ResourceEdge edge,
+                                             Resource parent,
+                                             Function<String, Optional<Resource>> lccnResourceProvider) {
+    var target = edge.getTarget();
+    var originalId = target.getId();
+
+    unMockLccnResourceEdgesRecursive(target, lccnResourceProvider);
+
+    if (isMockLccnResource(target)) {
+      return replaceWithUnmockedResource(target, parent, edge.getPredicate(), lccnResourceProvider);
+    }
+
+    return recreateEdgeIfTargetChanged(edge, parent, target, originalId);
+  }
+
+  private Optional<ResourceEdge> replaceWithUnmockedResource(Resource mockResource,
+                                                             Resource parent,
+                                                             PredicateDictionary predicate,
+                                                             Function<String, Optional<Resource>> resourceProvider) {
+    return unMockSingleLccnResource(mockResource, resourceProvider, predicate)
+      .map(unMockedTarget -> new ResourceEdge(parent, unMockedTarget, predicate));
+  }
+
+  private Optional<ResourceEdge> recreateEdgeIfTargetChanged(ResourceEdge edge,
+                                                             Resource parent,
+                                                             Resource target,
+                                                             Long originalId) {
+    if (target.getId().equals(originalId)) {
+      return of(edge);
+    } else {
+      return of(new ResourceEdge(parent, target, edge.getPredicate()));
+    }
+  }
+
+  private void updateParentIfEdgesChanged(Resource parent, Set<ResourceEdge> newOutgoingEdges) {
+    if (!newOutgoingEdges.equals(parent.getOutgoingEdges())) {
       parent.setOutgoingEdges(newOutgoingEdges);
       parent.setId(fingerprintHashService.hash(parent));
     }
-    return isUnMocked.get();
+  }
+
+  private boolean isMockLccnResource(Resource resource) {
+    return resource.isOfType(MOCKED_RESOURCE);
   }
 
 
