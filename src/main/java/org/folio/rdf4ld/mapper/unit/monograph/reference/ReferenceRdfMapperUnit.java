@@ -4,9 +4,7 @@ import static java.util.Optional.of;
 import static org.eclipse.rdf4j.model.util.Values.bnode;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
-import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
-import static org.folio.rdf4ld.util.ResourceUtil.copyLongestLabelToName;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
@@ -22,6 +20,7 @@ import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
+import org.folio.rdf4ld.util.ResourceUtil;
 
 @RequiredArgsConstructor
 public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
@@ -37,18 +36,11 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
                                     ResourceMapping mapping,
                                     Resource parent) {
     var mappedOptional = baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
-      .map(mapped -> addExtraPropertiesAndTypes(model, resource, mapped));
+      .map(mapped -> ResourceUtil.enrichResource(mapped, model, resource, hashService));
     if (resource instanceof IRI iri) {
       mappedOptional = of(mockLccnResourceService.mockLccnResource(mappedOptional.orElse(null), iri.getLocalName()));
     }
     return mappedOptional;
-  }
-
-  private Resource addExtraPropertiesAndTypes(Model model, org.eclipse.rdf4j.model.Resource node, Resource mapped) {
-    copyLongestLabelToName(mapped);
-    readSupportedExtraTypes(model, node).forEach(mapped::addType);
-    mapped.setId(hashService.hash(mapped));
-    return mapped;
   }
 
   @Override

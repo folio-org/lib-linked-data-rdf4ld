@@ -14,6 +14,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
@@ -108,19 +109,21 @@ class WorkAgentMappingIT {
       LABEL, List.of(contributorLabel),
       NAME, List.of(contributorLabel)
     );
-    String creatorMockLabel = "LCCN_RESOURCE_MOCK_n2021004098";
-    String contributorMockLabel = "LCCN_RESOURCE_MOCK_n2021004092";
+    String creatorMockLabel = "n2021004098";
+    String contributorMockLabel = "n2021004092";
     validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
       work -> {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
-        validateAgent(work, creatorLabel, creatorMockLabel, CREATOR, PERSON);
-        validateOutgoingEdge(work, AUTHOR, of(PERSON), expectedCreatorProperties, creatorMockLabel);
-        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), expectedCreatorProperties, creatorMockLabel);
-        validateAgent(work, contributorLabel, contributorMockLabel, CONTRIBUTOR, FAMILY);
-        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorMockLabel);
-        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
+        validateAgent(work, creatorLabel, creatorMockLabel, CREATOR, of(PERSON, MOCKED_RESOURCE));
+        validateOutgoingEdge(work, AUTHOR, of(PERSON, MOCKED_RESOURCE), expectedCreatorProperties, creatorMockLabel);
+        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON, MOCKED_RESOURCE), expectedCreatorProperties,
+          creatorMockLabel);
+        validateAgent(work, contributorLabel, contributorMockLabel, CONTRIBUTOR, of(FAMILY, MOCKED_RESOURCE));
+        validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY, MOCKED_RESOURCE), expectedContributorProperties,
+          contributorMockLabel);
+        validateOutgoingEdge(work, COLLABORATOR, of(FAMILY, MOCKED_RESOURCE), expectedContributorProperties,
           contributorMockLabel);
       });
   }
@@ -155,10 +158,10 @@ class WorkAgentMappingIT {
         assertThat(work.getId()).isNotNull();
         assertThat(work.getIncomingEdges()).isEmpty();
         assertThat(work.getOutgoingEdges()).hasSize(6);
-        validateAgent(work, creatorLabel, creatorLabel, CREATOR, PERSON);
+        validateAgent(work, creatorLabel, creatorLabel, CREATOR, of(PERSON));
         validateOutgoingEdge(work, AUTHOR, of(PERSON), expectedCreatorProperties, creatorLabel);
         validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(PERSON), expectedCreatorProperties, creatorLabel);
-        validateAgent(work, contributorLabel, contributorLabel, CONTRIBUTOR, FAMILY);
+        validateAgent(work, contributorLabel, contributorLabel, CONTRIBUTOR, of(FAMILY));
         validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorLabel);
         validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
           contributorLabel);
@@ -169,12 +172,12 @@ class WorkAgentMappingIT {
                              String labelProperty,
                              String label,
                              PredicateDictionary predicate,
-                             ResourceTypeDictionary type) {
+                             Set<ResourceTypeDictionary> types) {
     var expectedProperties = Map.of(
       LABEL, List.of(labelProperty),
       NAME, List.of(labelProperty)
     );
-    validateOutgoingEdge(work, predicate, of(type), expectedProperties, label,
+    validateOutgoingEdge(work, predicate, types, expectedProperties, label,
       agent -> {
         assertThat(agent.getId()).isNotNull();
         assertThat(agent.getIncomingEdges()).isEmpty();

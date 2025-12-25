@@ -18,13 +18,7 @@
         ],
         "http://id.loc.gov/ontologies/bibframe/subject": [
             {
-                "@id": "http://id.loc.gov/rwo/agents/n79026681"
-            },
-            {
-                "@id": "http://id.loc.gov/rwo/agents/n123456789"
-            },
-            {
-                "@id": "http://id.loc.gov/authorities/subjects/sh85070981"
+                "@id": "http://id.loc.gov/authorities/subjects/sh111222333"
             }
         ]
     }

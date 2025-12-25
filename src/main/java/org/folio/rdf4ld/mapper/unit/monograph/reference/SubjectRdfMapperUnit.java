@@ -5,22 +5,25 @@ import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
-import static org.folio.rdf4ld.util.ResourceUtil.copyWithoutPreferred;
+import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
+import static org.folio.rdf4ld.util.ResourceUtil.copyExcluding;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
-import org.eclipse.rdf4j.model.BNode;
+import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.model.util.RDFCollections;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.ld.dictionary.util.LabelGenerator;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -29,16 +32,21 @@ import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 @RdfMapperDefinition(predicate = SUBJECT)
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
+
+  private final ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               MockLccnResourceService mockLccnResourceService,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
-                              LongFunction<String> resourceUrlProvider) {
+                              LongFunction<String> resourceUrlProvider,
+                              ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit) {
     super(baseRdfMapperUnit, hashService, mockLccnResourceService, resourceUrlProvider, coreLd2RdfMapper);
+    this.complexSubjectRdfMapperSubUnit = complexSubjectRdfMapperSubUnit;
   }
 
   @Override
@@ -46,26 +54,34 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                     org.eclipse.rdf4j.model.Resource resource,
                                     ResourceMapping resourceMapping,
                                     Resource parent) {
+    if (complexSubjectRdfMapperSubUnit.isComplexSubject(model, resource, resourceMapping)) {
+      return complexSubjectRdfMapperSubUnit.readComplexSubject(model, resource, resourceMapping, parent);
+    }
     return super.mapToLd(model, resource, resourceMapping, parent)
       .map(subject -> isConceptOrMock(subject) ? subject : wrapWithConcept(subject));
   }
 
   @Override
   public Resource enrichUnMockedResource(Resource subject) {
-    return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+    if (subject.isOfType(CONCEPT)) {
+      return complexSubjectRdfMapperSubUnit.enrichConceptFromComponents(subject);
+    }
+    return wrapWithConcept(subject);
   }
 
   private boolean isConceptOrMock(Resource subject) {
-    return subject.isOfType(CONCEPT) || mockLccnResourceService.isMockLccnResource(subject);
+    return subject.isOfType(CONCEPT) || subject.isOfType(MOCKED_RESOURCE);
   }
 
-  public Resource wrapWithConcept(Resource subject) {
+  private Resource wrapWithConcept(Resource focus) {
     var concept = new Resource()
-      .setLabel(subject.getLabel())
-      .setDoc(copyWithoutPreferred(subject))
+      .setDoc(copyExcluding(focus, RESOURCE_PREFERRED, LABEL))
       .addType(CONCEPT);
-    subject.getTypes().forEach(concept::addType);
-    concept.addOutgoingEdge(new ResourceEdge(concept, subject, FOCUS));
+    focus.getTypes().forEach(concept::addType);
+    concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
+    var label = LabelGenerator.generateLabel(concept);
+    concept.setLabel(label);
+    addProperty(concept.getDoc(), LABEL, label);
     concept.setId(hashService.hash(concept));
     return concept;
   }
@@ -76,23 +92,26 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                             ResourceMapping mapping,
                             Resource parent) {
     var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
-    if (noSubFocuses(subject)) {
+    var predicate = mapping.getBfResourceDef().getPredicate();
+
+    var conceptLccnLink = getCurrentLccnLink(subject);
+    if (conceptLccnLink.isPresent()) {
+      linkResources(parentIri, iri(conceptLccnLink.get()), predicate, modelBuilder);
+      return;
+    }
+
+    var hasSubFocus = subject.getOutgoingEdges().stream()
+      .anyMatch(oe -> oe.getPredicate() == SUB_FOCUS);
+
+    if (hasSubFocus) {
+      complexSubjectRdfMapperSubUnit.writeComplexSubject(subject, modelBuilder, mapping, parentIri);
+    } else {
       subject.getOutgoingEdges()
         .stream()
         .filter(oe -> oe.getPredicate() == FOCUS)
         .map(ResourceEdge::getTarget)
         .forEach(resource -> writeSingleSubject(resource, modelBuilder, mapping, parentIri));
-    } else {
-      var predicate = mapping.getBfResourceDef().getPredicate();
-      getCurrentLccnLink(subject)
-        .ifPresentOrElse(link -> linkResources(parentIri, iri(link), predicate, modelBuilder),
-          () -> writeComplexSubject(subject, modelBuilder, mapping, parentIri)
-        );
     }
-  }
-
-  private boolean noSubFocuses(Resource resource) {
-    return resource.getOutgoingEdges().stream().noneMatch(oe -> oe.getPredicate() == SUB_FOCUS);
   }
 
   private void writeSingleSubject(Resource subject,
@@ -111,39 +130,5 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       );
   }
 
-  private void writeComplexSubject(Resource subject,
-                                   ModelBuilder modelBuilder,
-                                   ResourceMapping mapping,
-                                   org.eclipse.rdf4j.model.Resource parent) {
-    var complexSubjectNode = bnode("_" + subject.getId());
-    var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
-    linkResources(parent, complexSubjectNode, mapping.getBfResourceDef().getPredicate(), modelBuilder);
-    writeBlankNode(complexSubjectNode, subject, modelBuilder, complexSubjectMapping, coreLd2RdfMapper);
-    writeExtraTypes(modelBuilder, subject, complexSubjectNode);
-    writeComponentsList(subject, modelBuilder, mapping, complexSubjectNode);
-  }
-
-  private void writeComponentsList(Resource subject,
-                                   ModelBuilder modelBuilder,
-                                   ResourceMapping mapping,
-                                   BNode complexSubjectNode) {
-    var components = subject.getOutgoingEdges().stream()
-      .filter(oe -> oe.getPredicate() == FOCUS || oe.getPredicate() == SUB_FOCUS)
-      .map(ResourceEdge::getTarget)
-      .map(f -> getCurrentLccnLink(f)
-        .map(iri -> (org.eclipse.rdf4j.model.Resource) iri(iri))
-        .orElseGet(() -> {
-          var nodeId = "_" + f.getId();
-          var bnode = writeBlankNode(bnode(nodeId), f, modelBuilder, mapping, coreLd2RdfMapper);
-          writeExtraTypes(modelBuilder, f, bnode(nodeId));
-          return bnode;
-        }))
-      .toList();
-    var listHead = bnode();
-    RDFCollections.asRDF(components, listHead, modelBuilder.build());
-    var complexSubjectMapping = getEdgeMapping(mapping.getResourceMapping(), 0);
-    var componentListPredicate = complexSubjectMapping.getBfResourceDef().getPredicate();
-    modelBuilder.add(complexSubjectNode, iri(componentListPredicate), listHead);
-  }
 
 }

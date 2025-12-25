@@ -151,10 +151,10 @@ public class MonographUtil {
                                      List<ResourceTypeDictionary> types,
                                      String label) {
     return createResource(
-      Map.of(LABEL, List.of(label)),
+      Map.of(LABEL, List.of(label), NAME, List.of(label)),
       new LinkedHashSet<>(types),
       Map.of(MAP, List.of(createLccn(lccn, AGENTS_NAMESPACE, isCurrent)))
-    );
+    ).setLabel(label);
   }
 
   public static Resource createConceptAgent(String lccn,
@@ -190,17 +190,17 @@ public class MonographUtil {
                                      boolean isCurrent,
                                      String label) {
     return createResource(
-      Map.of(LABEL, List.of(label)),
+      Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(TOPIC),
       Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
-    );
+    ).setLabel(label);
   }
 
   public static Resource createTemporal(String lccn,
                                      boolean isCurrent,
                                      String label) {
     return createResource(
-      Map.of(LABEL, List.of(label)),
+      Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(TEMPORAL),
       Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
     );
@@ -210,7 +210,7 @@ public class MonographUtil {
                                          boolean isCurrent,
                                          String label) {
     return createResource(
-      Map.of(LABEL, List.of(label)),
+      Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(FORM),
       Map.of(MAP, List.of(createLccn(lccn, GENRE_FORMS_NAMESPACE, isCurrent)))
     );
@@ -237,7 +237,7 @@ public class MonographUtil {
       Map.of(NAME, List.of(lccn), LINK, List.of(lccnNameSpace + lccn)),
       Set.of(IDENTIFIER, ID_LCCN),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
-    );
+    ).setLabel(lccn);
   }
 
   private static Resource createStatus(boolean isCurrent) {
