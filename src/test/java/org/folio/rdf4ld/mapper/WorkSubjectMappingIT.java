@@ -15,7 +15,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCSH;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
@@ -27,8 +28,8 @@ import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConcept;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
+import static org.folio.rdf4ld.test.MonographUtil.createIdentifier;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
-import static org.folio.rdf4ld.test.MonographUtil.createLccn;
 import static org.folio.rdf4ld.test.MonographUtil.createTemporal;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -260,7 +261,7 @@ class WorkSubjectMappingIT {
         return of(createTopic(TOPIC_LCCN, true, TOPIC_LABEL));
       }
       if (lccn.equals(PERSON_AGENT_LCCN)) {
-        return of(createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL));
+        return of(createAgent(PERSON_AGENT_LCCN, ID_LCNAF, true, List.of(PERSON), PERSON_AGENT_LABEL));
       }
       return empty();
     });
@@ -301,14 +302,18 @@ class WorkSubjectMappingIT {
       LINK, List.of(AGENTS_NAMESPACE + PERSON_AGENT_LCCN)
     );
 
-    validateOutgoingEdge(unmockedInstance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+    validateOutgoingEdge(unmockedInstance,
+      INSTANTIATES,
+      Set.of(WORK, BOOKS),
+      EXPECTED_WORK_PROPERTIES,
+      "",
       work -> validateOutgoingEdge(work, SUBJECT, Set.of(TOPIC, CONCEPT), expectedConceptProperties,
         expectedConceptLabel, concept -> {
           validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), expectedTopicProperties, TOPIC_LABEL, topic ->
-            validateOutgoingEdge(topic, MAP, Set.of(IDENTIFIER, ID_LCCN), expectedTopicLccnProperties, TOPIC_LCCN)
+            validateOutgoingEdge(topic, MAP, Set.of(IDENTIFIER, ID_LCSH), expectedTopicLccnProperties, TOPIC_LCCN)
           );
           validateOutgoingEdge(concept, SUB_FOCUS, Set.of(PERSON), expectedPersonProperties, PERSON_AGENT_LABEL,
-            person -> validateOutgoingEdge(person, MAP, Set.of(IDENTIFIER, ID_LCCN), expectedPersonLccnProperties,
+            person -> validateOutgoingEdge(person, MAP, Set.of(IDENTIFIER, ID_LCNAF), expectedPersonLccnProperties,
               PERSON_AGENT_LCCN));
           validateOutgoingEdge(concept, SUB_FOCUS, Set.of(FAMILY), expectedFamilyProperties, FAMILY_AGENT_LABEL);
         })
@@ -343,8 +348,8 @@ class WorkSubjectMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubjectsWithoutLccn() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
-    var personAgent = createAgent(PERSON_AGENT_LCCN, false, List.of(PERSON), PERSON_AGENT_LABEL);
-    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var personAgent = createAgent(PERSON_AGENT_LCCN, ID_LCNAF, false, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, ID_LCNAF, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, false, TOPIC_LABEL);
     var temporal = createTemporal(TEMPORAL_LCCN, false, TEMPORAL_LABEL);
     var personConcept = createConcept(List.of(PERSON), List.of(personAgent), List.of(), PERSON_AGENT_LABEL);
@@ -380,8 +385,8 @@ class WorkSubjectMappingIT {
     // given
     var work = createWork(Map.of(), BOOKS);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
-    var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
-    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var personAgent = createAgent(PERSON_AGENT_LCCN, ID_LCNAF, true, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, ID_LCNAF, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent),
       COMPLEX_SUBJECT_TOPIC_LABEL);
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
@@ -407,11 +412,11 @@ class WorkSubjectMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithSimpleSubject_withLccn() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
-    var personAgent = createAgent(PERSON_AGENT_LCCN, true, List.of(PERSON), PERSON_AGENT_LABEL);
-    var familyAgent = createAgent(FAMILY_AGENT_LCCN, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
+    var personAgent = createAgent(PERSON_AGENT_LCCN, ID_LCNAF, true, List.of(PERSON), PERSON_AGENT_LABEL);
+    var familyAgent = createAgent(FAMILY_AGENT_LCCN, ID_LCNAF, false, List.of(FAMILY), FAMILY_AGENT_LABEL);
     var topic = createTopic(TOPIC_LCCN, true, TOPIC_LABEL);
     var concept = createConcept(List.of(TOPIC), List.of(topic), List.of(personAgent, familyAgent), "subject label");
-    var conceptLccn = createLccn(SIMPLE_SUBJECT_LCCN, SUBJECTS_NAMESPACE, true);
+    var conceptLccn = createIdentifier(SIMPLE_SUBJECT_LCCN, ID_LCSH, SUBJECTS_NAMESPACE, true);
     concept.addOutgoingEdge(new ResourceEdge(concept, conceptLccn, MAP));
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);

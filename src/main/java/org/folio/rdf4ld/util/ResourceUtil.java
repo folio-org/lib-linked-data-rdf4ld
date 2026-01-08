@@ -6,6 +6,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.StreamSupport.stream;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.CHRONOLOGICAL_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.FORM_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.GENERAL_SUBDIVISION;
@@ -17,7 +18,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -125,16 +127,18 @@ public class ResourceUtil {
       .orElse((ObjectNode) doc);
   }
 
-  public static Optional<String> getCurrentLccnLink(Resource resource) {
-    var isAgent = isAgent(resource);
-    return resource.getOutgoingEdges()
-      .stream()
+  public static Optional<String> getCurrentIdentifierLink(Resource authorityResource) {
+    var isAgent = isAgent(authorityResource);
+    return authorityResource.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().equals(MAP))
       .map(ResourceEdge::getTarget)
-      .filter(target -> target.isOfType(ID_LCCN))
+      .filter(target -> target.isOfType(IDENTIFIER))
       .filter(ResourceUtil::isCurrent)
-      .map(Resource::getDoc)
-      .map(d -> getPropertiesString(d, LINK))
-      .map(lccnLink -> isAgent ? toAgentRwoLink(lccnLink) : lccnLink)
+      .flatMap(identifierResource ->
+        getFirstPropertyValue(identifierResource.getDoc(), LINK)
+          .map(link -> isAgent && identifierResource.isOfType(ID_LCNAF) ? toAgentRwoLink(link) : link)
+          .stream()
+      )
       .findFirst();
   }
 

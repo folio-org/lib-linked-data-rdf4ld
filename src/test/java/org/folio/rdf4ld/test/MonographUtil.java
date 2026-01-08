@@ -32,7 +32,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCGFT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCSH;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
@@ -146,14 +148,15 @@ public class MonographUtil {
     );
   }
 
-  public static Resource createAgent(String lccn,
+  public static Resource createAgent(String identifier,
+                                     ResourceTypeDictionary identifierType,
                                      boolean isCurrent,
                                      List<ResourceTypeDictionary> types,
                                      String label) {
     return createResource(
       Map.of(LABEL, List.of(label), NAME, List.of(label)),
       new LinkedHashSet<>(types),
-      Map.of(MAP, List.of(createLccn(lccn, AGENTS_NAMESPACE, isCurrent)))
+      Map.of(MAP, List.of(createIdentifier(identifier, identifierType, AGENTS_NAMESPACE, isCurrent)))
     ).setLabel(label);
   }
 
@@ -161,7 +164,7 @@ public class MonographUtil {
                                             boolean isCurrent,
                                             List<ResourceTypeDictionary> types,
                                             String label) {
-    return createConcept(types, List.of(createAgent(lccn, isCurrent, types, label)), List.of(), label);
+    return createConcept(types, List.of(createAgent(lccn, ID_LCNAF, isCurrent, types, label)), List.of(), label);
   }
 
   public static Resource createConceptTopic(String lccn,
@@ -192,7 +195,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(TOPIC),
-      Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
+      Map.of(MAP, List.of(createIdentifier(lccn, ID_LCSH, SUBJECTS_NAMESPACE, isCurrent)))
     ).setLabel(label);
   }
 
@@ -202,7 +205,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(TEMPORAL),
-      Map.of(MAP, List.of(createLccn(lccn, SUBJECTS_NAMESPACE, isCurrent)))
+      Map.of(MAP, List.of(createIdentifier(lccn, ID_LCSH, SUBJECTS_NAMESPACE, isCurrent)))
     );
   }
 
@@ -212,7 +215,7 @@ public class MonographUtil {
     return createResource(
       Map.of(LABEL, List.of(label), NAME, List.of(label)),
       Set.of(FORM),
-      Map.of(MAP, List.of(createLccn(lccn, GENRE_FORMS_NAMESPACE, isCurrent)))
+      Map.of(MAP, List.of(createIdentifier(lccn, ID_LCGFT, GENRE_FORMS_NAMESPACE, isCurrent)))
     );
   }
 
@@ -232,12 +235,13 @@ public class MonographUtil {
     );
   }
 
-  public static Resource createLccn(String lccn, String lccnNameSpace, boolean isCurrent) {
+  public static Resource createIdentifier(String identifier, ResourceTypeDictionary identifierType,
+                                          String lccnNameSpace, boolean isCurrent) {
     return createResource(
-      Map.of(NAME, List.of(lccn), LINK, List.of(lccnNameSpace + lccn)),
-      Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(NAME, List.of(identifier), LINK, List.of(lccnNameSpace + identifier)),
+      Set.of(IDENTIFIER, identifierType),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
-    ).setLabel(lccn);
+    ).setLabel(identifier);
   }
 
   private static Resource createStatus(boolean isCurrent) {

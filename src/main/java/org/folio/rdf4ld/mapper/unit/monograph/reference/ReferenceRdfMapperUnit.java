@@ -5,7 +5,7 @@ import static org.eclipse.rdf4j.model.util.Values.bnode;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -50,7 +50,7 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
                             Resource parent) {
     var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     var predicate = mapping.getBfResourceDef().getPredicate();
-    getCurrentLccnLink(reference)
+    getCurrentIdentifierLink(reference)
       .ifPresentOrElse(link -> linkResources(parentIri, iri(link), predicate, modelBuilder),
         () -> {
           var node = bnode("_" + reference.getId());
