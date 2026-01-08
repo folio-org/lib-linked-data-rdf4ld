@@ -236,9 +236,9 @@ public class MonographUtil {
   }
 
   public static Resource createIdentifier(String identifier, ResourceTypeDictionary identifierType,
-                                          String lccnNameSpace, boolean isCurrent) {
+                                          String identifierNamespace, boolean isCurrent) {
     return createResource(
-      Map.of(NAME, List.of(identifier), LINK, List.of(lccnNameSpace + identifier)),
+      Map.of(NAME, List.of(identifier), LINK, List.of(identifierNamespace + identifier)),
       Set.of(IDENTIFIER, identifierType),
       Map.of(STATUS, List.of(createStatus(isCurrent)))
     ).setLabel(identifier);

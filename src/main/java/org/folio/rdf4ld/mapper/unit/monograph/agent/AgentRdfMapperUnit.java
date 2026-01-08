@@ -104,8 +104,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     var nodeId = getNodeId(agent);
     var contributionNode = Values.bnode(nodeId);
     writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
-    getCurrentIdentifierLink(agent).ifPresentOrElse(lccnLink -> {
-        var agentIri = iri(lccnLink);
+    getCurrentIdentifierLink(agent).ifPresentOrElse(identifierLink -> {
+        var agentIri = iri(identifierLink);
         writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
       }, () -> {
         var agentNode = Values.bnode(nodeId + "_agent");

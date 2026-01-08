@@ -94,9 +94,9 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     var predicate = mapping.getBfResourceDef().getPredicate();
 
-    var conceptLccnLink = getCurrentIdentifierLink(subject);
-    if (conceptLccnLink.isPresent()) {
-      linkResources(parentIri, iri(conceptLccnLink.get()), predicate, modelBuilder);
+    var conceptIdentifierLink = getCurrentIdentifierLink(subject);
+    if (conceptIdentifierLink.isPresent()) {
+      linkResources(parentIri, iri(conceptIdentifierLink.get()), predicate, modelBuilder);
       return;
     }
 
