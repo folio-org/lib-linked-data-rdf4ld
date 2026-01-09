@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.AGENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
@@ -63,7 +64,7 @@ class MockLccnResourceServiceTest {
   void mockLccnResource_shouldReturnSameResourceMocked_ifMappedOneProvided() {
     // given
     var lccn = UUID.randomUUID().toString();
-    var mapped = createAgent(UUID.randomUUID().toString(), true, List.of(AGENT, PERSON), "agentLabel");
+    var mapped = createAgent(UUID.randomUUID().toString(), ID_LCNAF, true, List.of(AGENT, PERSON), "agentLabel");
 
     // when
     var result = lccnMockResourceService.mockLccnResource(mapped, lccn);

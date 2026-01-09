@@ -15,9 +15,9 @@ import static org.folio.rdf4ld.test.MonographUtil.STATUS_BASE_URI;
 import static org.folio.rdf4ld.test.MonographUtil.STATUS_CANCELLED;
 import static org.folio.rdf4ld.test.MonographUtil.STATUS_CURRENT;
 import static org.folio.rdf4ld.test.MonographUtil.createEan;
+import static org.folio.rdf4ld.test.MonographUtil.createIdentifier;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createIsbn;
-import static org.folio.rdf4ld.test.MonographUtil.createLccn;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
@@ -80,7 +80,7 @@ class InstanceIdentifiersMappingIT {
     // given
     var ean = createEan(EXPECTED_EAN);
     var isbn = createIsbn(EXPECTED_ISBN, false);
-    var lccn = createLccn(EXPECTED_LCCN, "", true);
+    var lccn = createIdentifier(EXPECTED_LCCN, ID_LCCN, "", true);
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, ean, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn, MAP));

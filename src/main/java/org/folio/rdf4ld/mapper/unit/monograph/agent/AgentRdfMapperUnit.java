@@ -11,7 +11,7 @@ import static org.folio.rdf4ld.util.RdfUtil.getByPredicate;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -104,8 +104,8 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     var nodeId = getNodeId(agent);
     var contributionNode = Values.bnode(nodeId);
     writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
-    getCurrentLccnLink(agent).ifPresentOrElse(lccnLink -> {
-        var agentIri = iri(lccnLink);
+    getCurrentIdentifierLink(agent).ifPresentOrElse(identifierLink -> {
+        var agentIri = iri(identifierLink);
         writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
       }, () -> {
         var agentNode = Values.bnode(nodeId + "_agent");

@@ -14,7 +14,7 @@ import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.copyExcluding;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -94,9 +94,9 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
     var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     var predicate = mapping.getBfResourceDef().getPredicate();
 
-    var conceptLccnLink = getCurrentLccnLink(subject);
-    if (conceptLccnLink.isPresent()) {
-      linkResources(parentIri, iri(conceptLccnLink.get()), predicate, modelBuilder);
+    var conceptIdentifierLink = getCurrentIdentifierLink(subject);
+    if (conceptIdentifierLink.isPresent()) {
+      linkResources(parentIri, iri(conceptIdentifierLink.get()), predicate, modelBuilder);
       return;
     }
 
@@ -119,7 +119,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
                                   ResourceMapping mapping,
                                   org.eclipse.rdf4j.model.Resource parent) {
     var predicate = mapping.getBfResourceDef().getPredicate();
-    getCurrentLccnLink(subject)
+    getCurrentIdentifierLink(subject)
       .ifPresentOrElse(link -> linkResources(parent, iri(link), predicate, modelBuilder),
         () -> {
           var node = bnode("_" + subject.getId());

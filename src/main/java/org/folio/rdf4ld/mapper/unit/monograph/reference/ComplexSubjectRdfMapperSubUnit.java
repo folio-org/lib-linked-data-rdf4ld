@@ -18,7 +18,7 @@ import static org.folio.rdf4ld.util.RdfUtil.writeBlankNode;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.copyExcluding;
-import static org.folio.rdf4ld.util.ResourceUtil.getCurrentLccnLink;
+import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
 import static org.folio.rdf4ld.util.ResourceUtil.getPropertyForSubFocusType;
 
 import java.util.List;
@@ -166,7 +166,7 @@ public class ComplexSubjectRdfMapperSubUnit {
     var components = subject.getOutgoingEdges().stream()
       .filter(oe -> oe.getPredicate() == FOCUS || oe.getPredicate() == SUB_FOCUS)
       .map(ResourceEdge::getTarget)
-      .map(f -> getCurrentLccnLink(f)
+      .map(f -> getCurrentIdentifierLink(f)
         .map(iri -> (org.eclipse.rdf4j.model.Resource) iri(iri))
         .orElseGet(() -> {
           var nodeId = "_" + f.getId();

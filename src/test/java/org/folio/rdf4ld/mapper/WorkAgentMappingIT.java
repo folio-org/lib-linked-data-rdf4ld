@@ -14,6 +14,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -195,8 +196,8 @@ class WorkAgentMappingIT {
     // given
     var work = createWork(Map.of(), BOOKS);
     var isCurrent = !rdfFile.contains("no_lccn");
-    var creator = createAgent("n2021004098", isCurrent, List.of(PERSON), "Creator Agent");
-    var contributor = createAgent("n2021004092", isCurrent, List.of(FAMILY), "Contributor Agent");
+    var creator = createAgent("n2021004098", ID_LCNAF, isCurrent, List.of(PERSON), "Creator Agent");
+    var contributor = createAgent("n2021004092", ID_LCNAF, isCurrent, List.of(FAMILY), "Contributor Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, PUBLISHING_DIRECTOR));
@@ -225,7 +226,7 @@ class WorkAgentMappingIT {
   void mapLdToBibframe2Rdf_shouldReturnWorkWithSameAgentAsCreatorAndContributorCorrectly() throws IOException {
     // given
     var work = createWork(Map.of(), BOOKS);
-    var creator = createAgent("n2021004098", true, List.of(PERSON), "Creator Agent");
+    var creator = createAgent("n2021004098", ID_LCNAF, true, List.of(PERSON), "Creator Agent");
     work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
     var instance = createInstance(null);
