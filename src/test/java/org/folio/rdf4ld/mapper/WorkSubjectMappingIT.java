@@ -8,9 +8,11 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
+import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -30,6 +32,7 @@ import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createIdentifier;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
+import static org.folio.rdf4ld.test.MonographUtil.createResource;
 import static org.folio.rdf4ld.test.MonographUtil.createTemporal;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -317,6 +320,45 @@ class WorkSubjectMappingIT {
               PERSON_AGENT_LCCN));
           validateOutgoingEdge(concept, SUB_FOCUS, Set.of(FAMILY), expectedFamilyProperties, FAMILY_AGENT_LABEL);
         })
+    );
+  }
+
+  @Test
+  void mapBibframe2RdfToLdAndUnMock_shouldReturnUnmodifiedComplexSubjectIfPreferred() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    var preferredSubjectProperties = Map.of(
+      RESOURCE_PREFERRED, List.of("true"),
+      LABEL, List.of("Some label"),
+      GEOGRAPHIC_SUBDIVISION, List.of("Some geo subdivision")
+    );
+    var preferredComplexSubject = createResource(preferredSubjectProperties, Set.of(CONCEPT, TOPIC), Map.of());
+
+    // when
+    var mapped = rdf4LdMapper.mapBibframe2RdfToLd(model);
+    assertThat(mapped).hasSize(1);
+    var mappedInstance = mapped.iterator().next();
+    var unmockedInstance = mockLccnResourceService.unMockLccnEdges(mappedInstance, lccn -> {
+      if (lccn.equals(SIMPLE_SUBJECT_LCCN)) {
+        return of(preferredComplexSubject);
+      }
+      return empty();
+    });
+
+    // then
+    var work = unmockedInstance.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().equals(INSTANTIATES))
+      .map(ResourceEdge::getTarget)
+      .findFirst().orElseThrow();
+
+    validateOutgoingEdge(
+      work,
+      SUBJECT,
+      preferredComplexSubject.getTypes(),
+      preferredSubjectProperties,
+      preferredComplexSubject.getLabel()
     );
   }
 

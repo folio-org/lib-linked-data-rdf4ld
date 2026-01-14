@@ -15,6 +15,7 @@ import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.copyExcluding;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
+import static org.folio.rdf4ld.util.ResourceUtil.isPreferred;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -63,6 +64,9 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
   @Override
   public Resource enrichUnMockedResource(Resource subject) {
+    if (subject.isOfType(CONCEPT) && isPreferred(subject)) {
+      return subject;
+    }
     if (subject.isOfType(CONCEPT)) {
       return complexSubjectRdfMapperSubUnit.enrichConceptFromComponents(subject);
     }
@@ -129,6 +133,4 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
         }
       );
   }
-
-
 }
