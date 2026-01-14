@@ -269,4 +269,48 @@ class ResourceUtilTest {
       .hasSize(5);
   }
 
+  @Test
+  void isPreferred_shouldReturnTrue_whenResourcePreferredIsTrue() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    doc.set(RESOURCE_PREFERRED.getValue(), JsonNodeFactory.instance.arrayNode().add("true"));
+    resource.setDoc(doc);
+
+    // when
+    var result = ResourceUtil.isPreferred(resource);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void isPreferred_shouldReturnFalse_whenResourcePreferredIsFalse() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    doc.set(RESOURCE_PREFERRED.getValue(), JsonNodeFactory.instance.arrayNode().add("false"));
+    resource.setDoc(doc);
+
+    // when
+    var result = ResourceUtil.isPreferred(resource);
+
+    // then
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  void isPreferred_shouldReturnFalse_whenResourcePreferredIsMissing() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    resource.setDoc(doc);
+
+    // when
+    var result = ResourceUtil.isPreferred(resource);
+
+    // then
+    assertThat(result).isFalse();
+  }
+
 }
