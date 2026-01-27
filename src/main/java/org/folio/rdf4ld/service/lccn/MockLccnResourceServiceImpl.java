@@ -49,9 +49,12 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
 
   private Stream<String> gatherMockLccnsRecursive(Stream<Resource> resources) {
     return resources
-      .flatMap(r -> r.isOfType(MOCKED_RESOURCE)
-        ? Stream.of(r.getLabel())
-        : gatherMockLccnsRecursive(r.getOutgoingEdges().stream().map(ResourceEdge::getTarget)));
+      .flatMap(r -> {
+        var childLccns = gatherMockLccnsRecursive(r.getOutgoingEdges().stream().map(ResourceEdge::getTarget));
+        return r.isOfType(MOCKED_RESOURCE)
+          ? Stream.concat(Stream.of(r.getLabel()), childLccns)
+          : childLccns;
+      });
   }
 
   private void unMockLccnResourceEdgesRecursive(Resource parent,
