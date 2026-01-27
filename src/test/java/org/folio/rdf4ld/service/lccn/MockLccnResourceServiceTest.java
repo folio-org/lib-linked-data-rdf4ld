@@ -79,22 +79,33 @@ class MockLccnResourceServiceTest {
   }
 
   @Test
-  void gatherLccns_shouldReturnAllLccnValues() {
+  void gatherLccns_shouldReturnAllLccnValuesRecursively() {
     // given
     var lccn1 = UUID.randomUUID().toString();
     var lccn2 = UUID.randomUUID().toString();
+    var lccn4 = UUID.randomUUID().toString();
+    var mockResource1 = mockLccnResource(lccn1);
+    var mockResource2 = mockLccnResource(lccn2);
+    var mockResource4 = mockLccnResource(lccn4);
+    var regularResource = new Resource()
+      .setId(100L)
+      .setLabel("Regular Resource");
+    mockResource1.setOutgoingEdges(Set.of(new ResourceEdge(mockResource1, mockResource2, MAP)));
     var lccn3 = UUID.randomUUID().toString();
-    var resources = Set.of(
-      mockLccnResource(lccn1),
-      mockLccnResource(lccn2),
-      mockLccnResource(lccn3)
-    );
+    var mockResource3 = mockLccnResource(lccn3);
+    mockResource2.setOutgoingEdges(Set.of(new ResourceEdge(mockResource2, mockResource3, MAP)));
+    regularResource.setOutgoingEdges(Set.of(new ResourceEdge(regularResource, mockResource4, MAP)));
+    var lccn5 = UUID.randomUUID().toString();
+    var mockResource5 = mockLccnResource(lccn5);
+    mockResource4.setOutgoingEdges(Set.of(new ResourceEdge(mockResource4, mockResource5, MAP)));
+
+    var resources = Set.of(mockResource1, regularResource);
 
     // when
     var result = lccnMockResourceService.gatherLccns(resources);
 
     // then
-    assertThat(result).containsExactlyInAnyOrder(lccn1, lccn2, lccn3);
+    assertThat(result).containsExactlyInAnyOrder(lccn1, lccn2, lccn3, lccn4, lccn5);
   }
 
   @Test
