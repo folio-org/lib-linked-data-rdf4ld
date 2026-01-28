@@ -157,7 +157,9 @@ public class TestUtil {
 
   public static String getTitleLabel(String prefix, String titleType) {
     return prefix + titleType + " mainTitle 1, " + prefix + titleType + " mainTitle 2, "
-      + prefix + titleType + " subTitle 1, " + prefix + titleType + " subTitle 2";
+      + prefix + titleType + " subTitle 1, " + prefix + titleType + " subTitle 2, "
+      + prefix + titleType + " partNumber 1, " + prefix + titleType + " partNumber 2, "
+      + prefix + titleType + " partName 1, " + prefix + titleType + " partName 2";
   }
 
   public static void validateResourceWithGivenEdges(Resource resource, ResourceEdge... edges) {

@@ -2,11 +2,9 @@ package org.folio.rdf4ld.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
@@ -54,10 +52,7 @@ class ResourceUtilTest {
     // given
     var target = new Resource();
     target.setTypes(Set.of(ResourceTypeDictionary.TITLE));
-    target.setDoc(getJsonNode(Map.of(
-      MAIN_TITLE.getValue(), List.of("Main Title"),
-      SUBTITLE.getValue(), List.of("Subtitle"))
-    ));
+    target.setLabel("title label");
     var edge = new ResourceEdge(new Resource(), target, PredicateDictionary.TITLE);
     var resource = new Resource();
     resource.setOutgoingEdges(Set.of(edge));
@@ -66,7 +61,7 @@ class ResourceUtilTest {
     var result = ResourceUtil.getPrimaryMainTitle(resource);
 
     // then
-    assertThat(result).isEqualTo("Main Title, Subtitle");
+    assertThat(result).isEqualTo(target.getLabel());
   }
 
   @Test
