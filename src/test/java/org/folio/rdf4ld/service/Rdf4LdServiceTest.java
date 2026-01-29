@@ -13,8 +13,9 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,8 @@ class Rdf4LdServiceTest {
 
   @Mock
   private Rdf4LdMapper rdf4LdMapper;
+  @Mock
+  private Rdf4LdObjectMapper objectMapper;
   @InjectMocks
   private Rdf4LdServiceImpl rdf4LdService;
 
@@ -37,11 +40,11 @@ class Rdf4LdServiceTest {
     var inputStream = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
-    var resourceMapping = mock(ResourceMapping.class);
-    when(rdf4LdMapper.mapRdfToLd(any(), eq(resourceMapping))).thenReturn(resources);
+    var mappingProfile = mock(MappingProfile.class);
+    when(rdf4LdMapper.mapRdfToLd(any(), eq(mappingProfile))).thenReturn(resources);
 
     // when
-    var result = rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping);
+    var result = rdf4LdService.mapRdfToLd(inputStream, contentType, mappingProfile);
 
     // then
     assertThat(result).isEqualTo(resources);
@@ -52,10 +55,10 @@ class Rdf4LdServiceTest {
     // given
     InputStream inputStream = null;
     var contentType = "application/ld+json";
-    var resourceMapping = mock(ResourceMapping.class);
+    var mappingProfile = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, mappingProfile))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Input stream is null");
@@ -66,10 +69,10 @@ class Rdf4LdServiceTest {
     // given
     var inputStream = mock(InputStream.class);
     var contentType = "unsupported/type";
-    var resourceMapping = mock(ResourceMapping.class);
+    var mappingProfile = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, resourceMapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, mappingProfile))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("Unsupported RDF format");
@@ -80,10 +83,10 @@ class Rdf4LdServiceTest {
     // given
     var inputStream = this.getClass().getResourceAsStream("/rdf/invalid.json");
     var contentType = "application/ld+json";
-    var mapping = mock(ResourceMapping.class);
+    var mappingProfile = mock(MappingProfile.class);
 
     // when
-    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, mapping))
+    assertThatThrownBy(() -> rdf4LdService.mapRdfToLd(inputStream, contentType, mappingProfile))
       // then
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("RDF parsing error");
@@ -147,13 +150,13 @@ class Rdf4LdServiceTest {
   void mapLdToRdf_returnsSerializedModel_forValidInput() {
     // given
     var resource = new Resource().setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
-    var resourceMapping = mock(ResourceMapping.class);
+    var mappingProfile = mock(MappingProfile.class);
     var rdfFormat = RDFFormat.JSONLD;
     var model = new ModelBuilder().build();
-    when(rdf4LdMapper.mapLdToRdf(resource, resourceMapping)).thenReturn(model);
+    when(rdf4LdMapper.mapLdToRdf(resource, mappingProfile)).thenReturn(model);
 
     // when
-    var result = rdf4LdService.mapLdToRdf(resource, rdfFormat, resourceMapping);
+    var result = rdf4LdService.mapLdToRdf(resource, rdfFormat, mappingProfile);
 
     // then
     assertThat(result).isNotNull();

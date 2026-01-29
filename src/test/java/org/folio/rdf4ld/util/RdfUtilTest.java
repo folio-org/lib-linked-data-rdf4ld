@@ -198,5 +198,81 @@ class RdfUtilTest {
     assertThat(result.get(1)).isEqualTo(personIri);
     assertThat(result.get(2)).isEqualTo(familyBlank);
   }
+
+  @Test
+  void selectSubjectsByTypes_shouldReturnEmptyStreamWhenNoTypesSpecified() {
+    // given
+    var model = new ModelBuilder().build();
+    var emptyTypeSet = java.util.Set.<String>of();
+
+    // when
+    var result = RdfUtil.selectSubjectsByTypes(model, emptyTypeSet);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void selectSubjectsByTypes_shouldReturnSubjectsWithAllSpecifiedTypes() {
+    // given
+    var model = new ModelBuilder().build();
+    var type1 = "http://example.org/Type1";
+    var type2 = "http://example.org/Type2";
+    var type3 = "http://example.org/Type3";
+
+    var subject1 = createIri("http://example.org/subject1");
+    var subject2 = createIri("http://example.org/subject2");
+    var subject3 = createIri("http://example.org/subject3");
+
+    // subject1 has type1 and type2
+    new ModelBuilder(model).subject(subject1)
+      .add(RDF.TYPE, Values.iri(type1))
+      .add(RDF.TYPE, Values.iri(type2));
+
+    // subject2 has only type1
+    new ModelBuilder(model).subject(subject2)
+      .add(RDF.TYPE, Values.iri(type1));
+
+    // subject3 has all three types
+    new ModelBuilder(model).subject(subject3)
+      .add(RDF.TYPE, Values.iri(type1))
+      .add(RDF.TYPE, Values.iri(type2))
+      .add(RDF.TYPE, Values.iri(type3));
+
+    // when - searching for subjects with both type1 AND type2
+    var result = RdfUtil.selectSubjectsByTypes(model, java.util.Set.of(type1, type2));
+
+    // then - should return only subject1 and subject3 (both have type1 and type2)
+    var resultList = result.toList();
+    assertThat(resultList)
+      .hasSize(2)
+      .containsExactlyInAnyOrder(subject1, subject3);
+  }
+
+  @Test
+  void selectSubjectsByTypes_shouldReturnAllSubjectsWhenAllHaveSingleSpecifiedType() {
+    // given
+    var model = new ModelBuilder().build();
+    var type1 = "http://example.org/Type1";
+
+    var subject1 = createIri("http://example.org/subject1");
+    var subject2 = createIri("http://example.org/subject2");
+
+    // Both subjects have type1
+    new ModelBuilder(model).subject(subject1)
+      .add(RDF.TYPE, Values.iri(type1));
+
+    new ModelBuilder(model).subject(subject2)
+      .add(RDF.TYPE, Values.iri(type1));
+
+    // when - searching for subjects with type1
+    var result = RdfUtil.selectSubjectsByTypes(model, java.util.Set.of(type1));
+
+    // then - should return both subjects
+    var resultList = result.toList();
+    assertThat(resultList)
+      .hasSize(2)
+      .containsExactlyInAnyOrder(subject1, subject2);
+  }
 }
 
