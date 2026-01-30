@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.e2e;
 
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +37,7 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;

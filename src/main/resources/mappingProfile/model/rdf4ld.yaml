@@ -9,3 +9,5 @@ components:
   schemas:
     resourceMapping:
       $ref: schema/resourceMapping.json
+    mappingProfile:
+      $ref: schema/mappingProfile.json

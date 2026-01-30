@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -51,12 +52,15 @@ class WorkTitlesMappingIT {
     // then
     assertThat(result).hasSize(1);
     var instance = result.iterator().next();
+    assertThat(instance.getLabel()).isEqualTo(getTitleLabel("", "Title"));
     validateResourceWithTitles(instance, "", "http://test-tobe-changed.folio.com/resources/INSTANCE_ID");
     assertThat(instance.getOutgoingEdges()).hasSize(4);
     validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, CONTINUING_RESOURCES),
       Map.of(LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")),
-      getTitleLabel("Work ", "Title"), r -> validateResourceWithTitles(r, "Work ",
-        "http://test-tobe-changed.folio.com/resources/WORK_ID")
+      getTitleLabel("Work ", "Title"), r -> {
+        assertThat(r.getLabel()).isEqualTo(getTitleLabel("Work ", "Title"));
+        validateResourceWithTitles(r, "Work ", "http://test-tobe-changed.folio.com/resources/WORK_ID");
+      }
     );
   }
 

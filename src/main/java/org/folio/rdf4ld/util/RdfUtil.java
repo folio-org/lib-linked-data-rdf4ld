@@ -77,12 +77,13 @@ public class RdfUtil {
       .stream();
   }
 
-  public static Stream<Resource> selectSubjectsByType(Model model,
-                                                      Set<String> bfTypeSet) {
-    return bfTypeSet.stream()
-      .map(type -> model.filter(null, RDF.TYPE, Values.iri(type)))
-      .flatMap(Collection::stream)
-      .map(Statement::getSubject);
+  public static Stream<Resource> selectSubjectsByTypes(Model model,
+                                                       Set<String> bfTypeSet) {
+    var allSubjects = model.subjects();
+    return allSubjects.stream()
+      .filter(subject -> bfTypeSet.stream()
+        .allMatch(type -> model.contains(subject, RDF.TYPE, Values.iri(type)))
+      );
   }
 
   public static Set<String> getAllTypes(Model model, Resource resource) {

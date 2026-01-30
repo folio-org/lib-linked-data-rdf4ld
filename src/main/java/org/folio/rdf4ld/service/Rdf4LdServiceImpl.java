@@ -16,7 +16,7 @@ import org.eclipse.rdf4j.rio.WriterConfig;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,9 +27,9 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   private final Rdf4LdObjectMapper objectMapper;
 
   @Override
-  public Set<Resource> mapRdfToLd(InputStream input, String contentType, ResourceMapping resourceMapping) {
+  public Set<Resource> mapRdfToLd(InputStream input, String contentType, MappingProfile mappingProfile) {
     var model = readModel(input, contentType);
-    return rdf4LdMapper.mapRdfToLd(model, resourceMapping);
+    return rdf4LdMapper.mapRdfToLd(model, mappingProfile);
   }
 
   @Override
@@ -39,8 +39,8 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   }
 
   @Override
-  public ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, ResourceMapping resourceMapping) {
-    var model = rdf4LdMapper.mapLdToRdf(resource, resourceMapping);
+  public ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, MappingProfile mappingProfile) {
+    var model = rdf4LdMapper.mapLdToRdf(resource, mappingProfile);
     return writeModel(model, rdfFormat, new WriterConfig());
   }
 

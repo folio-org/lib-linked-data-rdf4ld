@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.folio.rdf4ld.mapper.Rdf2LdMappingException;
+import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Mapping Profile",
+  "type": "object",
+  "properties": {
+    "topResourceMappings": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Top resource mappings",
+      "items": {
+        "$ref": "resourceMapping.json"
+      }
+    }
+  }
+}

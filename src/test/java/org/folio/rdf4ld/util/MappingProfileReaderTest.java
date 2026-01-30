@@ -1,7 +1,7 @@
 package org.folio.rdf4ld.util;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -39,10 +39,12 @@ class MappingProfileReaderTest {
 
     // then
     assertThat(result).isNotNull();
+    assertThat(result.getTopResourceMappings()).isNotNull();
+    assertThat(result.getTopResourceMappings()).hasSize(2); // Instance and Hub
   }
 
   @Test
-  void getBibframe20Profile_shouldReturnNullWhenExceptionOccurs() throws Exception {
+  void getBibframe20Profile_shouldReturnEmptyMappingProfileWhenExceptionOccurs() throws Exception {
     // given
     when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenThrow(new IOException());
 
@@ -50,7 +52,9 @@ class MappingProfileReaderTest {
     var result = mappingProfileReader.getBibframe20Profile();
 
     // then
-    assertThat(result).isNull();
+    assertThat(result).isNotNull();
+    assertThat(result.getTopResourceMappings()).isNotNull();
+    assertThat(result.getTopResourceMappings()).isEmpty();
   }
 
   private ResourceMapping getResourceMapping(String random) {

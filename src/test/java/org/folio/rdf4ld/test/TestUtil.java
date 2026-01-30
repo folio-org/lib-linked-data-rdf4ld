@@ -120,7 +120,6 @@ public class TestUtil {
 
   public static void validateResourceWithTitles(Resource resource, String prefix, String expectedLink) {
     assertThat(resource.getId()).isNotNull();
-    assertThat(resource.getLabel()).isEqualTo(getTitleLabel(prefix, "Title"));
     validateProperty(resource.getDoc(), LINK.getValue(), List.of(expectedLink));
     assertThat(resource.getIncomingEdges()).isEmpty();
     validateOutgoingEdge(resource, TITLE, Set.of(ResourceTypeDictionary.TITLE),

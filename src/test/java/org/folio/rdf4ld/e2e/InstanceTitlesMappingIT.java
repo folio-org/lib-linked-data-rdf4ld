@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBI
 import static org.folio.rdf4ld.test.MonographUtil.createParallelTitle;
 import static org.folio.rdf4ld.test.MonographUtil.createPrimaryTitle;
 import static org.folio.rdf4ld.test.MonographUtil.createVariantTitle;
+import static org.folio.rdf4ld.test.TestUtil.getTitleLabel;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateProperty;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithTitles;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.MonographUtil;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
@@ -45,7 +47,7 @@ class InstanceTitlesMappingIT {
     var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
 
     // then
-    assertThat(result).isNotEmpty().hasSize(1);
+    assertThat(result).hasSize(1);
     var instance = result.iterator().next();
     assertThat(instance.getDoc()).isNotNull();
     validateProperty(instance.getDoc(), DIMENSIONS.getValue(),
@@ -53,6 +55,7 @@ class InstanceTitlesMappingIT {
     validateProperty(instance.getDoc(), STATEMENT_OF_RESPONSIBILITY.getValue(),
       List.of("Instance responsibilityStatement 1", "Instance responsibilityStatement 2")
     );
+    assertThat(instance.getLabel()).isEqualTo(getTitleLabel("", "Title"));
     validateResourceWithTitles(instance, "", "http://test-tobe-changed.folio.com/resources/INSTANCE_ID");
     assertThat(instance.getOutgoingEdges()).hasSize(3);
   }

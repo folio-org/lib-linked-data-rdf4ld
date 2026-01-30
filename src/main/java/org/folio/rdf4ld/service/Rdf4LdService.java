@@ -7,23 +7,23 @@ import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.WriterConfig;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.rdf4ld.model.ResourceMapping;
+import org.folio.rdf4ld.model.MappingProfile;
 
 public interface Rdf4LdService {
 
-  Set<Resource> mapRdfToLd(InputStream inputStream, String contentType, ResourceMapping resourceMapping);
+  Set<Resource> mapRdfToLd(InputStream inputStream, String contentType, MappingProfile mappingProfile);
 
   Set<Resource> mapBibframe2RdfToLd(InputStream inputStream, String contentType);
 
-  ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, ResourceMapping resourceMapping);
+  ByteArrayOutputStream mapLdToRdf(Resource resource, RDFFormat rdfFormat, MappingProfile mappingProfile);
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat);
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(Resource resource, RDFFormat rdfFormat, WriterConfig outputConfig);
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat)
-      throws JsonProcessingException;
+    throws JsonProcessingException;
 
   ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat, WriterConfig outputConfig)
-      throws JsonProcessingException;
+    throws JsonProcessingException;
 }
