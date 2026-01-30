@@ -84,7 +84,6 @@ public class MappingProfileReader {
         readResourceMapping(TITLE_ABBREVIATED).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_PARALLEL).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(TITLE_VARIANT).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
-        getWorkMapping().ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
         return im;
       });
   }
