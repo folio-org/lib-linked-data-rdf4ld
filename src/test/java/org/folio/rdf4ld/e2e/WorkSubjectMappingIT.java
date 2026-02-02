@@ -219,7 +219,7 @@ class WorkSubjectMappingIT {
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
 
-    var expectedConceptLabel = TOPIC_LCCN + " -- " + PERSON_AGENT_LCCN + " -- " + FAMILY_AGENT_LABEL;
+    var expectedConceptLabel = TOPIC_LCCN + " -- " + FAMILY_AGENT_LABEL + " -- " + PERSON_AGENT_LCCN;
 
     var expectedConceptProperties = Map.of(
       LABEL, List.of(expectedConceptLabel),
