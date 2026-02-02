@@ -15,13 +15,29 @@ This software uses the following Weak Copyleft (Eclipse Public License 1.0 / 2.0
 
 ## Purpose
 Lib-linked-data-rdf4ld is a Java library designed for converting RDF files with BIBFRAME records to Linked Data Graphs and vice versa.
+
+The library supports mapping for the following top-level resources by default:
+- **Instance** - instance of a bibliographic resource
+- **Hub** - hub entity connecting related works and instances
 ## Compiling
 ```bash
 mvn clean install
 ```
 ## Using the library
 
+### Mapping Profile Parameter
+
+The library API accepts a `MappingProfile` parameter to define which top-level resources and what mapping rules should be processed during conversion.
+
+The **default mapping profile** (used when no custom profile is provided) includes:
+- **Instance** as a top-level resource
+- **Hub** as a top-level resource
+
+You can either use the default profile or provide a custom `MappingProfile` to specify different top-level resources.
+
 ### Convert Bibframe 2 RDF to Linked Data Graph
+
+#### Using default mapping profile (Instance and Hub)
 ```java
 @Service
 public class MyService {
@@ -34,13 +50,14 @@ public class MyService {
   public void convertBibframe2RdfToLinkedDataGraph() {
     InputStream rdfInputStream = ...;
     var contentType = "application/ld+json";
+    // Uses default profile with Instance and Hub as top resources
     var result = rdf4LdService.mapBibframe2RdfToLd(rdfInputStream, contentType);
     // Process the result as needed
   }
 }
 ```
 
-### Convert Linked Data Graph to Bibframe 2 RDF
+#### Using custom mapping profile
 ```java
 @Service
 public class MyService {
@@ -50,10 +67,11 @@ public class MyService {
     this.rdf4LdService = rdf4LdService;
   }
 
-  public void convertLinkedDataGraphToBibframe2Rdf() {
+  public void convertWithCustomProfile() {
     Resource linkedDataGraph = ...;
     var rdfFormat = RDFFormat.JSONLD;
-    var result = rdf4LdService.mapLdToBibframe2Rdf(linkedDataGraph, rdfFormat);
+    var customProfile = new MappingProfile(/* custom configuration */);
+    var result = rdf4LdService.mapLdToRdf(linkedDataGraph, rdfFormat, customProfile);
     // Process the result as needed
   }
 }
@@ -70,11 +88,23 @@ The built artifacts for this module are available. See [configuration](https://d
 
 The primary mechanism to map between Linked Data and BIBFRAME is through configuration profiles in JSON, found under `src/main/resources/mappingProfile/bibframe2.0`. The JSON schema for these files is defined in the `model/` subdirectory.
 
+### JSON configuration profiles
+
+The library uses JSON-based configuration files to define the transformation rules between BIBFRAME and Linked Data formats. These configuration profiles define:
+- Resource type mappings
+- Property mappings
+- Predicate (edge) mappings
+- Label configurations
+
+Mapping profiles are organized by resource type and are loaded by `MappingProfileReader` class. The reader provides separate collections for:
+- **Instance mappings** - for BIBFRAME Instance resources
+- **Hub mappings** - for Hub resources that connect related entities
+
 In general, the expectation when using configuration profiles is that the overall graph shape is nearly identical independent of vocabulary specifics, with only the terms changing (though properties can become predicates, altering the shape). For more complex transformations, you can add a new Java class that supplements the configuration profile.
 
 ### Adding a new mapping
 
-Define the new mapping and add it to the directory above. Also update `org.folio.rdf4ld.util.MappingProfileReader`, defining a new static constant pointing to the added file and adding it to the appropriate work and/or instance section.
+Define the new mapping and add it to the directory above. Also update `org.folio.rdf4ld.util.MappingProfileReader`, defining a new static constant pointing to the added file and adding it to the appropriate instance, and/or hub section.
 
 ### Schema terms
 

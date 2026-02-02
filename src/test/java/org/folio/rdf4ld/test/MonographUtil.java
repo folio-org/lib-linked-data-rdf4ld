@@ -26,9 +26,11 @@ import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ABBREVIATED_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -77,6 +79,14 @@ public class MonographUtil {
     return createResource(
       properties,
       Set.of(INSTANCE),
+      Map.of()
+    );
+  }
+
+  public static Resource createHub(Map<PropertyDictionary, List<String>> properties) {
+    return createResource(
+      properties,
+      Set.of(HUB),
       Map.of()
     );
   }
@@ -135,6 +145,18 @@ public class MonographUtil {
         NOTE, List.of(prefix + "VariantTitle note 1", prefix + "VariantTitle note 2")
       ),
       Set.of(VARIANT_TITLE),
+      emptyMap()
+    );
+  }
+
+  public static Resource createAbbreviatedTitle(String prefix) {
+    return createResource(
+      Map.of(
+        PART_NAME, List.of(prefix + "AbbreviatedTitle partName 1", prefix + "AbbreviatedTitle partName 2"),
+        PART_NUMBER, List.of(prefix + "AbbreviatedTitle partNumber 1", prefix + "AbbreviatedTitle partNumber 2"),
+        MAIN_TITLE, List.of(prefix + "AbbreviatedTitle mainTitle 1", prefix + "AbbreviatedTitle mainTitle 2")
+      ),
+      Set.of(ABBREVIATED_TITLE),
       emptyMap()
     );
   }

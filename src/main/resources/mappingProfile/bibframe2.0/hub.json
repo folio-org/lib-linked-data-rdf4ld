@@ -1,0 +1,21 @@
+{
+  "ldResourceDef": {
+    "typeSet": "HUB"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Hub",
+    "partialTypesMatch": true
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "LABEL",
+        "bfProperty": "http://id.loc.gov/ontologies/bflc/aap"
+      },
+      {
+        "ldProperty": "LINK",
+        "bfProperty": "@iri"
+      }
+    ]
+  }
+}

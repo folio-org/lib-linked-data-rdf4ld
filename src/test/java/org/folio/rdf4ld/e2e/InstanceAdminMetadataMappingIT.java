@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.mapper;
+package org.folio.rdf4ld.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.rdf4j.model.util.Values.iri;
@@ -11,6 +11,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.MonographUtil;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
@@ -39,7 +40,7 @@ class InstanceAdminMetadataMappingIT {
     var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
 
     // then
-    assertThat(result).isNotEmpty().hasSize(1);
+    assertThat(result).hasSize(1);
     var instance = result.iterator().next();
     assertThat(instance.getDoc()).isNotNull();
     assertThat(instance.getOutgoingEdges().stream().anyMatch(edge ->

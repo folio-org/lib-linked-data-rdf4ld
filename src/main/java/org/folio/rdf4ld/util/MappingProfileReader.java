@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
+import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,10 @@ public class MappingProfileReader {
 
   public static final String BASE_PATH = "mappingProfile/bibframe2.0/";
   public static final String INSTANCE = "instance.json";
+  public static final String HUB = "hub.json";
   public static final String WORK = "work.json";
   public static final String TITLE = "title/title.json";
+  public static final String TITLE_ABBREVIATED = "title/title_abbreviated.json";
   public static final String TITLE_PARALLEL = "title/title_parallel.json";
   public static final String TITLE_VARIANT = "title/title_variant.json";
   public static final String CONTRIBUTOR = "authority/contributor.json";
@@ -34,9 +37,11 @@ public class MappingProfileReader {
   public static final String ADMIN_METADATA = "admin_metadata/admin_metadata.json";
   private final Rdf4LdObjectMapper objectMapper;
 
-  public ResourceMapping getBibframe20Profile() {
-    return getInstanceMapping()
-      .orElse(null);
+  public MappingProfile getBibframe20Profile() {
+    var mappingProfile = new MappingProfile();
+    getInstanceMapping().ifPresent(mappingProfile::addTopResourceMappingsItem);
+    getHubMapping().ifPresent(mappingProfile::addTopResourceMappingsItem);
+    return mappingProfile;
   }
 
   private Optional<ResourceMapping> getInstanceMapping() {
@@ -69,6 +74,17 @@ public class MappingProfileReader {
         readResourceMapping(GENRE_FORM).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         readResourceMapping(SUBJECT_CONCEPT).ifPresent(wm.getResourceMapping()::addOutgoingEdgesItem);
         return wm;
+      });
+  }
+
+  private Optional<ResourceMapping> getHubMapping() {
+    return readResourceMapping(HUB)
+      .map(im -> {
+        readResourceMapping(TITLE).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_ABBREVIATED).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_PARALLEL).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_VARIANT).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
+        return im;
       });
   }
 
