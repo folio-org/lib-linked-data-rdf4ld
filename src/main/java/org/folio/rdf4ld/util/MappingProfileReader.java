@@ -79,12 +79,14 @@ public class MappingProfileReader {
 
   private Optional<ResourceMapping> getHubMapping() {
     return readResourceMapping(HUB)
-      .map(im -> {
-        readResourceMapping(TITLE).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
-        readResourceMapping(TITLE_ABBREVIATED).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
-        readResourceMapping(TITLE_PARALLEL).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
-        readResourceMapping(TITLE_VARIANT).ifPresent(im.getResourceMapping()::addOutgoingEdgesItem);
-        return im;
+      .map(hm -> {
+        readResourceMapping(TITLE).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_ABBREVIATED).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_PARALLEL).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(TITLE_VARIANT).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(CONTRIBUTOR).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        readResourceMapping(CREATOR).ifPresent(hm.getResourceMapping()::addOutgoingEdgesItem);
+        return hm;
       });
   }
 

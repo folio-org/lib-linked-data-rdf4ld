@@ -6,8 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
@@ -180,5 +182,23 @@ public class TestUtil {
       .setId((long) lccn.hashCode())
       .setLabel(lccn)
       .addType(MOCKED_RESOURCE);
+  }
+
+  public static void validateAgent(Resource parentResource,
+                                    String labelProperty,
+                                    String label,
+                                    PredicateDictionary predicate,
+                                    Set<ResourceTypeDictionary> types) {
+    var expectedProperties = Map.of(
+      LABEL, List.of(labelProperty),
+      NAME, List.of(labelProperty)
+    );
+    validateOutgoingEdge(parentResource, predicate, types, expectedProperties, label,
+      agent -> {
+        assertThat(agent.getId()).isNotNull();
+        assertThat(agent.getIncomingEdges()).isEmpty();
+        assertThat(agent.getOutgoingEdges()).isEmpty();
+      }
+    );
   }
 }
