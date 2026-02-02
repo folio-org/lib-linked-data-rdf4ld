@@ -40,7 +40,9 @@
     ],
     "label": [
       "MAIN_TITLE",
-      "SUBTITLE"
+      "SUBTITLE",
+      "PART_NUMBER",
+      "PART_NAME"
     ]
   }
 }
