@@ -23,6 +23,7 @@ import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
 import static org.folio.rdf4ld.test.TestUtil.mockLccnResource;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
+import static org.folio.rdf4ld.test.TestUtil.validateAgent;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 import static org.folio.rdf4ld.test.TestUtil.validateResourceWithGivenEdges;
 
@@ -32,10 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -170,23 +168,6 @@ class WorkAgentMappingIT {
       });
   }
 
-  private void validateAgent(Resource work,
-                             String labelProperty,
-                             String label,
-                             PredicateDictionary predicate,
-                             Set<ResourceTypeDictionary> types) {
-    var expectedProperties = Map.of(
-      LABEL, List.of(labelProperty),
-      NAME, List.of(labelProperty)
-    );
-    validateOutgoingEdge(work, predicate, types, expectedProperties, label,
-      agent -> {
-        assertThat(agent.getId()).isNotNull();
-        assertThat(agent.getIncomingEdges()).isEmpty();
-        assertThat(agent.getOutgoingEdges()).isEmpty();
-      }
-    );
-  }
 
   @ParameterizedTest
   @ValueSource(strings = {
