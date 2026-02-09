@@ -35,7 +35,7 @@
     <rdf4j.version>5.2.2</rdf4j.version>
     <jetbrains-annotations.version>26.0.2-1</jetbrains-annotations.version>
 
-    <folio-spring-base.version>9.1.0</folio-spring-base.version>
+    <folio-spring-base.version>10.0.0-RC1</folio-spring-base.version>
 
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <maven-openapi-generator-plugin.version>7.19.0</maven-openapi-generator-plugin.version>
