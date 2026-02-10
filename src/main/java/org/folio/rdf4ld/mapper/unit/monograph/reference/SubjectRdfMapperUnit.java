@@ -22,9 +22,9 @@ import java.util.function.LongFunction;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.folio.ld.dictionary.label.LabelGeneratorService;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.ld.dictionary.util.LabelGenerator;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -39,15 +39,18 @@ import org.springframework.stereotype.Component;
 public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
   private final ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit;
+  private final LabelGeneratorService labelGeneratorService;
 
   public SubjectRdfMapperUnit(BaseRdfMapperUnit baseRdfMapperUnit,
                               MockLccnResourceService mockLccnResourceService,
                               FingerprintHashService hashService,
                               CoreLd2RdfMapper coreLd2RdfMapper,
                               LongFunction<String> resourceUrlProvider,
-                              ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit) {
+                              ComplexSubjectRdfMapperSubUnit complexSubjectRdfMapperSubUnit,
+                              LabelGeneratorService labelGeneratorService) {
     super(baseRdfMapperUnit, hashService, mockLccnResourceService, resourceUrlProvider, coreLd2RdfMapper);
     this.complexSubjectRdfMapperSubUnit = complexSubjectRdfMapperSubUnit;
+    this.labelGeneratorService = labelGeneratorService;
   }
 
   @Override
@@ -83,7 +86,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
       .addType(CONCEPT);
     focus.getTypes().forEach(concept::addType);
     concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
-    var label = LabelGenerator.generateLabel(concept);
+    var label = labelGeneratorService.getLabel(concept);
     concept.setLabel(label);
     addProperty(concept.getDoc(), LABEL, label);
     concept.setId(hashService.hash(concept));

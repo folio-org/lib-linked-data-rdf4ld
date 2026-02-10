@@ -33,9 +33,9 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.RDFCollections;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.folio.ld.dictionary.label.LabelGeneratorService;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.ld.dictionary.util.LabelGenerator;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -55,6 +55,7 @@ public class ComplexSubjectRdfMapperSubUnit {
   private final FingerprintHashService hashService;
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final MockLccnResourceService mockLccnResourceService;
+  private final LabelGeneratorService labelGeneratorService;
 
   public Optional<Resource> readComplexSubject(Model model,
                                                org.eclipse.rdf4j.model.Resource resource,
@@ -140,7 +141,7 @@ public class ComplexSubjectRdfMapperSubUnit {
         concept.addType(MOCKED_RESOURCE);
       }
     });
-    var label = LabelGenerator.generateLabel(concept);
+    var label = labelGeneratorService.getLabel(concept);
     concept.setLabel(label);
     addProperty(concept.getDoc(), LABEL, label);
     concept.setId(hashService.hash(concept));
