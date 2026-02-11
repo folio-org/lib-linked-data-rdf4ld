@@ -32,6 +32,7 @@ public class Rdf4ldBeanConfig {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   public LabelGeneratorService labelGeneratorService() {
     return new LabelGeneratorService();
   }
