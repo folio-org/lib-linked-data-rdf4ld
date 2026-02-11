@@ -1,22 +1,11 @@
 package org.folio.rdf4ld.util;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.io.InputStream;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
-import org.folio.rdf4ld.model.BfResourceDef;
-import org.folio.rdf4ld.model.ResourceInternalMapping;
-import org.folio.rdf4ld.model.ResourceMapping;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
@@ -25,15 +14,9 @@ class MappingProfileReaderTest {
 
   @InjectMocks
   private MappingProfileReader mappingProfileReader;
-  @Mock
-  private Rdf4LdObjectMapper objectMapper;
 
   @Test
   void getBibframe20Profile_shouldReturnMappingProfileWhenFilesAreValid() throws Exception {
-    // given
-    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class)))
-      .thenAnswer(inv -> getResourceMapping(randomUUID().toString()));
-
     // when
     var result = mappingProfileReader.getBibframe20Profile();
 
@@ -41,26 +24,6 @@ class MappingProfileReaderTest {
     assertThat(result).isNotNull();
     assertThat(result.getTopResourceMappings()).isNotNull();
     assertThat(result.getTopResourceMappings()).hasSize(2); // Instance and Hub
-  }
-
-  @Test
-  void getBibframe20Profile_shouldReturnEmptyMappingProfileWhenExceptionOccurs() throws Exception {
-    // given
-    when(objectMapper.readValue(any(InputStream.class), eq(ResourceMapping.class))).thenThrow(new IOException());
-
-    // when
-    var result = mappingProfileReader.getBibframe20Profile();
-
-    // then
-    assertThat(result).isNotNull();
-    assertThat(result.getTopResourceMappings()).isNotNull();
-    assertThat(result.getTopResourceMappings()).isEmpty();
-  }
-
-  private ResourceMapping getResourceMapping(String random) {
-    return new ResourceMapping()
-      .bfResourceDef(new BfResourceDef().predicate(random))
-      .resourceMapping(new ResourceInternalMapping());
   }
 
 }

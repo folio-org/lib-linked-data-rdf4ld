@@ -8,7 +8,6 @@ import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 
 import com.google.common.collect.ImmutableBiMap;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
@@ -80,8 +79,8 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
       var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
       resource.getDoc().get(VARIANT_TYPE.getValue()).iterator().forEachRemaining(
         textNode -> {
-          if (TYPES_BI_MAP.inverse().containsKey(textNode.asText())) {
-            modelBuilder.add(resourceIri, RDF.TYPE, iri(TYPES_BI_MAP.inverse().get(textNode.asText())));
+          if (TYPES_BI_MAP.inverse().containsKey(textNode.asString())) {
+            modelBuilder.add(resourceIri, RDF.TYPE, iri(TYPES_BI_MAP.inverse().get(textNode.asString())));
           }
         }
       );
@@ -89,9 +88,12 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
   }
 
   private void removeVariantTypeProperty(ModelBuilder modelBuilder, ResourceMapping mapping, Long id) {
-    var property = ((LinkedHashSet<PropertyMapping>) mapping.getResourceMapping().getProperties()).getLast()
-      .getBfProperty();
-    modelBuilder.build().remove(iri(resourceUrlProvider.apply(id)), iri(property), null);
+    mapping.getResourceMapping().getProperties()
+      .stream()
+      .filter(pm -> pm.getLdProperty() == VARIANT_TYPE)
+      .map(PropertyMapping::getBfProperty)
+      .findFirst()
+      .ifPresent(bfp -> modelBuilder.build().remove(iri(resourceUrlProvider.apply(id)), iri(bfp), null));
   }
 
 }
