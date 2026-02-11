@@ -5,13 +5,14 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
+import static org.folio.rdf4ld.util.JsonUtil.getJsonMapper;
 import static org.folio.rdf4ld.util.RdfUtil.IRI;
 import static org.folio.rdf4ld.util.RdfUtil.getAllTypes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,22 +25,24 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.Values;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnitProvider;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.PropertyMapping;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.NullNode;
 
 @Component
 @RequiredArgsConstructor
 public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   private final RdfMapperUnitProvider rdfMapperUnitProvider;
-  private final Rdf4LdObjectMapper objectMapper;
+  private final JsonMapper jsonMapper = getJsonMapper();
 
   @Override
   public JsonNode mapDoc(org.eclipse.rdf4j.model.Resource resource, Model model,
-                         Set<PropertyMapping> propertyMappings) {
+                         Collection<PropertyMapping> propertyMappings) {
     var doc = new HashMap<String, List<String>>();
     propertyMappings
       .forEach(pm -> {
@@ -74,18 +77,18 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
 
   @Override
   public JsonNode toJson(Map<String, List<String>> map) {
-    var node = objectMapper.convertValue(map, JsonNode.class);
-    return !(node instanceof NullNode) ? node : objectMapper.createObjectNode();
+    var node = jsonMapper.convertValue(map, JsonNode.class);
+    return !(node instanceof NullNode) ? node : jsonMapper.createObjectNode();
   }
 
   @Override
-  public Set<ResourceEdge> mapOutgoingEdges(Set<ResourceMapping> edgeMappings,
+  public Set<ResourceEdge> mapOutgoingEdges(Collection<ResourceMapping> edgeMappings,
                                             Model model,
                                             Resource parent,
                                             org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
-      .flatMap(Set::stream)
+      .flatMap(Collection::stream)
       .filter(oem -> nonNull(oem.getLdResourceDef()))
       .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
         .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
@@ -119,7 +122,7 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
         || TRUE.equals(bfResourceDef.getIgnoreTypesMatch())
         || (TRUE.equals(bfResourceDef.getPartialTypesMatch())
         ? getAllTypes(model, child).containsAll(bfResourceDef.getTypeSet())
-        : getAllTypes(model, child).equals(bfResourceDef.getTypeSet()))
+        : getAllTypes(model, child).equals(new HashSet<>(bfResourceDef.getTypeSet())))
       );
   }
 

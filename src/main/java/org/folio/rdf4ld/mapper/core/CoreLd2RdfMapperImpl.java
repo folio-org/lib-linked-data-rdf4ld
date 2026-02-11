@@ -79,7 +79,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
     ofNullable(resource.getDoc())
       .map(d -> d.get(property.getValue()))
       .ifPresent(propertyArray ->
-        propertyArray.forEach(node -> modelBuilder.add(predicate, node.asText()))
+        propertyArray.forEach(node -> modelBuilder.add(predicate, node.asString()))
       );
   }
 
@@ -96,7 +96,7 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
           var blankNode = Values.bnode(id);
           modelBuilder.subject(blankNode);
           pm.getEdgeParentBfDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
-          modelBuilder.add(pm.getBfProperty(), node.asText());
+          modelBuilder.add(pm.getBfProperty(), node.asString());
           linkResources(iri(resourceUrlProvider.apply(resource.getId())), blankNode, predicate, modelBuilder);
         });
       });

@@ -20,7 +20,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +40,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
+import tools.jackson.databind.JsonNode;
 
 @UtilityClass
 public class TestUtil {
@@ -49,7 +49,7 @@ public class TestUtil {
     assertThat(doc.has(property)).isTrue();
     assertThat(doc.get(property).size()).isEqualTo(expected.size());
     for (int i = 0; i < expected.size(); i++) {
-      assertThat(doc.get(property).get(i).asText()).isEqualTo(expected.get(i));
+      assertThat(doc.get(property).get(i).asString()).isEqualTo(expected.get(i));
     }
   }
 

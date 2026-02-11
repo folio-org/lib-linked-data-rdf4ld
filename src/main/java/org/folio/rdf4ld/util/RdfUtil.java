@@ -34,6 +34,7 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
+import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +79,7 @@ public class RdfUtil {
   }
 
   public static Stream<Resource> selectSubjectsByTypes(Model model,
-                                                       Set<String> bfTypeSet) {
+                                                       Collection<String> bfTypeSet) {
     var allSubjects = model.subjects();
     return allSubjects.stream()
       .filter(subject -> bfTypeSet.stream()
@@ -143,7 +144,8 @@ public class RdfUtil {
                                      ResourceMapping mapping,
                                      CoreLd2RdfMapper coreLd2RdfMapper) {
     modelBuilder.subject(node);
-    ofNullable(mapping.getBfResourceDef().getTypeSet())
+    ofNullable(mapping.getBfResourceDef())
+      .map(BfResourceDef::getTypeSet)
       .stream()
       .flatMap(Collection::stream)
       .forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));

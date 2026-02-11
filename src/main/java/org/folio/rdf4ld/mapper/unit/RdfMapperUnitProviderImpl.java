@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.log4j.Log4j2;
@@ -25,12 +26,12 @@ public class RdfMapperUnitProviderImpl implements RdfMapperUnitProvider {
   }
 
   @Override
-  public RdfMapperUnit getMapper(Set<ResourceTypeDictionary> typeSet, PredicateDictionary predicate) {
+  public RdfMapperUnit getMapper(Collection<ResourceTypeDictionary> typeSet, PredicateDictionary predicate) {
     return rdfMapperUnits.stream()
       .filter(m -> m.getClass().isAnnotationPresent(RdfMapperDefinition.class))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(RdfMapperDefinition.class);
-        return (typeSet.isEmpty() || typeSet.equals(toSet(annotation.types())))
+        return (typeSet.isEmpty() || new HashSet<>(typeSet).equals(toSet(annotation.types())))
           && (isNull(predicate) || predicate == annotation.predicate());
       })
       .findFirst()
