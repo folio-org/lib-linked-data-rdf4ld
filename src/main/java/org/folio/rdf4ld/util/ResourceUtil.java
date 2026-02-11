@@ -3,9 +3,7 @@ package org.folio.rdf4ld.util;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.StreamSupport.stream;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.CHRONOLOGICAL_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.FORM_SUBDIVISION;
@@ -31,14 +29,11 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.rdf4ld.util.RdfUtil.toAgentRwoLink;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Spliterator;
 import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +42,9 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 @UtilityClass
 public class ResourceUtil {
@@ -114,8 +112,9 @@ public class ResourceUtil {
       .map(d -> {
         if (d.has(property.getValue())) {
           var propertyArray = (ArrayNode) d.get(property.getValue());
-          var valueExists = stream(spliteratorUnknownSize(propertyArray.elements(), Spliterator.ORDERED), false)
-            .map(JsonNode::asText)
+          var valueExists = propertyArray.values()
+            .stream()
+            .map(JsonNode::asString)
             .anyMatch(value::equals);
           if (!valueExists) {
             propertyArray.add(value);
@@ -194,10 +193,10 @@ public class ResourceUtil {
   private static Stream<String> getPropertiesStream(JsonNode doc, PropertyDictionary property) {
     return ofNullable(doc)
       .map(d -> d.get(property.getValue()))
-      .map(JsonNode::elements)
+      .map(JsonNode::values)
       .stream()
-      .flatMap(elements -> stream(spliteratorUnknownSize(elements, Spliterator.ORDERED), false))
-      .map(JsonNode::asText);
+      .flatMap(Collection::stream)
+      .map(JsonNode::asString);
   }
 
 }

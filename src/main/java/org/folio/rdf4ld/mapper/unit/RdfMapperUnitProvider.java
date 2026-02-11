@@ -1,11 +1,11 @@
 package org.folio.rdf4ld.mapper.unit;
 
-import java.util.Set;
+import java.util.Collection;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 
 public interface RdfMapperUnitProvider {
 
-  RdfMapperUnit getMapper(Set<ResourceTypeDictionary> typeSet, PredicateDictionary predicate);
+  RdfMapperUnit getMapper(Collection<ResourceTypeDictionary> typeSet, PredicateDictionary predicate);
 
 }

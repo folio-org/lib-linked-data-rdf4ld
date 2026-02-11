@@ -46,9 +46,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.rdf4ld.util.JsonUtil.getJsonMapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,7 +62,8 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.dictionary.specific.PlaceDictionary;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 public class MonographUtil {
   public static final String AGENTS_NAMESPACE = "http://id.loc.gov/authorities/";
@@ -72,7 +72,7 @@ public class MonographUtil {
   public static final String STATUS_CURRENT = "current";
   public static final String STATUS_CANCELLED = "cancinv";
   public static final String STATUS_BASE_URI = "http://id.loc.gov/vocabulary/mstatus/";
-  private static final ObjectMapper OBJECT_MAPPER = new Rdf4LdObjectMapper();
+  private static final JsonMapper JSON_MAPPER = getJsonMapper();
   private static final Random RANDOM = new Random();
 
   public static Resource createInstance(Map<PropertyDictionary, List<String>> properties) {
@@ -346,7 +346,7 @@ public class MonographUtil {
   }
 
   public static JsonNode getJsonNode(Map<String, ?> map) {
-    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+    return JSON_MAPPER.convertValue(map, JsonNode.class);
   }
 
 }

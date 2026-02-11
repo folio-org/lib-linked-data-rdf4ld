@@ -1,8 +1,8 @@
 package org.folio.rdf4ld.service;
 
 import static java.util.Objects.isNull;
+import static org.folio.rdf4ld.util.JsonUtil.getJsonMapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,17 +14,17 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.WriterConfig;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.model.MappingProfile;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @RequiredArgsConstructor
 public class Rdf4LdServiceImpl implements Rdf4LdService {
 
   private final Rdf4LdMapper rdf4LdMapper;
-  private final Rdf4LdObjectMapper objectMapper;
+  private final JsonMapper jsonMapper = getJsonMapper();
 
   @Override
   public Set<Resource> mapRdfToLd(InputStream input, String contentType, MappingProfile mappingProfile) {
@@ -57,16 +57,14 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
   }
 
   @Override
-  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat)
-      throws JsonProcessingException {
-    var resource = objectMapper.readValue(input, Resource.class);
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat) {
+    var resource = jsonMapper.readValue(input, Resource.class);
     return mapLdToBibframe2Rdf(resource, rdfFormat);
   }
 
   @Override
-  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat, WriterConfig outputConfig)
-      throws JsonProcessingException {
-    var resource = objectMapper.readValue(input, Resource.class);
+  public ByteArrayOutputStream mapLdToBibframe2Rdf(String input, RDFFormat rdfFormat, WriterConfig outputConfig) {
+    var resource = jsonMapper.readValue(input, Resource.class);
     return mapLdToBibframe2Rdf(resource, rdfFormat, outputConfig);
   }
 

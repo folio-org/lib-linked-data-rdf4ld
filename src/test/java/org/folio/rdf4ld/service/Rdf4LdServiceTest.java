@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.spring.testing.type.UnitTest;
@@ -29,8 +28,6 @@ class Rdf4LdServiceTest {
 
   @Mock
   private Rdf4LdMapper rdf4LdMapper;
-  @Mock
-  private Rdf4LdObjectMapper objectMapper;
   @InjectMocks
   private Rdf4LdServiceImpl rdf4LdService;
 

@@ -1,7 +1,9 @@
 package org.folio.rdf4ld.mapper;
 
+import static java.util.Objects.nonNull;
 import static org.folio.rdf4ld.util.RdfUtil.selectSubjectsByTypes;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +57,8 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
   public Model mapLdToRdf(Resource resource, MappingProfile mappingProfile) {
     var modelBuilder = new ModelBuilder();
     mappingProfile.getTopResourceMappings().stream()
-      .filter(tm -> resource.getTypes().equals(tm.getLdResourceDef().getTypeSet()))
+      .filter(tm -> nonNull(tm.getLdResourceDef()))
+      .filter(tm -> resource.getTypes().equals(new HashSet<>(tm.getLdResourceDef().getTypeSet())))
       .forEach(tm -> {
         var ldResourceDef = tm.getLdResourceDef();
         var mapper = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());

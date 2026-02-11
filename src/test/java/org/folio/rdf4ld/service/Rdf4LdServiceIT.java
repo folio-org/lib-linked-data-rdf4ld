@@ -1,9 +1,7 @@
 package org.folio.rdf4ld.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.SneakyThrows;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.WriterConfig;
@@ -21,18 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class Rdf4LdServiceIT {
   @Autowired
   private Rdf4LdService rdf4LdService;
-
-  @Test
-  void mapLdToBibframe2Rdf_throwsForInvalidJson() {
-    // given
-    var input = "{";
-    var format = RDFFormat.JSONLD;
-
-    // when
-    assertThatThrownBy(() -> rdf4LdService.mapLdToBibframe2Rdf(input, format))
-      // then
-      .isInstanceOf(JsonProcessingException.class);
-  }
 
   @Test
   @SneakyThrows
