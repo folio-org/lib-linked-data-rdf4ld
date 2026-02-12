@@ -8,13 +8,14 @@ import java.util.function.LongFunction;
 import java.util.function.Supplier;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.ld.dictionary.label.LabelGeneratorService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Log4j2
 @Configuration
-public class BackupBeanConfig {
+public class Rdf4ldBeanConfig {
 
   @Bean
   @ConditionalOnMissingBean(name = "resourceUrlProvider")
@@ -28,6 +29,12 @@ public class BackupBeanConfig {
   public Supplier<Optional<ResourceTypeDictionary>> dummyDefaultWorkTypeProvider() {
     log.warn("No defaultWorkTypeProvider bean has been found, using the dummy one");
     return () -> of(BOOKS);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LabelGeneratorService labelGeneratorService() {
+    return new LabelGeneratorService();
   }
 
 }
