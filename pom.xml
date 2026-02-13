@@ -32,8 +32,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <swagger.yaml.file>${project.basedir}/src/main/resources/mappingProfile/model/rdf4ld.yaml</swagger.yaml.file>
 
-    <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
-    <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <lib-linked-data-dictionary.version>1.9.9</lib-linked-data-dictionary.version>
+    <lib-linked-data-fingerprint.version>1.9.9</lib-linked-data-fingerprint.version>
     <rdf4j.version>5.2.2</rdf4j.version>
     <jetbrains-annotations.version>26.0.2-1</jetbrains-annotations.version>
 
@@ -285,6 +285,17 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <preparationGoals>clean verify</preparationGoals>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -302,6 +313,12 @@
       <name>FOLIO Maven repository</name>
       <url>https://repository.folio.org/repository/maven-folio</url>
     </repository>
+
+    <repository>
+      <id>folio-nexus-releases</id>
+      <name>FOLIO Maven repository</name>
+      <url>https://repository.folio.org/repository/maven-releases</url>
+    </repository>
   </repositories>
 
   <distributionManagement>
@@ -312,6 +329,7 @@
       <uniqueVersion>false</uniqueVersion>
       <layout>default</layout>
     </repository>
+
     <snapshotRepository>
       <id>folio-nexus</id>
       <name>FOLIO Snapshot Repository</name>
