@@ -5,21 +5,18 @@
   "properties": {
     "properties": {
       "type": "array",
-      "uniqueItems": true,
       "items": {
         "$ref": "propertyMapping.json"
       }
     },
     "outgoingEdges": {
       "type": "array",
-      "uniqueItems": true,
       "items": {
         "$ref": "resourceMapping.json"
       }
     },
     "label": {
       "type": "array",
-      "uniqueItems": true,
       "description": "Linked Data properties to be used as Label. LABEL and LABEL_RDF by default.",
       "items": {
         "$ref": "propertyDictionaryPlaceholder.json"

@@ -22,19 +22,17 @@ import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.specific.PlaceDictionary;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
 import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @Component
 @RequiredArgsConstructor
 @RdfMapperDefinition(types = PLACE, predicate = PROVIDER_PLACE)
 public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
-
-  private final Rdf4LdObjectMapper objectMapper;
   private final FingerprintHashService hashService;
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final LongFunction<String> resourceUrlProvider;
@@ -58,7 +56,7 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
     return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
       .map(r -> {
           if (isNull(r.getDoc())) {
-            r.setDoc(objectMapper.createObjectNode());
+            r.setDoc(JsonNodeFactory.instance.objectNode());
           }
           PlaceDictionary.getValue(iri.getLocalName())
             .ifPresent(name -> r

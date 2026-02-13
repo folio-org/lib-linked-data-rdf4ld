@@ -5,7 +5,6 @@
   "properties": {
     "typeSet": {
       "type": "array",
-      "uniqueItems": true,
       "description": "Bibframe resource type set",
       "items": {
         "type": "string"

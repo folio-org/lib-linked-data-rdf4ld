@@ -10,8 +10,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +19,8 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 class ResourceUtilTest {
@@ -163,7 +163,7 @@ class ResourceUtilTest {
     // then
     assertThat(result).isNotNull();
     assertThat(result.has("otherProperty")).isTrue();
-    assertThat(result.get("otherProperty").asText()).isEqualTo("value");
+    assertThat(result.get("otherProperty").asString()).isEqualTo("value");
   }
 
   @Test
@@ -234,7 +234,7 @@ class ResourceUtilTest {
 
     // then
     assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
-    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("Single Label");
+    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("Single Label");
   }
 
   @Test
@@ -249,7 +249,7 @@ class ResourceUtilTest {
 
     // then
     assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
-    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("Longest Label Here");
+    assertThat(resource.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("Longest Label Here");
   }
 
   @Test
@@ -264,7 +264,7 @@ class ResourceUtilTest {
 
     // then
     assertThat(resource.getDoc().has(NAME.getValue())).isTrue();
-    var nameValue = resource.getDoc().get(NAME.getValue()).get(0).asText();
+    var nameValue = resource.getDoc().get(NAME.getValue()).get(0).asString();
     assertThat(nameValue).isIn("First", "Other")
       .hasSize(5);
   }

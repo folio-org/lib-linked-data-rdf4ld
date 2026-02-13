@@ -5,7 +5,6 @@
   "properties": {
     "topResourceMappings": {
       "type": "array",
-      "uniqueItems": true,
       "description": "Top resource mappings",
       "items": {
         "$ref": "resourceMapping.json"

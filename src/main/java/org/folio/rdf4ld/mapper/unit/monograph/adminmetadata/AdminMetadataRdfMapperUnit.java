@@ -59,7 +59,7 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
     baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
     addLocalIdentifiers(resource, modelBuilder);
   }
-  
+
   private void addLocalIdentifiers(Resource resource, ModelBuilder modelBuilder) {
     addLocalIdentifierNote(resource, modelBuilder, CONTROL_NUMBER.getValue(), FOLIO_HRID);
     addLocalIdentifierNote(resource, modelBuilder, FOLIO_INVENTORY_ID.getValue(), FOLIO_UUID);
@@ -84,7 +84,7 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
               StreamSupport.stream(identifiersModel.spliterator(), false)
                 .map(Statement::getObject)
                 .map(Value::stringValue)
-                .filter(objVal -> objVal.equals(identifierResource.asText()))
+                .filter(objVal -> objVal.equals(identifierResource.asString()))
                 .forEach(id -> {
                   var noteNode = bnode("note_" + id);
                   modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
