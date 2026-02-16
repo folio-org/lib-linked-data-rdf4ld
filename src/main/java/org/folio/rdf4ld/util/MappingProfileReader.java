@@ -1,14 +1,16 @@
 package org.folio.rdf4ld.util;
 
+import static org.folio.rdf4ld.util.JsonUtil.getJsonMapper;
+
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.rdf4ld.config.Rdf4LdObjectMapper;
 import org.folio.rdf4ld.model.MappingProfile;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component
@@ -35,7 +37,7 @@ public class MappingProfileReader {
   public static final String PRODUCTION = "provision/production.json";
   public static final String PUBLICATION = "provision/publication.json";
   public static final String ADMIN_METADATA = "admin_metadata/admin_metadata.json";
-  private final Rdf4LdObjectMapper objectMapper;
+  private final JsonMapper jsonMapper = getJsonMapper();
 
   public MappingProfile getBibframe20Profile() {
     var mappingProfile = new MappingProfile();
@@ -93,7 +95,7 @@ public class MappingProfileReader {
   private Optional<ResourceMapping> readResourceMapping(String fileName) {
     try {
       var resource = new ClassPathResource(BASE_PATH + fileName);
-      return Optional.of(objectMapper.readValue(resource.getInputStream(), ResourceMapping.class));
+      return Optional.of(jsonMapper.readValue(resource.getInputStream(), ResourceMapping.class));
     } catch (IOException e) {
       log.error("Mapping profile reading issue for file: {}", fileName, e);
       return Optional.empty();
