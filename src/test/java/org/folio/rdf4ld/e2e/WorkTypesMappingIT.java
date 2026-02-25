@@ -53,7 +53,8 @@ class WorkTypesMappingIT {
   }
 
   @Test
-  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAddedDefaultType_ifNoExtraTypes() throws IOException {
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithNotAddedDefaultType_ifNoDefaultWorkTypeProvider()
+    throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_no_extra_type.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
@@ -67,7 +68,7 @@ class WorkTypesMappingIT {
     assertThat(instance.getId()).isNotNull();
     assertThat(instance.getIncomingEdges()).isEmpty();
     assertThat(instance.getOutgoingEdges()).hasSize(1);
-    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS),
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK),
       Map.of(LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")), "",
       work -> {
         assertThat(work.getId()).isNotNull();
