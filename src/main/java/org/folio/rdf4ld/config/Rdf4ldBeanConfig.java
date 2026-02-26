@@ -1,8 +1,5 @@
 package org.folio.rdf4ld.config;
 
-import static java.util.Optional.of;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
-
 import java.util.Optional;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
@@ -28,7 +25,7 @@ public class Rdf4ldBeanConfig {
   @ConditionalOnMissingBean(name = "defaultWorkTypeProvider")
   public Supplier<Optional<ResourceTypeDictionary>> dummyDefaultWorkTypeProvider() {
     log.warn("No defaultWorkTypeProvider bean has been found, using the dummy one");
-    return () -> of(BOOKS);
+    return Optional::empty;
   }
 
   @Bean
