@@ -11,10 +11,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.GENERAL_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
@@ -67,8 +65,7 @@ public class ResourceUtil {
       .filter(e -> e.getPredicate() == PredicateDictionary.TITLE)
       .map(ResourceEdge::getTarget)
       .filter(t -> t.getTypes().contains(ResourceTypeDictionary.TITLE))
-      .map(Resource::getDoc)
-      .map(d -> getPropertiesString(d, MAIN_TITLE, SUBTITLE))
+      .map(Resource::getLabel)
       .findFirst()
       .orElse("");
   }
