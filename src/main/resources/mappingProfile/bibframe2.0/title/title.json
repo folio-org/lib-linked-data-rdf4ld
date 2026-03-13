@@ -29,10 +29,6 @@
         "ldProperty": "NON_SORT_NUM",
         "bfProperty": "http://id.loc.gov/ontologies/bflc/nonSortNum"
       }
-    ],
-    "label": [
-      "MAIN_TITLE",
-      "SUBTITLE"
     ]
   }
 }

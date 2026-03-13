@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.mapper.unit;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
@@ -15,6 +16,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.label.LabelGeneratorService;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
@@ -32,6 +34,7 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
   private final CoreLd2RdfMapper coreLd2RdfMapper;
   private final FingerprintHashService hashService;
   private final LongFunction<String> resourceUrlProvider;
+  private final LabelGeneratorService labelGeneratorService;
 
   @Override
   public Optional<Resource> mapToLd(Model model,
@@ -45,22 +48,30 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     ofNullable(resourceMapping)
       .ifPresent(rm -> {
         resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
-        setLabel(resource, resourceMapping);
         var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(),
           model, resource, rdfResource);
         resource.getOutgoingEdges().addAll(outEdges);
+        setLabel(resource, resourceMapping);
       });
     resource.setId(hashService.hash(resource));
     return Optional.of(resource);
   }
 
   private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {
-    if (resourceMapping.getLabel().isEmpty()) {
-      resource.setLabel(getPropertiesString(resource.getDoc(), DEFAULT_LABELS));
-    } else {
-      var labelProperties = resourceMapping.getLabel().toArray(PropertyDictionary[]::new);
-      resource.setLabel(getPropertiesString(resource.getDoc(), labelProperties));
+    var labelFromDoc = getPropertiesString(resource.getDoc(), DEFAULT_LABELS);
+    if (isNotBlank(labelFromDoc)) {
+      resource.setLabel(labelFromDoc);
+      return;
     }
+
+    var generatedLabel = labelGeneratorService.getLabel(resource);
+    if (isNotBlank(generatedLabel)) {
+      resource.setLabel(generatedLabel);
+      return;
+    }
+
+    var labelProperties = resourceMapping.getLabel().toArray(PropertyDictionary[]::new);
+    resource.setLabel(getPropertiesString(resource.getDoc(), labelProperties));
   }
 
   @Override

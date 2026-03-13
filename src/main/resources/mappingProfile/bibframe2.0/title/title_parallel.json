@@ -37,10 +37,6 @@
           "predicate": "http://id.loc.gov/ontologies/bibframe/note"
         }
       }
-    ],
-    "label": [
-      "MAIN_TITLE",
-      "SUBTITLE"
     ]
   }
 }
