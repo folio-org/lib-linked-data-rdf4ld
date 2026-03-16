@@ -10,11 +10,7 @@ import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
@@ -22,47 +18,6 @@ import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 class ResourceUtilTest {
-
-  @Test
-  void getPrimaryMainTitle_shouldReturnEmptyStringWhenResourceIsNull() {
-    // given
-    var resource = (Resource) null;
-
-    // when
-    var result = ResourceUtil.getPrimaryMainTitle(resource);
-
-    // then
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void getPrimaryMainTitle_shouldReturnEmptyStringWhenOutgoingEdgesAreNull() {
-    // given
-    var resource = new Resource();
-
-    // when
-    var result = ResourceUtil.getPrimaryMainTitle(resource);
-
-    // then
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void getPrimaryMainTitle_shouldReturnTitleWhenValidOutgoingEdgesExist() {
-    // given
-    var target = new Resource();
-    target.setTypes(Set.of(ResourceTypeDictionary.TITLE));
-    target.setLabel("Main Title, Subtitle");
-    var edge = new ResourceEdge(new Resource(), target, PredicateDictionary.TITLE);
-    var resource = new Resource();
-    resource.setOutgoingEdges(Set.of(edge));
-
-    // when
-    var result = ResourceUtil.getPrimaryMainTitle(resource);
-
-    // then
-    assertThat(result).isEqualTo("Main Title, Subtitle");
-  }
 
   @Test
   void getPropertyString_shouldReturnEmptyStringWhenDocIsNull() {

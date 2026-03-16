@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
@@ -56,20 +55,6 @@ public class ResourceUtil {
     TEMPORAL, CHRONOLOGICAL_SUBDIVISION,
     PLACE, GEOGRAPHIC_SUBDIVISION
   );
-
-  public static String getPrimaryMainTitle(Resource titledRresource) {
-    if (isNull(titledRresource) || isNull(titledRresource.getOutgoingEdges())) {
-      return "";
-    }
-    return titledRresource.getOutgoingEdges().stream()
-      .filter(e -> e.getPredicate() == PredicateDictionary.TITLE)
-      .map(ResourceEdge::getTarget)
-      .filter(t -> t.getTypes().contains(ResourceTypeDictionary.TITLE))
-      .map(Resource::getLabel)
-      .filter(StringUtils::isNotBlank)
-      .findFirst()
-      .orElse("");
-  }
 
   public static String getPropertiesString(JsonNode doc, PropertyDictionary... properties) {
     return Arrays.stream(properties)
