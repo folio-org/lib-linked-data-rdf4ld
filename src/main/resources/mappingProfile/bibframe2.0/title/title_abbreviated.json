@@ -21,7 +21,6 @@
         "ldProperty": "PART_NUMBER",
         "bfProperty": "http://id.loc.gov/ontologies/bibframe/partNumber"
       }
-    ],
-    "label": "MAIN_TITLE"
+    ]
   }
 }

@@ -64,6 +64,6 @@ class WorkRdfMapperUnitTest {
     assertThat(result).isPresent()
       .hasValueSatisfying(w -> assertThat(w.getId()).isEqualTo(newId))
       .hasValueSatisfying(w -> assertThat(w.getLabel())
-        .isEqualTo("Title mainTitle 1, Title mainTitle 2, Title subTitle 1, Title subTitle 2"));
+        .isEqualTo("Title mainTitle 1 Title subTitle 1"));
   }
 }

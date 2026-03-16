@@ -107,7 +107,7 @@ public class MonographUtil {
       ),
       Set.of(TITLE),
       emptyMap()
-    );
+    ).setLabel(primaryTitleValue1 + " " + subTitleValue1);
   }
 
   public static Resource createParallelTitle(String prefix) {

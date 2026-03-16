@@ -42,10 +42,6 @@
         "ldProperty": "VARIANT_TYPE",
         "bfProperty": "http://id.loc.gov/ontologies/bibframe/variantType"
       }
-    ],
-    "label": [
-      "MAIN_TITLE",
-      "SUBTITLE"
     ]
   }
 }
