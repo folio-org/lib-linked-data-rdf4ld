@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.util.RdfUtil.readAllTypes;
 import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
-import static org.folio.rdf4ld.util.ResourceUtil.getPrimaryMainTitle;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -41,7 +40,6 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
                                     Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
       .map(work -> {
-        work.setLabel(getPrimaryMainTitle(work));
         setExtraTypes(model, resource, work);
         work.setId(hashService.hash(work));
         return work;
