@@ -63,7 +63,9 @@ class HubTitlesMappingIT {
         MAIN_TITLE, List.of("AbbreviatedTitle mainTitle 1", "AbbreviatedTitle mainTitle 2"),
         PART_NAME, List.of("AbbreviatedTitle partName 1", "AbbreviatedTitle partName 2"),
         PART_NUMBER, List.of("AbbreviatedTitle partNumber 1", "AbbreviatedTitle partNumber 2")
-      ), "AbbreviatedTitle mainTitle 1 AbbreviatedTitle partNumber 1 AbbreviatedTitle partName 1"
+      ), "AbbreviatedTitle mainTitle 1 AbbreviatedTitle mainTitle 2 "
+        + "AbbreviatedTitle partNumber 1 AbbreviatedTitle partNumber 2 "
+        + "AbbreviatedTitle partName 1 AbbreviatedTitle partName 2"
     );
     assertThat(hub.getOutgoingEdges()).hasSize(4);
   }
