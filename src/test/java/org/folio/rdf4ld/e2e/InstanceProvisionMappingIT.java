@@ -72,7 +72,9 @@ class InstanceProvisionMappingIT {
         DATE, List.of(prefix + " simple date 1", prefix + " simple date 2"),
         NAME, List.of(prefix + " simple agent 1", prefix + " simple agent 2"),
         SIMPLE_PLACE, List.of(prefix + " simple place 1", prefix + " simple place 2")
-      ), prefix + " simple agent 1, " + prefix + " simple agent 2",
+      ), prefix + " simple agent 1 " + prefix + " simple agent 2, "
+        + prefix + " simple place 1 " + prefix + " simple place 2, "
+        + prefix + " simple date 1 " + prefix + " simple date 2",
       publication -> {
         validateOutgoingEdge(publication, PROVIDER_PLACE, Set.of(PLACE),
           Map.of(
