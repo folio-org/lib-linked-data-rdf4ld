@@ -12,7 +12,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -46,6 +45,7 @@ import java.util.Set;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
@@ -325,17 +325,16 @@ class WorkSubjectMappingIT {
   }
 
   @Test
-  void mapBibframe2RdfToLdAndUnMock_shouldReturnUnmodifiedComplexSubjectIfPreferred() throws IOException {
+  void mapBibframe2RdfToLdAndUnMock_shouldReturnUnmodifiedComplexSubjectIfWithFolioMetadata() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
-
-    var preferredSubjectProperties = Map.of(
-      RESOURCE_PREFERRED, List.of("true"),
+    var subjectProperties = Map.of(
       LABEL, List.of("Some label"),
       GEOGRAPHIC_SUBDIVISION, List.of("Some geo subdivision")
     );
-    var preferredComplexSubject = createResource(preferredSubjectProperties, Set.of(CONCEPT, TOPIC), Map.of());
+    var preferredComplexSubject = createResource(subjectProperties, Set.of(CONCEPT, TOPIC), Map.of())
+      .setFolioMetadata(new FolioMetadata());
 
     // when
     var mapped = rdf4LdMapper.mapBibframe2RdfToLd(model);
@@ -358,7 +357,7 @@ class WorkSubjectMappingIT {
       work,
       SUBJECT,
       preferredComplexSubject.getTypes(),
-      preferredSubjectProperties,
+      subjectProperties,
       preferredComplexSubject.getLabel()
     );
   }

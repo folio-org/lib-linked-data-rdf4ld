@@ -12,7 +12,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
@@ -156,11 +155,6 @@ public class ResourceUtil {
       .map(Resource::getDoc)
       .map(d -> getPropertiesString(d, LINK))
       .anyMatch(STATUS_CURRENT::equalsIgnoreCase);
-  }
-
-  public static boolean isPreferred(Resource resource) {
-    return getPropertiesStream(resource.getDoc(), RESOURCE_PREFERRED)
-      .anyMatch(Boolean::parseBoolean);
   }
 
   public static Resource enrichResource(Resource resource,

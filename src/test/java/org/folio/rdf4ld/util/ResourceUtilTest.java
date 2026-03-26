@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.rdf4ld.test.MonographUtil.getJsonNode;
 
@@ -75,15 +74,15 @@ class ResourceUtilTest {
     // given
     var resource = new Resource();
     var doc = JsonNodeFactory.instance.objectNode();
-    doc.set("http://library.link/vocab/resourcePreferred", JsonNodeFactory.instance.arrayNode().add("true"));
+    doc.set("http://bibfra.me/vocab/library/miscInfo", JsonNodeFactory.instance.arrayNode().add("true"));
     resource.setDoc(doc);
 
     // when
-    var result = ResourceUtil.copyExcluding(resource, RESOURCE_PREFERRED);
+    var result = ResourceUtil.copyExcluding(resource, MISC_INFO);
 
     // then
     assertThat(result).isNotNull();
-    assertThat(result.has("http://library.link/vocab/resourcePreferred")).isFalse();
+    assertThat(result.has("http://bibfra.me/vocab/library/miscInfo")).isFalse();
   }
 
   @Test
@@ -100,7 +99,7 @@ class ResourceUtilTest {
   }
 
   @Test
-  void copyWithoutPreferred_returnsUnchangedCopy_whenDocDoesNotContainPreferred() {
+  void copyWithoutSpecificProperty_returnsUnchangedCopy() {
     // given
     var resource = new Resource();
     var doc = JsonNodeFactory.instance.objectNode();
@@ -217,50 +216,6 @@ class ResourceUtilTest {
     var nameValue = resource.getDoc().get(NAME.getValue()).get(0).asString();
     assertThat(nameValue).isIn("First", "Other")
       .hasSize(5);
-  }
-
-  @Test
-  void isPreferred_shouldReturnTrue_whenResourcePreferredIsTrue() {
-    // given
-    var resource = new Resource();
-    var doc = JsonNodeFactory.instance.objectNode();
-    doc.set(RESOURCE_PREFERRED.getValue(), JsonNodeFactory.instance.arrayNode().add("true"));
-    resource.setDoc(doc);
-
-    // when
-    var result = ResourceUtil.isPreferred(resource);
-
-    // then
-    assertThat(result).isTrue();
-  }
-
-  @Test
-  void isPreferred_shouldReturnFalse_whenResourcePreferredIsFalse() {
-    // given
-    var resource = new Resource();
-    var doc = JsonNodeFactory.instance.objectNode();
-    doc.set(RESOURCE_PREFERRED.getValue(), JsonNodeFactory.instance.arrayNode().add("false"));
-    resource.setDoc(doc);
-
-    // when
-    var result = ResourceUtil.isPreferred(resource);
-
-    // then
-    assertThat(result).isFalse();
-  }
-
-  @Test
-  void isPreferred_shouldReturnFalse_whenResourcePreferredIsMissing() {
-    // given
-    var resource = new Resource();
-    var doc = JsonNodeFactory.instance.objectNode();
-    resource.setDoc(doc);
-
-    // when
-    var result = ResourceUtil.isPreferred(resource);
-
-    // then
-    assertThat(result).isFalse();
   }
 
 }
