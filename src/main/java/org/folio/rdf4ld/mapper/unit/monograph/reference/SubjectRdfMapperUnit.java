@@ -1,12 +1,12 @@
 package org.folio.rdf4ld.mapper.unit.monograph.reference;
 
+import static java.util.Objects.nonNull;
 import static org.eclipse.rdf4j.model.util.Values.bnode;
 import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
@@ -15,7 +15,6 @@ import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 import static org.folio.rdf4ld.util.ResourceUtil.addProperty;
 import static org.folio.rdf4ld.util.ResourceUtil.copyExcluding;
 import static org.folio.rdf4ld.util.ResourceUtil.getCurrentIdentifierLink;
-import static org.folio.rdf4ld.util.ResourceUtil.isPreferred;
 
 import java.util.Optional;
 import java.util.function.LongFunction;
@@ -67,7 +66,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
   @Override
   public Resource enrichUnMockedResource(Resource subject) {
-    if (subject.isOfType(CONCEPT) && isPreferred(subject)) {
+    if (subject.isOfType(CONCEPT) && nonNull(subject.getFolioMetadata())) {
       return subject;
     }
     if (subject.isOfType(CONCEPT)) {
@@ -82,7 +81,7 @@ public class SubjectRdfMapperUnit extends ReferenceRdfMapperUnit {
 
   private Resource wrapWithConcept(Resource focus) {
     var concept = new Resource()
-      .setDoc(copyExcluding(focus, RESOURCE_PREFERRED, LABEL))
+      .setDoc(copyExcluding(focus, LABEL))
       .addType(CONCEPT);
     focus.getTypes().forEach(concept::addType);
     concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));

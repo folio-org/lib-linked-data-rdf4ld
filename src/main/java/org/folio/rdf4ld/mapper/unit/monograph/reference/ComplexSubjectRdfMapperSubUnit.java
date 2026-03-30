@@ -5,7 +5,6 @@ import static org.eclipse.rdf4j.model.util.Values.iri;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
@@ -130,7 +129,7 @@ public class ComplexSubjectRdfMapperSubUnit {
 
   private Resource createConceptFromComponents(Resource focus, List<Resource> subFocuses) {
     var concept = new Resource()
-      .setDoc(copyExcluding(focus, RESOURCE_PREFERRED, LABEL))
+      .setDoc(copyExcluding(focus, LABEL))
       .addType(CONCEPT);
     focus.getTypes().forEach(concept::addType);
     concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
