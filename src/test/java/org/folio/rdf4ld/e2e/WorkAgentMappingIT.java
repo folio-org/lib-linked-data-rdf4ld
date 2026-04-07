@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PredicateDictionary.PUBLISHING_DIRECTOR;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -165,6 +166,36 @@ class WorkAgentMappingIT {
         validateOutgoingEdge(work, ILLUSTRATOR, of(FAMILY), expectedContributorProperties, contributorLabel);
         validateOutgoingEdge(work, COLLABORATOR, of(FAMILY), expectedContributorProperties,
           contributorLabel);
+      });
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldHandleUncontrolledRoleLabels() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_uncontrolled_role_label.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(3);
+        var expectedCreatorProperties = Map.of(
+          LABEL, List.of("Creator Agent"),
+          NAME, List.of("Creator Agent")
+        );
+        validateAgent(work, "Creator Agent", "Creator Agent", CREATOR, of(PERSON));
+        validateOutgoingEdge(work, ISSUING_BODY, of(PERSON), expectedCreatorProperties, "Creator Agent");
+        validateAgent(work, "Contributor Agent", "Contributor Agent", CONTRIBUTOR, of(FAMILY));
+        var expectedContributorProperties = Map.of(
+          LABEL, List.of("Contributor Agent"),
+          NAME, List.of("Contributor Agent")
+        );
+        validateOutgoingEdge(work, CONTRIBUTOR, of(FAMILY), expectedContributorProperties, "Contributor Agent");
       });
   }
 
