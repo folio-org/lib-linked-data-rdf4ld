@@ -3,6 +3,7 @@ package org.folio.rdf4ld.mapper.unit.monograph.agent;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.eclipse.rdf4j.model.util.Values.iri;
+import static org.eclipse.rdf4j.model.vocabulary.RDFS.LABEL;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.rdf4ld.util.MappingUtil.getEdgeMapping;
@@ -19,13 +20,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.SimpleIRI;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Values;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.ld.dictionary.specific.RoleDictionary;
+import org.folio.ld.dictionary.specific.RoleLabelDictionary;
 import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.mapper.unit.BaseRdfMapperUnit;
@@ -87,13 +91,34 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
                             ResourceInternalMapping resourceMapping) {
     var rolePredicate = getEdgePredicate(resourceMapping, ROLE_EDGE_NUMBER);
     getByPredicate(model, contributionResource, rolePredicate)
-      .map(SimpleIRI.class::cast)
-      .map(SimpleIRI::getLocalName)
-      .map(RoleDictionary::getValue)
+      .map(role -> resolveRolePredicate(model, role))
       .flatMap(Optional::stream)
+      .distinct()
       .map(p -> new ResourceEdge(parent, agent, p))
       .forEach(parent::addOutgoingEdge);
     return agent;
+  }
+
+  private Optional<PredicateDictionary> resolveRolePredicate(Model model, Value role) {
+    if (role instanceof IRI iri) {
+      return RoleDictionary.getValue(iri.getLocalName());
+    }
+    if (role instanceof org.eclipse.rdf4j.model.Resource roleResource) {
+      return resolveRolePredicateByLabel(model, roleResource);
+    }
+    return empty();
+  }
+
+  private Optional<PredicateDictionary> resolveRolePredicateByLabel(
+    Model model,
+    org.eclipse.rdf4j.model.Resource roleResource) {
+    return getByPredicate(model, roleResource, LABEL.stringValue())
+      .filter(Literal.class::isInstance)
+      .map(Literal.class::cast)
+      .map(Literal::getLabel)
+      .map(RoleLabelDictionary::getValue)
+      .flatMap(Optional::stream)
+      .findFirst();
   }
 
   @Override
