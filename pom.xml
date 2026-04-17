@@ -33,7 +33,7 @@
     <swagger.yaml.file>${project.basedir}/src/main/resources/mappingProfile/model/rdf4ld.yaml</swagger.yaml.file>
 
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
-    <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <lib-linked-data-fingerprint.version>2.0.0</lib-linked-data-fingerprint.version>
     <rdf4j.version>5.2.2</rdf4j.version>
     <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
