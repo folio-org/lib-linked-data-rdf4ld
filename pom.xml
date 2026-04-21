@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.folio</groupId>
   <artifactId>lib-linked-data-rdf4ld</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -32,8 +30,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <swagger.yaml.file>${project.basedir}/src/main/resources/mappingProfile/model/rdf4ld.yaml</swagger.yaml.file>
 
-    <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
-    <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <lib-linked-data-dictionary.version>3.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
+    <lib-linked-data-fingerprint.version>3.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
     <rdf4j.version>5.2.2</rdf4j.version>
     <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
