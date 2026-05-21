@@ -231,13 +231,6 @@ class WorkAgentMappingIT {
       ));
   }
 
-  static Stream<Arguments> contributionTypeScenarios() {
-    return Stream.of(
-      Arguments.of("/rdf/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
-      Arguments.of("/rdf/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
-    );
-  }
-
   @Test
   void mapBibframe2RdfToLd_shouldMapAllRolesFromSingleContribution() throws IOException {
     // given
@@ -319,5 +312,12 @@ class WorkAgentMappingIT {
     // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
+  }
+
+  static Stream<Arguments> contributionTypeScenarios() {
+    return Stream.of(
+      Arguments.of("/rdf/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
+      Arguments.of("/rdf/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
+    );
   }
 }
