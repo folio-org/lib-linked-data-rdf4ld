@@ -32,8 +32,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
@@ -41,6 +43,8 @@ import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -199,6 +203,64 @@ class WorkAgentMappingIT {
       });
   }
 
+
+  @ParameterizedTest
+  @MethodSource("contributionTypeScenarios")
+  void mapBibframe2RdfToLd_shouldMapContributionTypeToCorrectPredicate(String rdfFile,
+                                                                        PredicateDictionary expectedPredicate,
+                                                                        String lccn,
+                                                                        PredicateDictionary expectedRolePredicate)
+    throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream(rdfFile);
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var agent = mockLccnResource(lccn);
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> validateResourceWithGivenEdges(work,
+        new ResourceEdge(work, agent, expectedPredicate),
+        new ResourceEdge(work, agent, expectedRolePredicate)
+      ));
+  }
+
+  static Stream<Arguments> contributionTypeScenarios() {
+    return Stream.of(
+      Arguments.of("/rdf/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
+      Arguments.of("/rdf/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
+    );
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldMapAllRolesFromSingleContribution() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_multi_role_single_contribution.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var agent = mockLccnResource("n2021004098");
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> validateResourceWithGivenEdges(work,
+        new ResourceEdge(work, agent, CREATOR),
+        new ResourceEdge(work, agent, AUTHOR),
+        new ResourceEdge(work, agent, PUBLISHING_DIRECTOR),
+        new ResourceEdge(work, agent, ILLUSTRATOR)
+      ));
+  }
 
   @ParameterizedTest
   @ValueSource(strings = {
