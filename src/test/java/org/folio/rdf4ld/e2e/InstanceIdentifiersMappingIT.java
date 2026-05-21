@@ -25,14 +25,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,7 +49,10 @@ class InstanceIdentifiersMappingIT {
 
   private static final String EXPECTED_EAN = "780696204364";
   private static final String EXPECTED_ISBN = "0850598370";
+  private static final String EXPECTED_ISBN_2 = "9780850598377";
   private static final String EXPECTED_LCCN = "  2010470075";
+  private static final String EXPECTED_LCCN_2 = "  2019470076";
+
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
 
@@ -98,6 +106,129 @@ class InstanceIdentifiersMappingIT {
     // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
+  }
+
+  @ParameterizedTest
+  @MethodSource("identifierStatusArgs")
+  void mapBibframe2RdfToLd_shouldMapIdentifierWithStatus(
+    String fixturePath, ResourceTypeDictionary idType, String value,
+    String statusLabel, boolean isCurrent, String idPlaceholder) throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream(fixturePath);
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var expectedProps = idType == ID_LCCN
+      ? Map.of(NAME, List.of(value))
+      : Map.of(NAME, List.of(value), QUALIFIER, List.of("pbk"));
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, idType),
+      expectedProps, value,
+      identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
+        Map.of(LABEL, List.of(statusLabel), LINK, List.of(STATUS_BASE_URI + statusLabel)), statusLabel)
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("identifierStatusArgs")
+  void mapLdToBibframe2Rdf_shouldMapIdentifierWithStatus(
+    String fixturePath, ResourceTypeDictionary idType, String value,
+    String statusLabel, boolean isCurrent, String idPlaceholder) throws IOException {
+    // given
+    var identifier = idType == ID_LCCN
+      ? createIdentifier(value, ID_LCCN, "", isCurrent)
+      : createIsbn(value, isCurrent);
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, identifier, MAP));
+    var expected = new String(this.getClass().getResourceAsStream(fixturePath).readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll(idPlaceholder, identifier.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldMapMultipleIdentifiersOfSameType() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/instance_identifiers_multi_same_type.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getOutgoingEdges()).hasSize(4);
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(NAME, List.of(EXPECTED_LCCN)), EXPECTED_LCCN,
+      identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
+        Map.of(LABEL, List.of(STATUS_CURRENT), LINK, List.of(STATUS_BASE_URI + STATUS_CURRENT)), STATUS_CURRENT)
+    );
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(NAME, List.of(EXPECTED_LCCN_2)), EXPECTED_LCCN_2,
+      identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
+        Map.of(LABEL, List.of(STATUS_CANCELLED), LINK, List.of(STATUS_BASE_URI + STATUS_CANCELLED)), STATUS_CANCELLED)
+    );
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(NAME, List.of(EXPECTED_ISBN), QUALIFIER, List.of("pbk")), EXPECTED_ISBN,
+      identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
+        Map.of(LABEL, List.of(STATUS_CURRENT), LINK, List.of(STATUS_BASE_URI + STATUS_CURRENT)), STATUS_CURRENT)
+    );
+    validateOutgoingEdge(instance, MAP, Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(NAME, List.of(EXPECTED_ISBN_2), QUALIFIER, List.of("pbk")), EXPECTED_ISBN_2,
+      identifier -> validateOutgoingEdge(identifier, PredicateDictionary.STATUS, Set.of(STATUS),
+        Map.of(LABEL, List.of(STATUS_CANCELLED), LINK, List.of(STATUS_BASE_URI + STATUS_CANCELLED)), STATUS_CANCELLED)
+    );
+  }
+
+  @Test
+  void mapLdToBibframe2Rdf_shouldMapMultipleIdentifiersOfSameType() throws IOException {
+    // given
+    var lccn1 = createIdentifier(EXPECTED_LCCN, ID_LCCN, "", true);
+    var lccn2 = createIdentifier(EXPECTED_LCCN_2, ID_LCCN, "", false);
+    var isbn1 = createIsbn(EXPECTED_ISBN, true);
+    var isbn2 = createIsbn(EXPECTED_ISBN_2, false);
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, lccn1, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, lccn2, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, isbn1, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, isbn2, MAP));
+    var expected = new String(
+      this.getClass().getResourceAsStream("/rdf/instance_identifiers_multi_same_type.json").readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("LCCN1_ID", lccn1.getId().toString())
+      .replaceAll("LCCN2_ID", lccn2.getId().toString())
+      .replaceAll("ISBN1_ID", isbn1.getId().toString())
+      .replaceAll("ISBN2_ID", isbn2.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  static Stream<Arguments> identifierStatusArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/instance_identifier_lccn_current.json",
+        ID_LCCN, EXPECTED_LCCN, STATUS_CURRENT, true, "LCCN_ID"),
+      Arguments.of("/rdf/instance_identifier_lccn_cancelled.json",
+        ID_LCCN, EXPECTED_LCCN, STATUS_CANCELLED, false, "LCCN_ID"),
+      Arguments.of("/rdf/instance_identifier_isbn_current.json",
+        ID_ISBN, EXPECTED_ISBN, STATUS_CURRENT, true, "ISBN_ID"),
+      Arguments.of("/rdf/instance_identifier_isbn_cancelled.json",
+        ID_ISBN, EXPECTED_ISBN, STATUS_CANCELLED, false, "ISBN_ID")
+    );
   }
 
 }
