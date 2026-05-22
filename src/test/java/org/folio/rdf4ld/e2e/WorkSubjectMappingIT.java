@@ -15,11 +15,15 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCSH;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -29,9 +33,11 @@ import static org.folio.rdf4ld.test.MonographUtil.createAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConcept;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptAgent;
 import static org.folio.rdf4ld.test.MonographUtil.createConceptTopic;
+import static org.folio.rdf4ld.test.MonographUtil.createGenreForm;
 import static org.folio.rdf4ld.test.MonographUtil.createIdentifier;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createResource;
+import static org.folio.rdf4ld.test.MonographUtil.createSubjectPlace;
 import static org.folio.rdf4ld.test.MonographUtil.createTemporal;
 import static org.folio.rdf4ld.test.MonographUtil.createTopic;
 import static org.folio.rdf4ld.test.MonographUtil.createWork;
@@ -42,16 +48,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -476,4 +488,79 @@ class WorkSubjectMappingIT {
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
+
+  @ParameterizedTest
+  @MethodSource("subjectConceptTypeArgs")
+  void mapBibframe2RdfToLd_shouldMapSubjectIntermediateConceptNode(
+    String fixturePath, ResourceTypeDictionary expectedType, String label) throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream(fixturePath);
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var expectedSubjectProperties = Map.of(LABEL, List.of(label), NAME, List.of(label));
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(1);
+        validateOutgoingEdge(work, SUBJECT, Set.of(expectedType, CONCEPT), expectedSubjectProperties, label,
+          concept -> {
+            assertThat(concept.getOutgoingEdges()).hasSize(1);
+            validateOutgoingEdge(concept, FOCUS, Set.of(expectedType), expectedSubjectProperties, label, c -> {});
+          });
+      });
+  }
+
+  @ParameterizedTest
+  @MethodSource("subjectConceptTypeArgs")
+  void mapLdToBibframe2Rdf_shouldMapSubjectIntermediateConceptNode(
+    String fixturePath, ResourceTypeDictionary subjectType, String label) throws IOException {
+    // given
+    var work = createWork(Map.of(), BOOKS);
+    var focus = createSubjectFocusByType(subjectType, label);
+    var concept = createConcept(List.of(subjectType), List.of(focus), List.of(), label);
+    work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream(fixturePath).readAllBytes())
+      .replace("INSTANCE_ID", instance.getId().toString())
+      .replace("WORK_ID", work.getId().toString())
+      .replace("SUBJECT_ID", "_" + focus.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  private static Resource createSubjectFocusByType(ResourceTypeDictionary type, String label) {
+    if (type == TOPIC) {
+      return createTopic("subject-lccn", false, label);
+    }
+    if (type == FORM) {
+      return createGenreForm("subject-lccn", false, label);
+    }
+    if (type == PLACE) {
+      return createSubjectPlace("subject-lccn", false, label);
+    }
+    return createAgent("subject-lccn", ID_LCNAF, false, List.of(type), label);
+  }
+
+  static Stream<Arguments> subjectConceptTypeArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/work_subject_concept_person.json", PERSON, "Subject Person"),
+      Arguments.of("/rdf/work_subject_concept_family.json", FAMILY, "Subject Family"),
+      Arguments.of("/rdf/work_subject_concept_organization.json", ORGANIZATION, "Subject Organization"),
+      Arguments.of("/rdf/work_subject_concept_meeting.json", MEETING, "Subject Meeting"),
+      Arguments.of("/rdf/work_subject_concept_topic.json", TOPIC, "Subject Topic"),
+      Arguments.of("/rdf/work_subject_concept_place.json", PLACE, "Subject Place"),
+      Arguments.of("/rdf/work_subject_concept_form.json", FORM, "Subject Form")
+    );
+  }
+
 }

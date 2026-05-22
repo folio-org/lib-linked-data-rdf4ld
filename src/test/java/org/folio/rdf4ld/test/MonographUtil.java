@@ -231,6 +231,16 @@ public class MonographUtil {
     );
   }
 
+  public static Resource createSubjectPlace(String lccn,
+                                            boolean isCurrent,
+                                            String label) {
+    return createResource(
+      Map.of(LABEL, List.of(label), NAME, List.of(label)),
+      Set.of(PLACE),
+      Map.of(MAP, List.of(createIdentifier(lccn, ID_LCSH, SUBJECTS_NAMESPACE, isCurrent)))
+    ).setLabel(label);
+  }
+
   public static Resource createGenreForm(String lccn,
                                          boolean isCurrent,
                                          String label) {
