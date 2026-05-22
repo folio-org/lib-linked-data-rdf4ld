@@ -37,6 +37,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -290,6 +291,25 @@ class WorkAgentMappingIT {
     assertThat(jsonLdString).isEqualTo(expected);
   }
 
+  @ParameterizedTest
+  @MethodSource("lccnAgentRwoUriScenarios")
+  void mapLdToBibframe2Rdf_shouldMapAgentToRwoUri_whenAgentHasCurrentLccn(String lccn,
+                                                                            PredicateDictionary predicate,
+                                                                            List<ResourceTypeDictionary> agentTypes) {
+    // given
+    var work = createWork(Map.of(), BOOKS);
+    var agent = createAgent(lccn, ID_LCNAF, true, agentTypes, lccn);
+    work.addOutgoingEdge(new ResourceEdge(work, agent, predicate));
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).contains("http://id.loc.gov/rwo/agents/" + lccn);
+  }
+
   @Test
   void mapLdToBibframe2Rdf_shouldReturnWorkWithSameAgentAsCreatorAndContributorCorrectly() throws IOException {
     // given
@@ -318,6 +338,13 @@ class WorkAgentMappingIT {
     return Stream.of(
       Arguments.of("/rdf/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
       Arguments.of("/rdf/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
+    );
+  }
+
+  static Stream<Arguments> lccnAgentRwoUriScenarios() {
+    return Stream.of(
+      Arguments.of("n2021004098", CREATOR, List.of(PERSON)),
+      Arguments.of("n2021004092", CONTRIBUTOR, List.of(FAMILY))
     );
   }
 }
