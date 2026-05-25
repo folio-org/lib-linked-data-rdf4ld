@@ -83,6 +83,9 @@ class WorkSubjectMappingIT {
   private static final String TEMPORAL_LABEL = "Subject Temporal";
   private static final String COMPLEX_SUBJECT_TOPIC_LABEL = "Topic name";
   private static final String SIMPLE_SUBJECT_LCCN = "sh111222333";
+  private static final String FOCUS_LABEL = "Subject Focus";
+  private static final String SUB_FOCUS_LABEL = "Sub Focus Topic";
+  private static final String COMPLEX_CONCEPT_LABEL = FOCUS_LABEL + " -- " + SUB_FOCUS_LABEL;
   private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
     LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
   );
@@ -597,6 +600,43 @@ class WorkSubjectMappingIT {
       Arguments.of("/rdf/work_subject_concept_topic_with_lccn.json", TOPIC, "Subject Topic"),
       Arguments.of("/rdf/work_subject_concept_place_with_lccn.json", PLACE, "Subject Place"),
       Arguments.of("/rdf/work_subject_concept_form_with_lccn.json", FORM, "Subject Form")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("subjectComplexConceptTypeArgs")
+  void mapLdToBibframe2Rdf_shouldMapComplexSubjectConceptNodeNoLccn(
+    String fixturePath, ResourceTypeDictionary focusType) throws IOException {
+    // given
+    var work = createWork(Map.of(), BOOKS);
+    var focus = createSubjectFocusByType(focusType, FOCUS_LABEL, false);
+    var subFocus = createTopic("sub-focus-lccn", false, SUB_FOCUS_LABEL);
+    var concept = createConcept(List.of(focusType), List.of(focus), List.of(subFocus), COMPLEX_CONCEPT_LABEL);
+    work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream(fixturePath).readAllBytes())
+      .replace("INSTANCE_ID", instance.getId().toString())
+      .replace("WORK_ID", work.getId().toString())
+      .replace("COMPLEX_SUBJECT_ID", concept.getId().toString())
+      .replace("SUBFOCUS_ID", "_" + subFocus.getId().toString())
+      .replace("FOCUS_ID", "_" + focus.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  static Stream<Arguments> subjectComplexConceptTypeArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/work_subject_concept_person_complex_no_lccn.json", PERSON),
+      Arguments.of("/rdf/work_subject_concept_organization_complex_no_lccn.json", ORGANIZATION),
+      Arguments.of("/rdf/work_subject_concept_meeting_complex_no_lccn.json", MEETING),
+      Arguments.of("/rdf/work_subject_concept_topic_complex_no_lccn.json", TOPIC),
+      Arguments.of("/rdf/work_subject_concept_place_complex_no_lccn.json", PLACE),
+      Arguments.of("/rdf/work_subject_concept_form_complex_no_lccn.json", FORM)
     );
   }
 
