@@ -539,16 +539,20 @@ class WorkSubjectMappingIT {
   }
 
   private static Resource createSubjectFocusByType(ResourceTypeDictionary type, String label) {
+    return createSubjectFocusByType(type, label, false);
+  }
+
+  private static Resource createSubjectFocusByType(ResourceTypeDictionary type, String label, boolean isCurrent) {
     if (type == TOPIC) {
-      return createTopic("subject-lccn", false, label);
+      return createTopic("subject-lccn", isCurrent, label);
     }
     if (type == FORM) {
-      return createGenreForm("subject-lccn", false, label);
+      return createGenreForm("subject-lccn", isCurrent, label);
     }
     if (type == PLACE) {
-      return createSubjectPlace("subject-lccn", false, label);
+      return createSubjectPlace("subject-lccn", isCurrent, label);
     }
-    return createAgent("subject-lccn", ID_LCNAF, false, List.of(type), label);
+    return createAgent("subject-lccn", ID_LCNAF, isCurrent, List.of(type), label);
   }
 
   static Stream<Arguments> subjectConceptTypeArgs() {
@@ -560,6 +564,39 @@ class WorkSubjectMappingIT {
       Arguments.of("/rdf/work_subject_concept_topic.json", TOPIC, "Subject Topic"),
       Arguments.of("/rdf/work_subject_concept_place.json", PLACE, "Subject Place"),
       Arguments.of("/rdf/work_subject_concept_form.json", FORM, "Subject Form")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("subjectConceptTypeWithLccnArgs")
+  void mapLdToBibframe2Rdf_shouldMapSubjectIntermediateConceptNodeWithLccn(
+    String fixturePath, ResourceTypeDictionary subjectType, String label) throws IOException {
+    // given
+    var work = createWork(Map.of(), BOOKS);
+    var focus = createSubjectFocusByType(subjectType, label, true);
+    var concept = createConcept(List.of(subjectType), List.of(focus), List.of(), label);
+    work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream(fixturePath).readAllBytes())
+      .replace("INSTANCE_ID", instance.getId().toString())
+      .replace("WORK_ID", work.getId().toString());
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  static Stream<Arguments> subjectConceptTypeWithLccnArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/work_subject_concept_person_with_lccn.json", PERSON, "Subject Person"),
+      Arguments.of("/rdf/work_subject_concept_organization_with_lccn.json", ORGANIZATION, "Subject Organization"),
+      Arguments.of("/rdf/work_subject_concept_meeting_with_lccn.json", MEETING, "Subject Meeting"),
+      Arguments.of("/rdf/work_subject_concept_topic_with_lccn.json", TOPIC, "Subject Topic"),
+      Arguments.of("/rdf/work_subject_concept_place_with_lccn.json", PLACE, "Subject Place"),
+      Arguments.of("/rdf/work_subject_concept_form_with_lccn.json", FORM, "Subject Form")
     );
   }
 
