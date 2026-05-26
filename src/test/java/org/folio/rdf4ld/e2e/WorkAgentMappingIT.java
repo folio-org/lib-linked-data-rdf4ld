@@ -16,7 +16,10 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.test.MonographUtil.createAgent;
@@ -174,6 +177,37 @@ class WorkAgentMappingIT {
       });
   }
 
+  @ParameterizedTest
+  @MethodSource("noLccnAgentTypeArgs")
+  void mapBibframe2RdfToLd_shouldMapAgentTypeWithNoCurrentLccn(String rdfFile,
+                                                               ResourceTypeDictionary agentType)
+    throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream(rdfFile);
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var creatorLabel = "Creator Agent";
+    var contributorLabel = "Contributor Agent";
+    var expectedCreatorProperties = Map.of(LABEL, List.of(creatorLabel), NAME, List.of(creatorLabel));
+    var expectedContributorProperties = Map.of(LABEL, List.of(contributorLabel), NAME, List.of(contributorLabel));
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(6);
+        validateAgent(work, creatorLabel, creatorLabel, CREATOR, of(agentType));
+        validateOutgoingEdge(work, AUTHOR, of(agentType), expectedCreatorProperties, creatorLabel);
+        validateOutgoingEdge(work, PUBLISHING_DIRECTOR, of(agentType), expectedCreatorProperties, creatorLabel);
+        validateAgent(work, contributorLabel, contributorLabel, CONTRIBUTOR, of(agentType));
+        validateOutgoingEdge(work, ILLUSTRATOR, of(agentType), expectedContributorProperties, contributorLabel);
+        validateOutgoingEdge(work, COLLABORATOR, of(agentType), expectedContributorProperties, contributorLabel);
+      });
+  }
+
   @Test
   void mapBibframe2RdfToLd_shouldHandleUncontrolledRoleLabels() throws IOException {
     // given
@@ -292,6 +326,38 @@ class WorkAgentMappingIT {
   }
 
   @ParameterizedTest
+  @MethodSource("noLccnAgentTypeArgs")
+  void mapLdToBibframe2Rdf_shouldMapAgentTypeWithNoCurrentLccn(String rdfFile,
+                                                               ResourceTypeDictionary agentType)
+    throws IOException {
+    // given
+    var work = createWork(Map.of(), BOOKS);
+    var creator = createAgent("n2021004098", ID_LCNAF, false, List.of(agentType), "Creator Agent");
+    var contributor = createAgent("n2021004092", ID_LCNAF, false, List.of(agentType), "Contributor Agent");
+    work.addOutgoingEdge(new ResourceEdge(work, creator, CREATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, AUTHOR));
+    work.addOutgoingEdge(new ResourceEdge(work, creator, PUBLISHING_DIRECTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, ILLUSTRATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributor, COLLABORATOR));
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    var expected = new String(this.getClass().getResourceAsStream(rdfFile).readAllBytes())
+      .replaceAll("INSTANCE_ID", instance.getId().toString())
+      .replaceAll("WORK_ID", work.getId().toString())
+      .replaceAll("CREATOR_ID", "CREATOR_" + creator.getId().toString())
+      .replaceAll("CONTRIBUTOR_ID", "CONTRIBUTOR_" + contributor.getId().toString())
+      .replaceAll("CREATOR_AGENT_ID", "CREATOR_" + creator.getId().toString() + "_agent")
+      .replaceAll("CONTRIBUTOR_AGENT_ID", "CONTRIBUTOR_" + contributor.getId().toString() + "_agent");
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    assertThat(toJsonLdString(model)).isEqualTo(expected);
+  }
+
+  @ParameterizedTest
   @MethodSource("lccnAgentRwoUriScenarios")
   void mapLdToBibframe2Rdf_shouldMapAgentToRwoUri_whenAgentHasCurrentLccn(String lccn,
                                                                             PredicateDictionary predicate,
@@ -345,6 +411,16 @@ class WorkAgentMappingIT {
     return Stream.of(
       Arguments.of("n2021004098", CREATOR, List.of(PERSON)),
       Arguments.of("n2021004092", CONTRIBUTOR, List.of(FAMILY))
+    );
+  }
+
+  static Stream<Arguments> noLccnAgentTypeArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/work_agent_no_lccn_person.json", PERSON),
+      Arguments.of("/rdf/work_agent_no_lccn_family.json", FAMILY),
+      Arguments.of("/rdf/work_agent_no_lccn_organization.json", ORGANIZATION),
+      Arguments.of("/rdf/work_agent_no_lccn_jurisdiction.json", JURISDICTION),
+      Arguments.of("/rdf/work_agent_no_lccn_meeting.json", MEETING)
     );
   }
 }
