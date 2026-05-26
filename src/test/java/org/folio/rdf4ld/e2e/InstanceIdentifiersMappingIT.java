@@ -18,6 +18,7 @@ import static org.folio.rdf4ld.test.MonographUtil.createEan;
 import static org.folio.rdf4ld.test.MonographUtil.createIdentifier;
 import static org.folio.rdf4ld.test.MonographUtil.createInstance;
 import static org.folio.rdf4ld.test.MonographUtil.createIsbn;
+import static org.folio.rdf4ld.test.MonographUtil.createResource;
 import static org.folio.rdf4ld.test.TestUtil.toJsonLdString;
 import static org.folio.rdf4ld.test.TestUtil.validateOutgoingEdge;
 
@@ -29,7 +30,9 @@ import java.util.stream.Stream;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
@@ -218,6 +221,84 @@ class InstanceIdentifiersMappingIT {
     assertThat(toJsonLdString(model)).isEqualTo(expected);
   }
 
+  @ParameterizedTest
+  @MethodSource("isbnExportArgs")
+  void mapLdToBibframe2Rdf_shouldMapIsbnQualifierAndStatusPermutations(
+    String isbn, String qualifier, String statusLabel, boolean isCurrent) {
+    // given
+    var isbnResource = createIsbnVariant(isbn, qualifier, isCurrent);
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, isbnResource, MAP));
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString)
+      .contains("http://id.loc.gov/ontologies/bibframe/Isbn")
+      .contains(isbn)
+      .contains(qualifier)
+      .contains(STATUS_BASE_URI + statusLabel);
+  }
+
+  @ParameterizedTest
+  @MethodSource("eanExportArgs")
+  void mapLdToBibframe2Rdf_shouldMapEanValueAndQualifierPermutations(
+    String ean, String qualifier) {
+    // given
+    var eanResource = createEanVariant(ean, qualifier);
+    var instance = createInstance(null);
+    instance.addOutgoingEdge(new ResourceEdge(instance, eanResource, MAP));
+
+    // when
+    var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
+
+    // then
+    var jsonLdString = toJsonLdString(model);
+    assertThat(jsonLdString)
+      .contains("http://id.loc.gov/ontologies/bibframe/Ean")
+      .contains(ean);
+    if (qualifier == null) {
+      assertThat(jsonLdString).doesNotContain("http://id.loc.gov/ontologies/bibframe/qualifier");
+    } else {
+      assertThat(jsonLdString)
+        .contains("http://id.loc.gov/ontologies/bibframe/qualifier")
+        .contains(qualifier);
+    }
+  }
+
+  private static Resource createIsbnVariant(String isbn, String qualifier, boolean isCurrent) {
+    return createResource(
+      Map.of(NAME, List.of(isbn), QUALIFIER, List.of(qualifier)),
+      Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(PredicateDictionary.STATUS, List.of(createStatusResource(isCurrent)))
+    );
+  }
+
+  private static Resource createEanVariant(String ean, String qualifier) {
+    var properties = qualifier == null
+      ? Map.of(NAME, List.of(ean))
+      : Map.of(NAME, List.of(ean), QUALIFIER, List.of(qualifier));
+    return createResource(
+      properties,
+      Set.of(IDENTIFIER, ID_IAN),
+      Map.of()
+    );
+  }
+
+  private static Resource createStatusResource(boolean isCurrent) {
+    var status = isCurrent ? STATUS_CURRENT : STATUS_CANCELLED;
+    return createResource(
+      Map.of(
+        PropertyDictionary.LABEL, List.of(status),
+        LINK, List.of(STATUS_BASE_URI + status)
+      ),
+      Set.of(ResourceTypeDictionary.STATUS),
+      Map.of()
+    );
+  }
+
   static Stream<Arguments> identifierStatusArgs() {
     return Stream.of(
       Arguments.of("/rdf/instance_identifier_lccn_current.json",
@@ -231,4 +312,20 @@ class InstanceIdentifiersMappingIT {
     );
   }
 
+  static Stream<Arguments> isbnExportArgs() {
+    return Stream.of(
+      Arguments.of(EXPECTED_ISBN, "pbk", STATUS_CURRENT, true),
+      Arguments.of(EXPECTED_ISBN_2, "pbk", STATUS_CANCELLED, false),
+      Arguments.of("9781111111111", "hbk", STATUS_CURRENT, true),
+      Arguments.of("9782222222222", "hbk", STATUS_CANCELLED, false)
+    );
+  }
+
+  static Stream<Arguments> eanExportArgs() {
+    return Stream.of(
+      Arguments.of(EXPECTED_EAN, "abc"),
+      Arguments.of("9783007601470", "distribution"),
+      Arguments.of("9772049364017", null)
+    );
+  }
 }
