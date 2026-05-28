@@ -138,6 +138,37 @@ class WorkAgentMappingIT {
   }
 
   @Test
+  void mapBibframe2RdfToLd_shouldMapRdfsLabelToNameAndAuthoritativeLabelToLabel() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_label_name_distinction.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var expectedCreatorProperties = Map.of(
+      LABEL, List.of("Creator Agent,", "Creator Agent"),
+      NAME, List.of("Creator Agent,")
+    );
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getId()).isNotNull();
+        assertThat(work.getIncomingEdges()).isEmpty();
+        assertThat(work.getOutgoingEdges()).hasSize(2);
+        validateOutgoingEdge(work, CREATOR, of(PERSON, MOCKED_RESOURCE), expectedCreatorProperties,
+          "n2021004098");
+        validateOutgoingEdge(work, AUTHOR, of(PERSON, MOCKED_RESOURCE), expectedCreatorProperties,
+          "n2021004098");
+      });
+  }
+
+  @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withNoCurrentLccn() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");

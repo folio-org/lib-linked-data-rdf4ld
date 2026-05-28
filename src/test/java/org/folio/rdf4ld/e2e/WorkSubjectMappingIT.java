@@ -143,6 +143,30 @@ class WorkSubjectMappingIT {
   }
 
   @Test
+  void mapBibframe2RdfToLd_shouldMapRdfsLabelToNameAndAuthoritativeLabelToLabel() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_label_name_distinction.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var expectedPersonProperties = Map.of(
+      LABEL, List.of("Person Agent,", "Person Agent"),
+      NAME, List.of("Person Agent,")
+    );
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, MOCKED_RESOURCE),
+        expectedPersonProperties, PERSON_AGENT_LCCN, null));
+  }
+
+  @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithNoLccn() throws IOException {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/work_subjects_simple_no_lccn.json");
