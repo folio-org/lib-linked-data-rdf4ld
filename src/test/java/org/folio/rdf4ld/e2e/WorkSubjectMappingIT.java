@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
+import static org.folio.ld.dictionary.PropertyDictionary.GENERAL_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_SUBDIVISION;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -514,6 +515,38 @@ class WorkSubjectMappingIT {
     // then
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
+  }
+
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnUncontrolledConceptForComplexBlankNodeSubject() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_subject_concept_person_complex_no_lccn.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var expectedFocusProperties = Map.of(LABEL, List.of(FOCUS_LABEL), NAME, List.of(FOCUS_LABEL));
+    var expectedSubFocusProperties = Map.of(LABEL, List.of(SUB_FOCUS_LABEL), NAME, List.of(SUB_FOCUS_LABEL));
+    var expectedConceptProperties = Map.of(
+      LABEL, List.of(COMPLEX_CONCEPT_LABEL),
+      NAME, List.of(FOCUS_LABEL),
+      GENERAL_SUBDIVISION, List.of(SUB_FOCUS_LABEL)
+    );
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    validateOutgoingEdge(instance, INSTANTIATES, Set.of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(1);
+        validateOutgoingEdge(work, SUBJECT, Set.of(PERSON, CONCEPT), expectedConceptProperties,
+          COMPLEX_CONCEPT_LABEL, concept -> {
+            assertThat(concept.getOutgoingEdges()).hasSize(2);
+            validateOutgoingEdge(concept, FOCUS, Set.of(PERSON), expectedFocusProperties, FOCUS_LABEL, c -> {});
+            validateOutgoingEdge(concept, SUB_FOCUS, Set.of(TOPIC), expectedSubFocusProperties,
+              SUB_FOCUS_LABEL, c -> {});
+          });
+      });
   }
 
   @ParameterizedTest
