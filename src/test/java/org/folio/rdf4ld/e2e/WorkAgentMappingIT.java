@@ -270,6 +270,37 @@ class WorkAgentMappingIT {
   }
 
 
+  @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnAndUncontrolledRoles()
+    throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn_uncontrolled_role_label.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getIncomingEdges()).isEmpty();
+    assertThat(instance.getOutgoingEdges()).hasSize(1);
+    var creatorLabel = "Creator Agent";
+    var contributorLabel = "Contributor Agent";
+    var creatorMockLabel = "n2021004098";
+    var contributorMockLabel = "n2021004092";
+    var expectedCreatorProperties = Map.of(LABEL, List.of(creatorLabel), NAME, List.of(creatorLabel));
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(3);
+        validateAgent(work, creatorLabel, creatorMockLabel, CREATOR, of(PERSON, MOCKED_RESOURCE));
+        validateOutgoingEdge(work, ISSUING_BODY, of(PERSON, MOCKED_RESOURCE), expectedCreatorProperties,
+          creatorMockLabel);
+        validateAgent(work, contributorLabel, contributorMockLabel, CONTRIBUTOR, of(FAMILY, MOCKED_RESOURCE));
+      });
+  }
+
   @ParameterizedTest
   @MethodSource("noLccnUncontrolledRoleAgentTypeArgs")
   void mapBibframe2RdfToLd_shouldMapAgentTypeWithNoLccnAndUncontrolledRole(String rdfFile,
