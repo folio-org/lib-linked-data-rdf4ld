@@ -271,11 +271,38 @@ class WorkAgentMappingIT {
 
 
   @ParameterizedTest
+  @MethodSource("noLccnUncontrolledRoleAgentTypeArgs")
+  void mapBibframe2RdfToLd_shouldMapAgentTypeWithNoLccnAndUncontrolledRole(String rdfFile,
+                                                                           ResourceTypeDictionary agentType)
+    throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream(rdfFile);
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+    var creatorLabel = "Creator Agent";
+    var contributorLabel = "Contributor Agent";
+    var expectedCreatorProperties = Map.of(LABEL, List.of(creatorLabel), NAME, List.of(creatorLabel));
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var instance = result.iterator().next();
+    validateOutgoingEdge(instance, INSTANTIATES, of(WORK, BOOKS), EXPECTED_WORK_PROPERTIES, "",
+      work -> {
+        assertThat(work.getOutgoingEdges()).hasSize(3);
+        validateAgent(work, creatorLabel, creatorLabel, CREATOR, of(agentType));
+        validateOutgoingEdge(work, ISSUING_BODY, of(agentType), expectedCreatorProperties, creatorLabel);
+        validateAgent(work, contributorLabel, contributorLabel, CONTRIBUTOR, of(agentType));
+      });
+  }
+
+  @ParameterizedTest
   @MethodSource("contributionTypeScenarios")
   void mapBibframe2RdfToLd_shouldMapContributionTypeToCorrectPredicate(String rdfFile,
-                                                                        PredicateDictionary expectedPredicate,
-                                                                        String lccn,
-                                                                        PredicateDictionary expectedRolePredicate)
+                                                                       PredicateDictionary expectedPredicate,
+                                                                       String lccn,
+                                                                       PredicateDictionary expectedRolePredicate)
     throws IOException {
     // given
     var input = this.getClass().getResourceAsStream(rdfFile);
@@ -452,6 +479,16 @@ class WorkAgentMappingIT {
       Arguments.of("/rdf/work_agent_no_lccn_organization.json", ORGANIZATION),
       Arguments.of("/rdf/work_agent_no_lccn_jurisdiction.json", JURISDICTION),
       Arguments.of("/rdf/work_agent_no_lccn_meeting.json", MEETING)
+    );
+  }
+
+  static Stream<Arguments> noLccnUncontrolledRoleAgentTypeArgs() {
+    return Stream.of(
+      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_person.json", PERSON),
+      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_family.json", FAMILY),
+      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_organization.json", ORGANIZATION),
+      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_jurisdiction.json", JURISDICTION),
+      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_meeting.json", MEETING)
     );
   }
 }
