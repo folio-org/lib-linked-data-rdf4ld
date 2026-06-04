@@ -26,7 +26,7 @@ class Rdf4LdServiceIT {
   @ParameterizedTest
   @MethodSource("exportProfileArgs")
   void mapLdToBibframe2Rdf_returnsSerializedModel_forStringInput(String fixture,
-                                                                  String expectedBibframeType)
+                                                                 String expectedBibframeType)
     throws IOException {
     // given
     var input = new String(getClass().getResourceAsStream(fixture).readAllBytes());

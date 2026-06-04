@@ -7,21 +7,21 @@
   },
   "label": "Resilience Interventions for Youth in Diverse Populations",
   "types": [
-    "http://bibfra.me/vocab/lite/Work",
-    "http://bibfra.me/vocab/library/Books"
+    "http://bibfra.me/vocab/lite/Instance"
   ],
   "outgoingEdges": {
-    "http://bibfra.me/vocab/library/title": [
+    "http://bibfra.me/vocab/lite/instantiates": [
       {
         "id": "-3971230252524682729",
         "doc": {
-          "http://bibfra.me/vocab/library/mainTitle": [
+          "http://bibfra.me/vocab/lite/label": [
             "Resilience Interventions for Youth in Diverse Populations"
           ]
         },
         "label": "Resilience Interventions for Youth in Diverse Populations",
         "types": [
-          "http://bibfra.me/vocab/library/Title"
+          "http://bibfra.me/vocab/lite/Work",
+          "http://bibfra.me/vocab/library/Books"
         ],
         "outgoingEdges": {}
       }
