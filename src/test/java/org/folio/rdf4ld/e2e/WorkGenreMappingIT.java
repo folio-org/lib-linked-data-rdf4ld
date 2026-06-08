@@ -49,7 +49,7 @@ class WorkGenreMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithGenreMock() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_genre_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_genre_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -69,7 +69,7 @@ class WorkGenreMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithGenre() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_genre_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_genre_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -98,7 +98,7 @@ class WorkGenreMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_genre_no_lccn.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_genre_no_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("GENRE_FORM_ID", "_" + genreForm.getId().toString());
@@ -119,7 +119,7 @@ class WorkGenreMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_genre_lccn.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_genre_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 

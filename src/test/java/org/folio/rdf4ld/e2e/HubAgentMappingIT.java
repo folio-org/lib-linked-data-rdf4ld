@@ -49,7 +49,7 @@ class HubAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedHubWithAgentMocks() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/hub_agent_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/hub/hub_agent_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -76,7 +76,7 @@ class HubAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedHubWithAgents_withLccnWithBodies() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/hub_agent_lccn_with_body.json");
+    var input = this.getClass().getResourceAsStream("/rdf/hub/hub_agent_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -114,7 +114,7 @@ class HubAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedHubWithAgents_withNoCurrentLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/hub_agent_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/hub/hub_agent_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -147,8 +147,8 @@ class HubAgentMappingIT {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "/rdf/hub_agent_lccn.json",
-    "/rdf/hub_agent_no_lccn.json"
+    "/rdf/hub/hub_agent_lccn.json",
+    "/rdf/hub/hub_agent_no_lccn.json"
   })
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfHubWithAgents(String rdfFile) throws IOException {
     // given
@@ -184,7 +184,7 @@ class HubAgentMappingIT {
     var creator = createAgent("n2021004098", ID_LCNAF, true, List.of(PERSON), "Creator Agent");
     hub.addOutgoingEdge(new ResourceEdge(hub, creator, CREATOR));
     hub.addOutgoingEdge(new ResourceEdge(hub, creator, CONTRIBUTOR));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/hub_agent_as_creator_and_contributor.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/hub/hub_agent_as_creator_and_contributor.json")
       .readAllBytes())
       .replaceAll("HUB_ID", hub.getId().toString())
       .replaceAll("CREATOR_ID", "CREATOR_" + creator.getId().toString())

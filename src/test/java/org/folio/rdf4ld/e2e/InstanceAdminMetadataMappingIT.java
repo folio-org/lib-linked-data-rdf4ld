@@ -33,7 +33,7 @@ class InstanceAdminMetadataMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithoutAdminMetadata() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance_admin_metadata.json");
+    var input = this.getClass().getResourceAsStream("/rdf/instance/instance_admin_metadata.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -55,7 +55,8 @@ class InstanceAdminMetadataMappingIT {
     var folioUuid = UUID.randomUUID().toString();
     var adminMetadata = MonographUtil.createAdminMetadata("in00123", folioUuid);
     instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance_admin_metadata.json").readAllBytes())
+    var expected = new String(this.getClass()
+      .getResourceAsStream("/rdf/instance/instance_admin_metadata.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("ADMIN_METADATA_ID", adminMetadata.getId().toString())
       .replaceAll("FOLIO_UUID", folioUuid);
