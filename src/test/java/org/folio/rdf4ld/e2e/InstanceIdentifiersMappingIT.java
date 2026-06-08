@@ -97,7 +97,8 @@ class InstanceIdentifiersMappingIT {
     instance.addOutgoingEdge(new ResourceEdge(instance, ean, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, lccn, MAP));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance/instance_identifiers.json").readAllBytes())
+    var expected = new String(this.getClass()
+      .getResourceAsStream("/rdf/instance/instance_identifiers.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("EAN_ID", ean.getId().toString())
       .replaceAll("ISBN_ID", isbn.getId().toString())

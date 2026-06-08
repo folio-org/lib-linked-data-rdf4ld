@@ -474,7 +474,8 @@ class WorkAgentMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_agent_as_creator_and_contributor.json")
+    var expected = new String(this.getClass()
+      .getResourceAsStream("/rdf/work/work_agent_as_creator_and_contributor.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())

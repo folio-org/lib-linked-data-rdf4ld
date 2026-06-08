@@ -55,7 +55,8 @@ class InstanceAdminMetadataMappingIT {
     var folioUuid = UUID.randomUUID().toString();
     var adminMetadata = MonographUtil.createAdminMetadata("in00123", folioUuid);
     instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance/instance_admin_metadata.json").readAllBytes())
+    var expected = new String(this.getClass()
+      .getResourceAsStream("/rdf/instance/instance_admin_metadata.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("ADMIN_METADATA_ID", adminMetadata.getId().toString())
       .replaceAll("FOLIO_UUID", folioUuid);

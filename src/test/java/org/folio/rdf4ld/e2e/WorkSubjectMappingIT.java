@@ -414,7 +414,8 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_subjects_simple_lccn.json").readAllBytes())
+    var expected = new String(this.getClass()
+      .getResourceAsStream("/rdf/work/work_subjects_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 
