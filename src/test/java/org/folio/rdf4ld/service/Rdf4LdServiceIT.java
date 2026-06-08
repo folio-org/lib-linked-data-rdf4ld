@@ -62,8 +62,8 @@ class Rdf4LdServiceIT {
 
   static Stream<Arguments> exportProfileArgs() {
     return Stream.of(
-      Arguments.of("/rdf/exported_books.json", "http://id.loc.gov/ontologies/bibframe/Monograph"),
-      Arguments.of("/rdf/exported_serial.json", "http://id.loc.gov/ontologies/bibframe/Serial")
+      Arguments.of("/rdf/instance/exported_books.json", "http://id.loc.gov/ontologies/bibframe/Monograph"),
+      Arguments.of("/rdf/instance/exported_serial.json", "http://id.loc.gov/ontologies/bibframe/Serial")
     );
   }
 }

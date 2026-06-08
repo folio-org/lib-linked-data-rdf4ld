@@ -94,8 +94,8 @@ class MultipleResourcesImportIT {
 
   static Stream<Arguments> importProfileArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_books.json", BOOKS),
-      Arguments.of("/rdf/work_serial.json", CONTINUING_RESOURCES)
+      Arguments.of("/rdf/work/work_books.json", BOOKS),
+      Arguments.of("/rdf/work/work_serial.json", CONTINUING_RESOURCES)
     );
   }
 

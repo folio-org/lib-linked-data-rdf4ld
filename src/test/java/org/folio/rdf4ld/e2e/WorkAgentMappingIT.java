@@ -68,7 +68,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgentMocks() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -96,7 +96,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnWithBodies() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn_with_body.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -140,7 +140,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldMapRdfsLabelToNameAndAuthoritativeLabelToLabel() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_label_name_distinction.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_label_name_distinction.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -171,7 +171,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withNoCurrentLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -242,7 +242,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldHandleUncontrolledRoleLabels() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_uncontrolled_role_label.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_uncontrolled_role_label.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -274,7 +274,7 @@ class WorkAgentMappingIT {
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnAndUncontrolledRoles()
     throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_lccn_uncontrolled_role_label.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_lccn_uncontrolled_role_label.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -358,7 +358,7 @@ class WorkAgentMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldMapAllRolesFromSingleContribution() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_agent_multi_role_single_contribution.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_agent_multi_role_single_contribution.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -381,8 +381,8 @@ class WorkAgentMappingIT {
 
   @ParameterizedTest
   @ValueSource(strings = {
-    "/rdf/work_agent_lccn.json",
-    "/rdf/work_agent_no_lccn.json"
+    "/rdf/work/work_agent_lccn.json",
+    "/rdf/work/work_agent_no_lccn.json"
   })
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfInstanceWithWorkWithAgents(String rdfFile) throws IOException {
     // given
@@ -474,7 +474,7 @@ class WorkAgentMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, creator, CONTRIBUTOR));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_agent_as_creator_and_contributor.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_agent_as_creator_and_contributor.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -491,8 +491,8 @@ class WorkAgentMappingIT {
 
   static Stream<Arguments> contributionTypeScenarios() {
     return Stream.of(
-      Arguments.of("/rdf/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
-      Arguments.of("/rdf/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
+      Arguments.of("/rdf/work/work_agent_single_primary_contribution.json", CREATOR, "n2021004098", AUTHOR),
+      Arguments.of("/rdf/work/work_agent_single_contribution.json", CONTRIBUTOR, "n2021004092", ILLUSTRATOR)
     );
   }
 
@@ -505,21 +505,21 @@ class WorkAgentMappingIT {
 
   static Stream<Arguments> noLccnAgentTypeArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_agent_no_lccn_person.json", PERSON),
-      Arguments.of("/rdf/work_agent_no_lccn_family.json", FAMILY),
-      Arguments.of("/rdf/work_agent_no_lccn_organization.json", ORGANIZATION),
-      Arguments.of("/rdf/work_agent_no_lccn_jurisdiction.json", JURISDICTION),
-      Arguments.of("/rdf/work_agent_no_lccn_meeting.json", MEETING)
+      Arguments.of("/rdf/work/work_agent_no_lccn_person.json", PERSON),
+      Arguments.of("/rdf/work/work_agent_no_lccn_family.json", FAMILY),
+      Arguments.of("/rdf/work/work_agent_no_lccn_organization.json", ORGANIZATION),
+      Arguments.of("/rdf/work/work_agent_no_lccn_jurisdiction.json", JURISDICTION),
+      Arguments.of("/rdf/work/work_agent_no_lccn_meeting.json", MEETING)
     );
   }
 
   static Stream<Arguments> noLccnUncontrolledRoleAgentTypeArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_person.json", PERSON),
-      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_family.json", FAMILY),
-      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_organization.json", ORGANIZATION),
-      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_jurisdiction.json", JURISDICTION),
-      Arguments.of("/rdf/work_agent_no_lccn_uncontrolled_role_meeting.json", MEETING)
+      Arguments.of("/rdf/work/work_agent_no_lccn_uncontrolled_role_person.json", PERSON),
+      Arguments.of("/rdf/work/work_agent_no_lccn_uncontrolled_role_family.json", FAMILY),
+      Arguments.of("/rdf/work/work_agent_no_lccn_uncontrolled_role_organization.json", ORGANIZATION),
+      Arguments.of("/rdf/work/work_agent_no_lccn_uncontrolled_role_jurisdiction.json", JURISDICTION),
+      Arguments.of("/rdf/work/work_agent_no_lccn_uncontrolled_role_meeting.json", MEETING)
     );
   }
 }

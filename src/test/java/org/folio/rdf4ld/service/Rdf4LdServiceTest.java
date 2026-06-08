@@ -34,7 +34,7 @@ class Rdf4LdServiceTest {
   @Test
   void mapRdfToLd_returnsMappedResources_forValidInput() {
     // given
-    var inputStream = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
+    var inputStream = this.getClass().getResourceAsStream("/rdf/instance/instance_titles.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
     var mappingProfile = mock(MappingProfile.class);
@@ -92,7 +92,7 @@ class Rdf4LdServiceTest {
   @Test
   void mapBibframe2RdfToLd_returnsMappedResources_forValidInput() {
     // given
-    var inputStream = this.getClass().getResourceAsStream("/rdf/instance_titles.json");
+    var inputStream = this.getClass().getResourceAsStream("/rdf/instance/instance_titles.json");
     var contentType = "application/ld+json";
     var resources = Set.of(mock(Resource.class));
     when(rdf4LdMapper.mapBibframe2RdfToLd(any())).thenReturn(resources);

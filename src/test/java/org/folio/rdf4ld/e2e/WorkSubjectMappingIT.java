@@ -99,7 +99,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMocks() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subjects_simple_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subjects_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -122,7 +122,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMockWithBody() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn_with_body.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_simple_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -146,7 +146,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldMapRdfsLabelToNameAndAuthoritativeLabelToLabel() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_label_name_distinction.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_label_name_distinction.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -170,7 +170,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectsWithNoLccn() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subjects_simple_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subjects_simple_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -225,7 +225,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSimpleSubjectMock() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -246,7 +246,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithComplexMixedSubject() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed_lccn_with_body.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_complex_mixed_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -293,7 +293,7 @@ class WorkSubjectMappingIT {
   void mapBibframe2RdfToLdAndUnMock_shouldReturnMappedInstanceWithWorkWithComplexMixedSubjectUnmocked()
     throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed_lccn_with_body.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_complex_mixed_lccn_with_body.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -367,7 +367,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLdAndUnMock_shouldReturnUnmodifiedComplexSubjectIfWithFolioMetadata() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_simple_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
     var subjectProperties = Map.of(
       LABEL, List.of("Some label"),
@@ -414,7 +414,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, topic, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subjects_simple_lccn.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_subjects_simple_lccn.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 
@@ -444,7 +444,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, temporalConcept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subjects_simple_no_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_subjects_simple_no_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -474,7 +474,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_complex_mixed_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_subject_complex_mixed_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
@@ -503,7 +503,7 @@ class WorkSubjectMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, concept, SUBJECT));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_subject_simple_lccn.json")
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_subject_simple_lccn.json")
       .readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
@@ -520,7 +520,7 @@ class WorkSubjectMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnUncontrolledConceptForComplexBlankNodeSubject() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_subject_concept_person_complex_no_lccn.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_subject_concept_person_complex_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
     var expectedFocusProperties = Map.of(LABEL, List.of(FOCUS_LABEL), NAME, List.of(FOCUS_LABEL));
     var expectedSubFocusProperties = Map.of(LABEL, List.of(SUB_FOCUS_LABEL), NAME, List.of(SUB_FOCUS_LABEL));
@@ -617,13 +617,13 @@ class WorkSubjectMappingIT {
 
   static Stream<Arguments> subjectConceptTypeArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_subject_concept_person.json", PERSON, "Subject Person"),
-      Arguments.of("/rdf/work_subject_concept_family.json", FAMILY, "Subject Family"),
-      Arguments.of("/rdf/work_subject_concept_organization.json", ORGANIZATION, "Subject Organization"),
-      Arguments.of("/rdf/work_subject_concept_meeting.json", MEETING, "Subject Meeting"),
-      Arguments.of("/rdf/work_subject_concept_topic.json", TOPIC, "Subject Topic"),
-      Arguments.of("/rdf/work_subject_concept_place.json", PLACE, "Subject Place"),
-      Arguments.of("/rdf/work_subject_concept_form.json", FORM, "Subject Form")
+      Arguments.of("/rdf/work/work_subject_concept_person.json", PERSON, "Subject Person"),
+      Arguments.of("/rdf/work/work_subject_concept_family.json", FAMILY, "Subject Family"),
+      Arguments.of("/rdf/work/work_subject_concept_organization.json", ORGANIZATION, "Subject Organization"),
+      Arguments.of("/rdf/work/work_subject_concept_meeting.json", MEETING, "Subject Meeting"),
+      Arguments.of("/rdf/work/work_subject_concept_topic.json", TOPIC, "Subject Topic"),
+      Arguments.of("/rdf/work/work_subject_concept_place.json", PLACE, "Subject Place"),
+      Arguments.of("/rdf/work/work_subject_concept_form.json", FORM, "Subject Form")
     );
   }
 
@@ -651,12 +651,12 @@ class WorkSubjectMappingIT {
 
   static Stream<Arguments> subjectConceptTypeWithLccnArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_subject_concept_person_with_lccn.json", PERSON, "Subject Person"),
-      Arguments.of("/rdf/work_subject_concept_organization_with_lccn.json", ORGANIZATION, "Subject Organization"),
-      Arguments.of("/rdf/work_subject_concept_meeting_with_lccn.json", MEETING, "Subject Meeting"),
-      Arguments.of("/rdf/work_subject_concept_topic_with_lccn.json", TOPIC, "Subject Topic"),
-      Arguments.of("/rdf/work_subject_concept_place_with_lccn.json", PLACE, "Subject Place"),
-      Arguments.of("/rdf/work_subject_concept_form_with_lccn.json", FORM, "Subject Form")
+      Arguments.of("/rdf/work/work_subject_concept_person_with_lccn.json", PERSON, "Subject Person"),
+      Arguments.of("/rdf/work/work_subject_concept_organization_with_lccn.json", ORGANIZATION, "Subject Organization"),
+      Arguments.of("/rdf/work/work_subject_concept_meeting_with_lccn.json", MEETING, "Subject Meeting"),
+      Arguments.of("/rdf/work/work_subject_concept_topic_with_lccn.json", TOPIC, "Subject Topic"),
+      Arguments.of("/rdf/work/work_subject_concept_place_with_lccn.json", PLACE, "Subject Place"),
+      Arguments.of("/rdf/work/work_subject_concept_form_with_lccn.json", FORM, "Subject Form")
     );
   }
 
@@ -688,12 +688,12 @@ class WorkSubjectMappingIT {
 
   static Stream<Arguments> subjectComplexConceptTypeArgs() {
     return Stream.of(
-      Arguments.of("/rdf/work_subject_concept_person_complex_no_lccn.json", PERSON),
-      Arguments.of("/rdf/work_subject_concept_organization_complex_no_lccn.json", ORGANIZATION),
-      Arguments.of("/rdf/work_subject_concept_meeting_complex_no_lccn.json", MEETING),
-      Arguments.of("/rdf/work_subject_concept_topic_complex_no_lccn.json", TOPIC),
-      Arguments.of("/rdf/work_subject_concept_place_complex_no_lccn.json", PLACE),
-      Arguments.of("/rdf/work_subject_concept_form_complex_no_lccn.json", FORM)
+      Arguments.of("/rdf/work/work_subject_concept_person_complex_no_lccn.json", PERSON),
+      Arguments.of("/rdf/work/work_subject_concept_organization_complex_no_lccn.json", ORGANIZATION),
+      Arguments.of("/rdf/work/work_subject_concept_meeting_complex_no_lccn.json", MEETING),
+      Arguments.of("/rdf/work/work_subject_concept_topic_complex_no_lccn.json", TOPIC),
+      Arguments.of("/rdf/work/work_subject_concept_place_complex_no_lccn.json", PLACE),
+      Arguments.of("/rdf/work/work_subject_concept_form_complex_no_lccn.json", FORM)
     );
   }
 

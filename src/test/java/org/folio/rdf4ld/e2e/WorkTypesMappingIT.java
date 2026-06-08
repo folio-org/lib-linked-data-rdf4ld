@@ -34,7 +34,7 @@ class WorkTypesMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithSupportedExtraTypes() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_books.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_books.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -56,7 +56,7 @@ class WorkTypesMappingIT {
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithNotAddedDefaultType_ifNoDefaultWorkTypeProvider()
     throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_no_extra_type.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_no_extra_type.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -79,7 +79,7 @@ class WorkTypesMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldDiscardRdf_ifNotSupportedWorkExtraType() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_unsupported_extra_type.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_unsupported_extra_type.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when

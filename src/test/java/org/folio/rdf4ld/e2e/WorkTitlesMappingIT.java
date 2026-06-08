@@ -43,7 +43,7 @@ class WorkTitlesMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithTitles() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work_titles.json");
+    var input = this.getClass().getResourceAsStream("/rdf/work/work_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -85,7 +85,7 @@ class WorkTitlesMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, parallelWorkTitle, TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, variantWorkTitle, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work_titles.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_titles.json").readAllBytes())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("WORK_PRIMARY_TITLE_ID", primaryWorkTitle.getId().toString())
       .replaceAll("WORK_PARALLEL_TITLE_ID", parallelWorkTitle.getId().toString())

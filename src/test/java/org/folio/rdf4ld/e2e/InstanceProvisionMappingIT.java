@@ -48,7 +48,7 @@ class InstanceProvisionMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithProvisions() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance_provisions.json");
+    var input = this.getClass().getResourceAsStream("/rdf/instance/instance_provisions.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -106,7 +106,7 @@ class InstanceProvisionMappingIT {
     instance.addOutgoingEdge(new ResourceEdge(instance, manufacture, PE_MANUFACTURE));
     instance.addOutgoingEdge(new ResourceEdge(instance, production, PE_PRODUCTION));
     instance.addOutgoingEdge(new ResourceEdge(instance, publication, PE_PUBLICATION));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance_provisions.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/instance/instance_provisions.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("DISTRIBUTION_ID", distribution.getId().toString())
       .replaceAll("MANUFACTURE_ID", manufacture.getId().toString())

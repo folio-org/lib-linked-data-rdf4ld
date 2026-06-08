@@ -45,7 +45,7 @@ class HubTitlesMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedHubWithTitles() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/hub_titles.json");
+    var input = this.getClass().getResourceAsStream("/rdf/hub/hub_titles.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -86,7 +86,7 @@ class HubTitlesMappingIT {
     hub.addOutgoingEdge(new ResourceEdge(hub, parallelTitle, TITLE));
     hub.addOutgoingEdge(new ResourceEdge(hub, variantTitle, TITLE));
     hub.addOutgoingEdge(new ResourceEdge(hub, abbreviatedTitle, TITLE));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/hub_titles.json").readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream("/rdf/hub/hub_titles.json").readAllBytes())
       .replaceAll("HUB_ID", hub.getId().toString())
       .replaceAll("PRIMARY_TITLE_ID", primaryTitle.getId().toString())
       .replaceAll("PARALLEL_TITLE_ID", parallelTitle.getId().toString())
