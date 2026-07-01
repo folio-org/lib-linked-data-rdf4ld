@@ -1,4 +1,5 @@
 ## v2.0.0 (IN PROGRESS)
+- Work as new Top resource [MODLD-1109](https://folio-org.atlassian.net/browse/MODLD-1109)
 
 ## v1.0.0 (17-04-2026)
 - Use GitHub Workflows for Maven [MODLD-975](https://folio-org.atlassian.net/browse/MODLD-975)

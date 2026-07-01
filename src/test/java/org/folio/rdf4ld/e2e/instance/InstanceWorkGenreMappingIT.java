@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.e2e;
+package org.folio.rdf4ld.e2e.instance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -36,20 +36,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 @IntegrationTest
 @EnableConfigurationProperties
 @SpringBootTest(classes = SpringTestConfig.class)
-class WorkGenreMappingIT {
+class InstanceWorkGenreMappingIT {
 
   private static final Map<PropertyDictionary, List<String>> EXPECTED_WORK_PROPERTIES = Map.of(
     LINK, List.of("http://test-tobe-changed.folio.com/resources/WORK_ID")
   );
   private static final String GENRE_FORM_LABEL = "Fiction";
   private static final String GENRE_FORM_LCCN = "gf2014026339";
+  private static final String BASE_PATH = "/rdf/instance/work/genre/";
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
 
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithGenreMock() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work/work_genre_lccn.json");
+    var input = this.getClass().getResourceAsStream(BASE_PATH + "instance_work_genre_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -69,7 +70,7 @@ class WorkGenreMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithGenre() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/work/work_genre_no_lccn.json");
+    var input = this.getClass().getResourceAsStream(BASE_PATH + "instance_work_genre_no_lccn.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -98,7 +99,8 @@ class WorkGenreMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_genre_no_lccn.json").readAllBytes())
+    var inputStream = this.getClass().getResourceAsStream(BASE_PATH + "instance_work_genre_no_lccn.json");
+    var expected = new String(inputStream.readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString())
       .replaceAll("GENRE_FORM_ID", "_" + genreForm.getId().toString());
@@ -119,7 +121,8 @@ class WorkGenreMappingIT {
     work.addOutgoingEdge(new ResourceEdge(work, genreForm, GENRE));
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    var expected = new String(this.getClass().getResourceAsStream("/rdf/work/work_genre_lccn.json").readAllBytes())
+    var inputStream = this.getClass().getResourceAsStream(BASE_PATH + "instance_work_genre_lccn.json");
+    var expected = new String(inputStream.readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
 
