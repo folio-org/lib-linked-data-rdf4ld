@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.e2e;
+package org.folio.rdf4ld.e2e.instance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.rdf4j.model.util.Values.iri;

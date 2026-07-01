@@ -1,0 +1,77 @@
+[
+    {
+        "@id": "http://test-tobe-changed.folio.com/resources/WORK_ID",
+        "@type": [
+            "http://id.loc.gov/ontologies/bibframe/Work",
+            "http://id.loc.gov/ontologies/bibframe/Monograph"
+        ],
+        "http://id.loc.gov/ontologies/bibframe/subject": [
+            {
+                "@id": "_:_COMPLEX_SUBJECT_ID"
+            }
+        ]
+    },
+    {
+        "@id": "_:_COMPLEX_SUBJECT_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#ComplexSubject",
+            "http://id.loc.gov/ontologies/bibframe/Meeting"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Subject Focus -- Sub Focus Topic"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Subject Focus -- Sub Focus Topic"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#componentList": [
+            {
+                "@list": [
+                    {
+                        "@id": "_:FOCUS_ID"
+                    },
+                    {
+                        "@id": "_:SUBFOCUS_ID"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "@id": "_:FOCUS_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Meeting"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Subject Focus"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Subject Focus"
+            }
+        ]
+    },
+    {
+        "@id": "_:SUBFOCUS_ID",
+        "@type": [
+            "http://www.loc.gov/mads/rdf/v1#Authority",
+            "http://id.loc.gov/ontologies/bibframe/Topic"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+                "@value": "Sub Focus Topic"
+            }
+        ],
+        "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+            {
+                "@value": "Sub Focus Topic"
+            }
+        ]
+    }
+]

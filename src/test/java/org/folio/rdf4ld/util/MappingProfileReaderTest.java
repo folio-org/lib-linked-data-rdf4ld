@@ -23,7 +23,7 @@ class MappingProfileReaderTest {
     // then
     assertThat(result).isNotNull();
     assertThat(result.getTopResourceMappings()).isNotNull();
-    assertThat(result.getTopResourceMappings()).hasSize(2); // Instance and Hub
+    assertThat(result.getTopResourceMappings()).hasSize(3); // Instance, Hub, Work
   }
 
 }

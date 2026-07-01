@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.e2e;
+package org.folio.rdf4ld.e2e.instance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -55,6 +55,7 @@ class InstanceIdentifiersMappingIT {
   private static final String EXPECTED_ISBN_2 = "9780850598377";
   private static final String EXPECTED_LCCN = "  2010470075";
   private static final String EXPECTED_LCCN_2 = "  2019470076";
+  private static final String BASE_PATH = "/rdf/instance/identifiers/";
 
   @Autowired
   private Rdf4LdMapper rdf4LdMapper;
@@ -62,7 +63,7 @@ class InstanceIdentifiersMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithIdentifiers() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance/instance_identifiers.json");
+    var input = this.getClass().getResourceAsStream(BASE_PATH + "instance_identifiers.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -98,7 +99,7 @@ class InstanceIdentifiersMappingIT {
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, lccn, MAP));
     var expected = new String(this.getClass()
-      .getResourceAsStream("/rdf/instance/instance_identifiers.json").readAllBytes())
+      .getResourceAsStream(BASE_PATH + "instance_identifiers.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("EAN_ID", ean.getId().toString())
       .replaceAll("ISBN_ID", isbn.getId().toString())
@@ -118,7 +119,7 @@ class InstanceIdentifiersMappingIT {
     String fixturePath, ResourceTypeDictionary idType, String value,
     String statusLabel, boolean isCurrent, String idPlaceholder) throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream(fixturePath);
+    var input = this.getClass().getResourceAsStream(BASE_PATH + fixturePath);
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -149,7 +150,7 @@ class InstanceIdentifiersMappingIT {
       : createIsbn(value, isCurrent);
     var instance = createInstance(null);
     instance.addOutgoingEdge(new ResourceEdge(instance, identifier, MAP));
-    var expected = new String(this.getClass().getResourceAsStream(fixturePath).readAllBytes())
+    var expected = new String(this.getClass().getResourceAsStream(BASE_PATH + fixturePath).readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll(idPlaceholder, identifier.getId().toString());
 
@@ -163,7 +164,7 @@ class InstanceIdentifiersMappingIT {
   @Test
   void mapBibframe2RdfToLd_shouldMapMultipleIdentifiersOfSameType() throws IOException {
     // given
-    var input = this.getClass().getResourceAsStream("/rdf/instance/instance_identifiers_multi_same_type.json");
+    var input = this.getClass().getResourceAsStream(BASE_PATH + "instance_identifiers_multi_same_type.json");
     var model = Rio.parse(input, "", RDFFormat.JSONLD);
 
     // when
@@ -208,7 +209,7 @@ class InstanceIdentifiersMappingIT {
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn1, MAP));
     instance.addOutgoingEdge(new ResourceEdge(instance, isbn2, MAP));
     var expected = new String(
-      this.getClass().getResourceAsStream("/rdf/instance/instance_identifiers_multi_same_type.json").readAllBytes())
+      this.getClass().getResourceAsStream(BASE_PATH + "instance_identifiers_multi_same_type.json").readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("LCCN1_ID", lccn1.getId().toString())
       .replaceAll("LCCN2_ID", lccn2.getId().toString())
@@ -302,13 +303,13 @@ class InstanceIdentifiersMappingIT {
 
   static Stream<Arguments> identifierStatusArgs() {
     return Stream.of(
-      Arguments.of("/rdf/instance/instance_identifier_lccn_current.json",
+      Arguments.of("instance_identifier_lccn_current.json",
         ID_LCCN, EXPECTED_LCCN, STATUS_CURRENT, true, "LCCN_ID"),
-      Arguments.of("/rdf/instance/instance_identifier_lccn_cancelled.json",
+      Arguments.of("instance_identifier_lccn_cancelled.json",
         ID_LCCN, EXPECTED_LCCN, STATUS_CANCELLED, false, "LCCN_ID"),
-      Arguments.of("/rdf/instance/instance_identifier_isbn_current.json",
+      Arguments.of("instance_identifier_isbn_current.json",
         ID_ISBN, EXPECTED_ISBN, STATUS_CURRENT, true, "ISBN_ID"),
-      Arguments.of("/rdf/instance/instance_identifier_isbn_cancelled.json",
+      Arguments.of("instance_identifier_isbn_cancelled.json",
         ID_ISBN, EXPECTED_ISBN, STATUS_CANCELLED, false, "ISBN_ID")
     );
   }

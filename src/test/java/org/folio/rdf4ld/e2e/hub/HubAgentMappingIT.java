@@ -1,4 +1,4 @@
-package org.folio.rdf4ld.e2e;
+package org.folio.rdf4ld.e2e.hub;
 
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
