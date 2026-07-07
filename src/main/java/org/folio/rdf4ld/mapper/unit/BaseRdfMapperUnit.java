@@ -50,7 +50,10 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
         resource.setDoc(coreRdf2LdMapper.mapDoc(rdfResource, model, resourceMapping.getProperties()));
         var outEdges = coreRdf2LdMapper.mapOutgoingEdges(resourceMapping.getOutgoingEdges(),
           model, resource, rdfResource);
+        var inEdges = coreRdf2LdMapper.mapIncomingEdges(resourceMapping.getIncomingEdges(),
+          model, resource, rdfResource);
         resource.getOutgoingEdges().addAll(outEdges);
+        resource.getIncomingEdges().addAll(inEdges);
         setLabel(resource, resourceMapping);
       });
     resource.setId(hashService.hash(resource));

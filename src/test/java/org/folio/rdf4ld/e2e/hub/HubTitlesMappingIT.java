@@ -72,6 +72,34 @@ class HubTitlesMappingIT {
   }
 
   @Test
+  void mapBibframe2RdfToLd_shouldReturnMappedHubWork() throws IOException {
+    // given
+    var input = this.getClass().getResourceAsStream("/rdf/hub/hub-work_titles.json");
+    var model = Rio.parse(input, "", RDFFormat.JSONLD);
+
+    // when
+    var result = rdf4LdMapper.mapBibframe2RdfToLd(model);
+
+    // then
+    assertThat(result).hasSize(1);
+    var hub = result.iterator().next();
+    assertThat(hub.getDoc()).isNotNull();
+    validateProperty(hub.getDoc(), LABEL.getValue(), List.of(HUB_AAP));
+    assertThat(hub.getLabel()).isEqualTo(HUB_AAP);
+    validateResourceWithTitles(hub, "", "http://test-tobe-changed.folio.com/resources/HUB_ID");
+    validateOutgoingEdge(hub, TITLE, Set.of(ResourceTypeDictionary.ABBREVIATED_TITLE),
+      Map.of(
+        MAIN_TITLE, List.of("AbbreviatedTitle mainTitle 1", "AbbreviatedTitle mainTitle 2"),
+        PART_NAME, List.of("AbbreviatedTitle partName 1", "AbbreviatedTitle partName 2"),
+        PART_NUMBER, List.of("AbbreviatedTitle partNumber 1", "AbbreviatedTitle partNumber 2")
+      ), "AbbreviatedTitle mainTitle 1 AbbreviatedTitle mainTitle 2 "
+        + "AbbreviatedTitle partNumber 1 AbbreviatedTitle partNumber 2 "
+        + "AbbreviatedTitle partName 1 AbbreviatedTitle partName 2"
+    );
+    assertThat(hub.getOutgoingEdges()).hasSize(4);
+  }
+
+  @Test
   void mapLdToBibframe2Rdf_shouldReturnMappedRdfHubWithTitles() throws IOException {
     // given
     var primaryTitle = createPrimaryTitle("");

@@ -43,7 +43,10 @@ public class MappingProfileReader {
     var mappingProfile = new MappingProfile();
     getInstanceMapping().ifPresent(mappingProfile::addTopResourceMappingsItem);
     getHubMapping().ifPresent(mappingProfile::addTopResourceMappingsItem);
-    getWorkMapping().ifPresent(mappingProfile::addTopResourceMappingsItem);
+    getWorkMapping().ifPresent(wm -> {
+      getInstanceMapping().ifPresent(im -> wm.getResourceMapping().addIncomingEdgesItem(im));
+      mappingProfile.addTopResourceMappingsItem(wm);
+    });
     return mappingProfile;
   }
 

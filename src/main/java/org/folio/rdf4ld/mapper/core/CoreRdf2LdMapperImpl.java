@@ -96,6 +96,21 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .collect(toSet());
   }
 
+  @Override
+  public Set<ResourceEdge> mapIncomingEdges(Collection<ResourceMapping> edgeMappings,
+                                            Model model,
+                                            Resource parent,
+                                            org.eclipse.rdf4j.model.Resource rdfParent) {
+    return ofNullable(edgeMappings)
+      .stream()
+      .flatMap(Collection::stream)
+      .filter(oem -> nonNull(oem.getLdResourceDef()))
+      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
+        .map(r -> new ResourceEdge(r, parent, oem.getLdResourceDef().getPredicate()))
+      )
+      .collect(toSet());
+  }
+
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
                                        Resource parent,
