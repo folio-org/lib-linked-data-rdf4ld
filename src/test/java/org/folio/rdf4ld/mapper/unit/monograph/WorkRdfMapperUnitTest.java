@@ -2,6 +2,7 @@ package org.folio.rdf4ld.mapper.unit.monograph;
 
 import static java.util.Optional.of;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -52,7 +53,7 @@ class WorkRdfMapperUnitTest {
     var value = mock(Value.class);
     doReturn("http://id.loc.gov/ontologies/bibframe/Monograph").when(value).stringValue();
     doReturn(value).when(statement).getObject();
-    doReturn(Set.of(statement).stream()).when(model).stream();
+    doAnswer(invocation -> Set.of(statement).stream()).when(model).stream();
 
     // when
     var result = workRdfMapperUnit.mapToLd(model, resource, mapping, null);

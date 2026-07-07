@@ -1,9 +1,11 @@
 {
   "ldResourceDef": {
-    "typeSet": "INSTANCE"
+    "typeSet": "INSTANCE",
+    "predicate": "INSTANTIATES"
   },
   "bfResourceDef": {
-    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/hasInstance"
   },
   "resourceMapping": {
     "properties": [

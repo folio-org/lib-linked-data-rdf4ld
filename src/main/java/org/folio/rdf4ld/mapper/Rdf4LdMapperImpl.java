@@ -2,6 +2,8 @@ package org.folio.rdf4ld.mapper;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.rdf4ld.util.RdfUtil.selectSubjectsByTypes;
 
 import java.util.HashSet;
@@ -38,15 +40,18 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
     var mapped = mappingProfile.getTopResourceMappings().stream()
       .flatMap(tm -> mapSingleRdfTopResourceToLd(model, tm))
       .collect(Collectors.toSet());
-    return filterOutTopWorksLinkedToInstances(mapped);
+    return filterDuplicates(mapped);
   }
 
-  private Set<Resource> filterOutTopWorksLinkedToInstances(Set<Resource> all) {
+  private Set<Resource> filterDuplicates(Set<Resource> all) {
     var instances = all.stream()
       .filter(r -> r.isOfType(ResourceTypeDictionary.INSTANCE))
       .collect(Collectors.toSet());
-    return all.stream()
-      .filter(r -> r.isNotOfType(ResourceTypeDictionary.WORK) || workIsNotLinkedToInstances(r, instances))
+    var noDuplicatedWorks = all.stream()
+      .filter(r -> r.isNotOfType(WORK) || workIsNotLinkedToInstances(r, instances))
+      .collect(Collectors.toSet());
+    return noDuplicatedWorks.stream()
+      .filter(r -> r.isNotOfType(INSTANCE) || instanceIsNotReferencedByWork(r, noDuplicatedWorks))
       .collect(Collectors.toSet());
   }
 
@@ -54,6 +59,13 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
     return instances.stream()
       .flatMap(i -> i.getOutgoingEdges().stream())
       .noneMatch(edge -> edge.getTarget().equals(work));
+  }
+
+  private boolean instanceIsNotReferencedByWork(Resource instance, Set<Resource> noDuplicatedWorks) {
+    return noDuplicatedWorks.stream()
+      .filter(r -> r.isOfType(WORK))
+      .flatMap(work -> work.getIncomingEdges().stream())
+      .noneMatch(edge -> edge.getSource().equals(instance));
   }
 
   private Stream<Resource> mapSingleRdfTopResourceToLd(Model model, ResourceMapping topMapping) {

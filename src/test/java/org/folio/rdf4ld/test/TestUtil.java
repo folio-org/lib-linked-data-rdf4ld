@@ -123,7 +123,6 @@ public class TestUtil {
   public static void validateResourceWithTitles(Resource resource, String prefix, String expectedLink) {
     assertThat(resource.getId()).isNotNull();
     validateProperty(resource.getDoc(), LINK.getValue(), List.of(expectedLink));
-    assertThat(resource.getIncomingEdges()).isEmpty();
     validateOutgoingEdge(resource, TITLE, Set.of(ResourceTypeDictionary.TITLE),
       Map.of(
         MAIN_TITLE, List.of(prefix + "Title mainTitle 1", prefix + "Title mainTitle 2"),

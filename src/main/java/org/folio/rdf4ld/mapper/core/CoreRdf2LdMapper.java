@@ -22,4 +22,9 @@ public interface CoreRdf2LdMapper {
                                      Resource parent,
                                      org.eclipse.rdf4j.model.Resource rdfParent);
 
+  Set<ResourceEdge> mapIncomingEdges(Collection<ResourceMapping> edgeMappings,
+                                     Model model,
+                                     Resource parent,
+                                     org.eclipse.rdf4j.model.Resource rdfParent);
+
 }

@@ -9,6 +9,7 @@ import static org.folio.rdf4ld.util.RdfUtil.readSupportedExtraTypes;
 import static org.folio.rdf4ld.util.RdfUtil.writeExtraTypes;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @RdfMapperDefinition(types = WORK, predicate = INSTANTIATES)
 public class WorkRdfMapperUnit implements RdfMapperUnit {
+  private static final String HUB_TYPE = "http://id.loc.gov/ontologies/bibframe/Hub";
   private final BaseRdfMapperUnit baseRdfMapperUnit;
   private final FingerprintHashService hashService;
   private final LongFunction<String> resourceUrlProvider;
@@ -38,20 +40,24 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
                                     org.eclipse.rdf4j.model.Resource resource,
                                     ResourceMapping mapping,
                                     Resource parent) {
+    var allTypes = readAllTypes(model, resource).collect(toSet());
+    if (allTypes.contains(HUB_TYPE)) {
+      return Optional.empty();
+    }
     return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
       .map(work -> {
-        setExtraTypes(model, resource, work);
+        setExtraTypes(model, allTypes, resource, work);
         work.setId(hashService.hash(work));
         return work;
       });
   }
 
-  private void setExtraTypes(Model model, org.eclipse.rdf4j.model.Resource resource, Resource work) {
+  private void setExtraTypes(Model model, Set<String> allTypes,
+                             org.eclipse.rdf4j.model.Resource resource, Resource work) {
     var supportedExtraTypes = readSupportedExtraTypes(model, resource);
     if (!supportedExtraTypes.isEmpty()) {
       supportedExtraTypes.forEach(work::addType);
     } else {
-      var allTypes = readAllTypes(model, resource).collect(toSet());
       if (allTypes.size() == 1) {
         defaultWorkTypeProvider.get().ifPresent(work::addType);
       } else {
