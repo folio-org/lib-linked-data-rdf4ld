@@ -84,14 +84,14 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   @Override
   public Set<ResourceEdge> mapOutgoingEdges(Collection<ResourceMapping> edgeMappings,
                                             Model model,
-                                            Resource parent,
+                                            Resource edgeOwner,
                                             org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Collection::stream)
       .filter(oem -> nonNull(oem.getLdResourceDef()))
-      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
-        .map(r -> new ResourceEdge(parent, r, oem.getLdResourceDef().getPredicate()))
+      .flatMap(oem -> mapEdgeTargets(model, oem, edgeOwner, rdfParent).stream()
+        .map(r -> new ResourceEdge(edgeOwner, r, oem.getLdResourceDef().getPredicate()))
       )
       .collect(toSet());
   }
@@ -99,27 +99,31 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
   @Override
   public Set<ResourceEdge> mapIncomingEdges(Collection<ResourceMapping> edgeMappings,
                                             Model model,
-                                            Resource parent,
+                                            Resource edgeOwner,
                                             org.eclipse.rdf4j.model.Resource rdfParent) {
     return ofNullable(edgeMappings)
       .stream()
       .flatMap(Collection::stream)
       .filter(oem -> nonNull(oem.getLdResourceDef()))
-      .flatMap(oem -> mapEdgeTargets(model, oem, parent, rdfParent).stream()
-        .map(r -> new ResourceEdge(r, parent, oem.getLdResourceDef().getPredicate()))
+      .flatMap(oem -> mapEdgeTargets(model, oem, edgeOwner, rdfParent).stream()
+        .map(r -> {
+          var re = new ResourceEdge(r, edgeOwner, oem.getLdResourceDef().getPredicate());
+          r.addOutgoingEdge(re);
+          return re;
+        })
       )
       .collect(toSet());
   }
 
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
-                                       Resource parent,
+                                       Resource edgeOwner,
                                        org.eclipse.rdf4j.model.Resource rdfParent) {
     // fetch remote resource if it's not presented and edgeMapping.localOnly() is not true
     var ldResourceDef = edgeMapping.getLdResourceDef();
     var mapperUnit = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());
     return selectLinkedResources(model, edgeMapping.getBfResourceDef(), rdfParent)
-      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, parent))
+      .map(resource -> mapperUnit.mapToLd(model, resource, edgeMapping, edgeOwner))
       .filter(Optional::isPresent)
       .map(Optional::get)
       .collect(toSet());
