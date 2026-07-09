@@ -1,6 +1,7 @@
 package org.folio.rdf4ld.e2e.work;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.rdf4ld.test.TestUtil.getTitleLabel;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.rdf4ld.mapper.Rdf4LdMapper;
 import org.folio.rdf4ld.test.SpringTestConfig;
 import org.folio.spring.testing.type.IntegrationTest;
@@ -53,7 +55,8 @@ class WorkInstanceMappingIT {
     );
     assertThat(instance.getLabel()).isEqualTo(getTitleLabel("", "Title"));
     validateResourceWithTitles(instance, "", "http://test-tobe-changed.folio.com/resources/INSTANCE_ID");
-    assertThat(instance.getOutgoingEdges()).hasSize(3);
+    assertThat(instance.getOutgoingEdges()).hasSize(4);
+    assertThat(instance.getOutgoingEdges()).contains(new ResourceEdge(instance, work, INSTANTIATES));
   }
 
 }
