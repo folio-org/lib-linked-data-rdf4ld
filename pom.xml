@@ -32,14 +32,14 @@
 
     <lib-linked-data-dictionary.version>3.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-fingerprint.version>3.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
-    <rdf4j.version>5.3.2</rdf4j.version>
+    <rdf4j.version>6.0.0</rdf4j.version>
     <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
     <folio-spring-base.version>10.0.0</folio-spring-base.version>
 
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <maven-openapi-generator-plugin.version>7.23.0</maven-openapi-generator-plugin.version>
-    <checkstyle.version>13.7.0</checkstyle.version>
+    <checkstyle.version>13.8.0</checkstyle.version>
   </properties>
 
   <dependencies>
