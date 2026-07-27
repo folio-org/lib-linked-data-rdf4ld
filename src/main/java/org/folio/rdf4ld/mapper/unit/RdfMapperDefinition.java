@@ -14,5 +14,4 @@ public @interface RdfMapperDefinition {
   ResourceTypeDictionary[] types() default {};
 
   PredicateDictionary predicate() default PredicateDictionary.NULL;
-
 }

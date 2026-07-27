@@ -33,5 +33,4 @@ public class Rdf4ldBeanConfig {
   public LabelGeneratorService labelGeneratorService() {
     return new LabelGeneratorService();
   }
-
 }

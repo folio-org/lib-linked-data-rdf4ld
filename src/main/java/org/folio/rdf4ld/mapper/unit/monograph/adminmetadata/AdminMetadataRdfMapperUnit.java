@@ -9,6 +9,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.rdf4ld.util.RdfUtil.linkResources;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.LongFunction;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.folio.rdf4ld.mapper.unit.RdfMapperDefinition;
 import org.folio.rdf4ld.mapper.unit.RdfMapperUnit;
 import org.folio.rdf4ld.model.ResourceMapping;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 @RequiredArgsConstructor
@@ -74,25 +76,31 @@ public class AdminMetadataRdfMapperUnit implements RdfMapperUnit {
       resource.getDoc().get(property).iterator().forEachRemaining(
         identifierResource -> {
           var amNodes = modelBuilder.build().getStatements(
-              resourceIri, iri(BF_IDENTIFIED_BY), null);
+            resourceIri, iri(BF_IDENTIFIED_BY), null);
           StreamSupport.stream(amNodes.spliterator(), false)
             .map(Statement::getObject)
             .filter(Value::isResource)
             .map(org.eclipse.rdf4j.model.Resource.class::cast)
-            .forEach(identifierNode -> {
-              var identifiersModel = modelBuilder.build().getStatements(identifierNode, RDF.VALUE, null);
-              StreamSupport.stream(identifiersModel.spliterator(), false)
-                .map(Statement::getObject)
-                .map(Value::stringValue)
-                .filter(objVal -> objVal.equals(identifierResource.asString()))
-                .forEach(id -> {
-                  var noteNode = bnode("note_" + id);
-                  modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
-                  modelBuilder.add(noteNode, RDFS.LABEL, note);
-                  linkResources(identifierNode, noteNode, BF_NOTE, modelBuilder);
-                });
-            });
+            .forEach(mapIdentifierToNote(modelBuilder, note, identifierResource));
         });
     }
+  }
+
+  private Consumer<org.eclipse.rdf4j.model.Resource> mapIdentifierToNote(ModelBuilder modelBuilder,
+                                                                         String note,
+                                                                         JsonNode identifierResource) {
+    return identifierNode -> {
+      var identifiersModel = modelBuilder.build().getStatements(identifierNode, RDF.VALUE, null);
+      StreamSupport.stream(identifiersModel.spliterator(), false)
+        .map(Statement::getObject)
+        .map(Value::stringValue)
+        .filter(objVal -> objVal.equals(identifierResource.asString()))
+        .forEach(id -> {
+          var noteNode = bnode("note_" + id);
+          modelBuilder.add(noteNode, RDF.TYPE, iri(BF_NOTE_TYPE));
+          modelBuilder.add(noteNode, RDFS.LABEL, note);
+          linkResources(identifierNode, noteNode, BF_NOTE, modelBuilder);
+        });
+    };
   }
 }

@@ -144,7 +144,6 @@ class HubAgentMappingIT {
     validateOutgoingEdge(hub, COLLABORATOR, of(FAMILY), expectedContributorProperties, contributorLabel);
   }
 
-
   @ParameterizedTest
   @ValueSource(strings = {
     "/rdf/hub/hub_agent_lccn.json",

@@ -112,7 +112,6 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
     return resource.isOfType(MOCKED_RESOURCE);
   }
 
-
   private Optional<Resource> unMockSingleLccnResource(Resource resource,
                                                       Function<String, Optional<Resource>> lccnResourceProvider,
                                                       PredicateDictionary predicate) {
@@ -131,5 +130,4 @@ public class MockLccnResourceServiceImpl implements MockLccnResourceService {
     resource.setId(fingerprintHashService.hash(resource));
     return of(resource);
   }
-
 }

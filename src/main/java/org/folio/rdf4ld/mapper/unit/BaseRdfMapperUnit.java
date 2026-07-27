@@ -60,6 +60,21 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     return Optional.of(resource);
   }
 
+  @Override
+  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
+    var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
+    modelBuilder.subject(resourceIri);
+    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
+    coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
+    resource.getOutgoingEdges().forEach(oe ->
+      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
+    );
+    ofNullable(parent)
+      .ifPresent(p -> linkResources(iri(resourceUrlProvider.apply(p.getId())),
+        resourceIri, mapping.getBfResourceDef().getPredicate(), modelBuilder)
+      );
+  }
+
   private void setLabel(Resource resource, ResourceInternalMapping resourceMapping) {
     var labelFromDoc = getPropertiesString(resource.getDoc(), DEFAULT_LABELS);
     if (isNotBlank(labelFromDoc)) {
@@ -76,20 +91,4 @@ public class BaseRdfMapperUnit implements RdfMapperUnit {
     var labelProperties = resourceMapping.getLabel().toArray(PropertyDictionary[]::new);
     resource.setLabel(getPropertiesString(resource.getDoc(), labelProperties));
   }
-
-  @Override
-  public void mapToBibframe(Resource resource, ModelBuilder modelBuilder, ResourceMapping mapping, Resource parent) {
-    var resourceIri = iri(resourceUrlProvider.apply(resource.getId()));
-    modelBuilder.subject(resourceIri);
-    mapping.getBfResourceDef().getTypeSet().forEach(type -> modelBuilder.add(RDF.TYPE, iri(type)));
-    coreLd2RdfMapper.mapProperties(resource, modelBuilder, mapping);
-    resource.getOutgoingEdges().forEach(oe ->
-      coreLd2RdfMapper.mapOutgoingEdge(modelBuilder, oe, mapping.getResourceMapping())
-    );
-    ofNullable(parent)
-      .ifPresent(p -> linkResources(iri(resourceUrlProvider.apply(p.getId())),
-        resourceIri, mapping.getBfResourceDef().getPredicate(), modelBuilder)
-      );
-  }
-
 }

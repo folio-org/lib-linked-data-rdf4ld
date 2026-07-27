@@ -26,5 +26,4 @@ public interface CoreRdf2LdMapper {
                                      Model model,
                                      Resource edgeOwner,
                                      org.eclipse.rdf4j.model.Resource rdfParent);
-
 }

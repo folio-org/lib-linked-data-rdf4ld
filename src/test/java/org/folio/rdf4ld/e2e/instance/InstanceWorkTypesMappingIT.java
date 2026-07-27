@@ -97,5 +97,4 @@ class InstanceWorkTypesMappingIT {
       Arguments.of("instance_work_serial.json", CONTINUING_RESOURCES)
     );
   }
-
 }

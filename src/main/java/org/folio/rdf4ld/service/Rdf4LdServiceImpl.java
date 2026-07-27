@@ -92,5 +92,4 @@ public class Rdf4LdServiceImpl implements Rdf4LdService {
     Rio.write(model, out, rdfFormat, outputConfig);
     return out;
   }
-
 }

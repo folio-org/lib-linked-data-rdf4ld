@@ -58,5 +58,4 @@ class WorkInstanceMappingIT {
     assertThat(instance.getOutgoingEdges()).hasSize(4);
     assertThat(instance.getOutgoingEdges()).contains(new ResourceEdge(instance, work, INSTANTIATES));
   }
-
 }

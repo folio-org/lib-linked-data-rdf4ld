@@ -133,5 +133,4 @@ class InstanceWorkGenreMappingIT {
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
-
 }

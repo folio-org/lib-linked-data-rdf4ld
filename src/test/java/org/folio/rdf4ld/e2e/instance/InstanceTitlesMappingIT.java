@@ -92,5 +92,4 @@ class InstanceTitlesMappingIT {
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
-
 }

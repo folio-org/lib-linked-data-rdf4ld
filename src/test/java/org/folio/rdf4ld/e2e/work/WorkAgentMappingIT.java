@@ -235,7 +235,6 @@ class WorkAgentMappingIT {
     validateOutgoingEdge(work, CONTRIBUTOR, of(FAMILY), contributorProperties, "Contributor Agent");
   }
 
-
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnAndUncontrolledRoles()
     throws IOException {

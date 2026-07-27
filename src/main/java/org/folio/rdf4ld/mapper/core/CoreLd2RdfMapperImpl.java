@@ -55,8 +55,8 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
       .ifPresent(m -> m.getOutgoingEdges().stream()
         .filter(oem -> nonNull(oem.getLdResourceDef()))
         .filter(oem -> (oem.getLdResourceDef().getTypeSet().isEmpty()
-          || edge.getTarget().getTypes().containsAll(oem.getLdResourceDef().getTypeSet()))
-          && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
+                        || edge.getTarget().getTypes().containsAll(oem.getLdResourceDef().getTypeSet()))
+                        && edge.getPredicate().equals(oem.getLdResourceDef().getPredicate()))
         .forEach(oem -> {
           var ldResourceDef = oem.getLdResourceDef();
           var mapper = rdfMapperUnitProvider.getMapper(ldResourceDef.getTypeSet(), ldResourceDef.getPredicate());
@@ -101,5 +101,4 @@ public class CoreLd2RdfMapperImpl implements CoreLd2RdfMapper {
         });
       });
   }
-
 }

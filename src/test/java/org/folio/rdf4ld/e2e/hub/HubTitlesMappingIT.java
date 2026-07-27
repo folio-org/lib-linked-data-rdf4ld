@@ -133,5 +133,4 @@ class HubTitlesMappingIT {
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
-
 }
