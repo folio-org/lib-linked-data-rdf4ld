@@ -252,5 +252,4 @@ class MockLccnResourceServiceTest {
     verify(fingerprintHashService).hash(mockResource);
     verify(fingerprintHashService, never()).hash(childResource);
   }
-
 }

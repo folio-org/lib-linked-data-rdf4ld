@@ -358,5 +358,4 @@ public class MonographUtil {
   public static JsonNode getJsonNode(Map<String, ?> map) {
     return JSON_MAPPER.convertValue(map, JsonNode.class);
   }
-
 }

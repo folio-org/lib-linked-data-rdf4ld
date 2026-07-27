@@ -270,7 +270,6 @@ class InstanceWorkAgentMappingIT {
       });
   }
 
-
   @Test
   void mapBibframe2RdfToLd_shouldReturnMappedInstanceWithWorkWithAgents_withLccnAndUncontrolledRoles()
     throws IOException {
@@ -526,5 +525,4 @@ class InstanceWorkAgentMappingIT {
       Arguments.of("instance_work_agent_no_lccn_uncontrolled_role_meeting.json", MEETING)
     );
   }
-
 }

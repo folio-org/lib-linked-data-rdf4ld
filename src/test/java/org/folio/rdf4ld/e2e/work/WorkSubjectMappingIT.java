@@ -288,30 +288,13 @@ class WorkSubjectMappingIT {
     validateProperty(unmockedWork.getDoc(), LINK.getValue(), List.of("http://test-tobe-changed.folio.com/resources/WORK_ID"));
 
     var conceptLabel = TOPIC_LABEL + " -- " + FAMILY_AGENT_LABEL + " -- " + PERSON_AGENT_LABEL;
-    var conceptProperties = Map.of(
-      LABEL, List.of(conceptLabel),
-      NAME, List.of(TOPIC_LABEL)
-    );
-    var topicProperties = Map.of(
-      LABEL, List.of(TOPIC_LABEL),
-      NAME, List.of(TOPIC_LABEL)
-    );
-    var personProperties = Map.of(
-      LABEL, List.of(PERSON_AGENT_LABEL),
-      NAME, List.of(PERSON_AGENT_LABEL)
-    );
-    var familyProperties = Map.of(
-      LABEL, List.of(FAMILY_AGENT_LABEL),
-      NAME, List.of(FAMILY_AGENT_LABEL)
-    );
-    var topicLccnProperties = Map.of(
-      NAME, List.of(TOPIC_LCCN),
-      LINK, List.of(SUBJECTS_NAMESPACE + TOPIC_LCCN)
-    );
-    var personLccnProperties = Map.of(
-      NAME, List.of(PERSON_AGENT_LCCN),
-      LINK, List.of(AGENTS_NAMESPACE + PERSON_AGENT_LCCN)
-    );
+    var conceptProperties = Map.of(LABEL, List.of(conceptLabel), NAME, List.of(TOPIC_LABEL));
+    var topicProperties = Map.of(LABEL, List.of(TOPIC_LABEL), NAME, List.of(TOPIC_LABEL));
+    var personProperties = Map.of(LABEL, List.of(PERSON_AGENT_LABEL), NAME, List.of(PERSON_AGENT_LABEL));
+    var familyProperties = Map.of(LABEL, List.of(FAMILY_AGENT_LABEL), NAME, List.of(FAMILY_AGENT_LABEL));
+    var topicLccnProperties = Map.of(NAME, List.of(TOPIC_LCCN), LINK, List.of(SUBJECTS_NAMESPACE + TOPIC_LCCN));
+    var personLccnProperties =
+      Map.of(NAME, List.of(PERSON_AGENT_LCCN), LINK, List.of(AGENTS_NAMESPACE + PERSON_AGENT_LCCN));
     validateOutgoingEdge(unmockedWork, SUBJECT, Set.of(TOPIC, CONCEPT), conceptProperties, conceptLabel, concept -> {
       validateOutgoingEdge(concept, FOCUS, Set.of(TOPIC), topicProperties, TOPIC_LABEL, topic ->
           validateOutgoingEdge(topic, MAP, Set.of(IDENTIFIER, ID_LCSH), topicLccnProperties, TOPIC_LCCN)
@@ -403,7 +386,6 @@ class WorkSubjectMappingIT {
       .replaceAll("TOPIC_ID", "_" + topic.getId().toString())
       .replaceAll("TEMPORAL_ID", "_" + temporal.getId().toString());
 
-
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(work);
 
@@ -428,7 +410,6 @@ class WorkSubjectMappingIT {
       .replaceAll("COMPLEX_SUBJECT_ID", concept.getId().toString())
       .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString());
 
-
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(work);
 
@@ -451,7 +432,6 @@ class WorkSubjectMappingIT {
     var expected = new String(this.getClass().getResourceAsStream(BASE_PATH + "work_subject_simple_lccn.json")
       .readAllBytes())
       .replaceAll("WORK_ID", work.getId().toString());
-
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(work);
@@ -625,5 +605,4 @@ class WorkSubjectMappingIT {
       Arguments.of(BASE_PATH + "work_subject_concept_form_complex_no_lccn.json", FORM)
     );
   }
-
 }

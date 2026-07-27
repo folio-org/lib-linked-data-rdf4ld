@@ -175,5 +175,4 @@ public class ResourceUtil {
       .flatMap(Collection::stream)
       .map(JsonNode::asString);
   }
-
 }

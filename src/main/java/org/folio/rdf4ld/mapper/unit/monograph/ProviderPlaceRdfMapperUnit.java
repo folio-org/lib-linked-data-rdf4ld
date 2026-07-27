@@ -81,5 +81,4 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
     var link = getPropertyString(resource.getDoc(), LINK);
     linkResources(parentIri, iri(link), mapping.getBfResourceDef().getPredicate(), modelBuilder);
   }
-
 }

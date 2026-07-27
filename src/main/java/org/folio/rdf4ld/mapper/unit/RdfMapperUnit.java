@@ -18,7 +18,6 @@ public interface RdfMapperUnit {
                      ResourceMapping resourceMapping,
                      Resource parent);
 
-
   default Resource enrichUnMockedResource(Resource resource) {
     return resource;
   }

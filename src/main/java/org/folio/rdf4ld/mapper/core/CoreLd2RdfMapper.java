@@ -13,5 +13,4 @@ public interface CoreLd2RdfMapper {
   void mapOutgoingEdge(ModelBuilder modelBuilder,
                        ResourceEdge edge,
                        ResourceInternalMapping resourceMapping);
-
 }

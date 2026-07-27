@@ -59,5 +59,4 @@ public abstract class ReferenceRdfMapperUnit implements RdfMapperUnit {
         }
       );
   }
-
 }

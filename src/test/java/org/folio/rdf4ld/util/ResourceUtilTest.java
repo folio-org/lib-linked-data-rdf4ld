@@ -217,5 +217,4 @@ class ResourceUtilTest {
     assertThat(nameValue).isIn("First", "Other")
       .hasSize(5);
   }
-
 }

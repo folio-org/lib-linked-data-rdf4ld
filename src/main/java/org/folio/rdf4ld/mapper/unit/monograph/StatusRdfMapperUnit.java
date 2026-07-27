@@ -61,7 +61,5 @@ public class StatusRdfMapperUnit implements RdfMapperUnit {
     var statusLink = getPropertyString(resource.getDoc(), LINK);
     linkResources(iri(resourceUrlProvider.apply(parent.getId())),
       iri(statusLink), mapping.getBfResourceDef().getPredicate(), modelBuilder);
-
   }
-
 }

@@ -101,5 +101,4 @@ public class Rdf4LdMapperImpl implements Rdf4LdMapper {
       });
     return modelBuilder.build();
   }
-
 }

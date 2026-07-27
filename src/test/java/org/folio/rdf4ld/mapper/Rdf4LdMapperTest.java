@@ -162,5 +162,4 @@ class Rdf4LdMapperTest {
     // then
     assertThat(result).isEmpty();
   }
-
 }

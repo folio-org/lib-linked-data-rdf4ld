@@ -78,6 +78,25 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .get();
   }
 
+  @Override
+  public void mapToBibframe(Resource agent,
+                            ModelBuilder modelBuilder,
+                            ResourceMapping resourceMapping,
+                            Resource parent) {
+    var nodeId = getNodeId(agent);
+    var contributionNode = Values.bnode(nodeId);
+    writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
+    getCurrentIdentifierLink(agent).ifPresentOrElse(identifierLink -> {
+        var agentIri = iri(identifierLink);
+        writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
+      }, () -> {
+        var agentNode = Values.bnode(nodeId + "_agent");
+        writeContributionResource(agent, contributionNode, agentNode, modelBuilder, resourceMapping, parent);
+        writeAgentResource(agent, agentNode, modelBuilder, resourceMapping);
+      }
+    );
+  }
+
   private Optional<Resource> mapAgent(Model model, org.eclipse.rdf4j.model.Resource agentNode,
                                       ResourceMapping mapping, Resource parent) {
     return baseRdfMapperUnit.mapToLd(model, agentNode, mapping, parent)
@@ -121,25 +140,6 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
       .findFirst();
   }
 
-  @Override
-  public void mapToBibframe(Resource agent,
-                            ModelBuilder modelBuilder,
-                            ResourceMapping resourceMapping,
-                            Resource parent) {
-    var nodeId = getNodeId(agent);
-    var contributionNode = Values.bnode(nodeId);
-    writeContributionLink(contributionNode, modelBuilder, resourceMapping, parent);
-    getCurrentIdentifierLink(agent).ifPresentOrElse(identifierLink -> {
-        var agentIri = iri(identifierLink);
-        writeContributionResource(agent, contributionNode, agentIri, modelBuilder, resourceMapping, parent);
-      }, () -> {
-        var agentNode = Values.bnode(nodeId + "_agent");
-        writeContributionResource(agent, contributionNode, agentNode, modelBuilder, resourceMapping, parent);
-        writeAgentResource(agent, agentNode, modelBuilder, resourceMapping);
-      }
-    );
-  }
-
   private String getNodeId(Resource agent) {
     var predicate = this.getClass().getAnnotation(RdfMapperDefinition.class).predicate().name();
     return predicate + "_" + agent.getId();
@@ -179,5 +179,4 @@ public abstract class AgentRdfMapperUnit implements RdfMapperUnit {
     writeBlankNode(agentNode, agent, modelBuilder, agentMapping, coreLd2RdfMapper);
     writeExtraTypes(modelBuilder, agent, agentNode);
   }
-
 }

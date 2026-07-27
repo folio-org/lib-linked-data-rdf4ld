@@ -76,5 +76,4 @@ class MultipleResourcesImportIT {
     validateResourceWithTitles(resource, prefix, BASE_LINK + expectedLink);
     assertThat(resource.getOutgoingEdges()).hasSize(expectedEdges);
   }
-
 }

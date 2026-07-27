@@ -95,5 +95,4 @@ class WorkTypesMappingIT {
       Arguments.of("work_serial.json", CONTINUING_RESOURCES)
     );
   }
-
 }

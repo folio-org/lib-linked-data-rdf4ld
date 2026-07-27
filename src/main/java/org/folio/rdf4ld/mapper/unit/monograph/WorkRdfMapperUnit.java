@@ -74,5 +74,4 @@ public class WorkRdfMapperUnit implements RdfMapperUnit {
     baseRdfMapperUnit.mapToBibframe(resource, modelBuilder, resourceMapping, parent);
     writeExtraTypes(modelBuilder, resource, iri(resourceUrlProvider.apply(resource.getId())));
   }
-
 }

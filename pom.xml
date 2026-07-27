@@ -32,14 +32,23 @@
 
     <lib-linked-data-dictionary.version>3.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-fingerprint.version>3.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <!-- Do not bump rdf4j.version to 6.0.0: those jars are compiled for Java 25 (class file
+         version 69.0), but this project builds with Java 21 (class file version 65.0), causing
+         "bad class file ... wrong version 69.0, should be 65.0" compile failures. Stay on 5.x
+         until the project's target JDK is upgraded to 25. See CI run:
+         https://github.com/folio-org/lib-linked-data-rdf4ld/actions/runs/30203284503 -->
     <rdf4j.version>5.3.2</rdf4j.version>
-    <jetbrains-annotations.version>26.1.0</jetbrains-annotations.version>
 
     <folio-spring-base.version>10.0.0</folio-spring-base.version>
+    <jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
+    <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+    <swagger-annotations.version>2.2.52</swagger-annotations.version>
+    <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-    <maven-openapi-generator-plugin.version>7.23.0</maven-openapi-generator-plugin.version>
-    <checkstyle.version>13.7.0</checkstyle.version>
+    <maven-openapi-generator-plugin.version>7.24.0</maven-openapi-generator-plugin.version>
+    <folio-java-checkstyle.version>1.2.0</folio-java-checkstyle.version>
+    <checkstyle.version>13.8.0</checkstyle.version>
   </properties>
 
   <dependencies>
@@ -78,11 +87,6 @@
       <version>${rdf4j.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jetbrains</groupId>
-      <artifactId>annotations</artifactId>
-      <version>${jetbrains-annotations.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
@@ -97,22 +101,22 @@
     <dependency>
       <groupId>org.openapitools</groupId>
       <artifactId>jackson-databind-nullable</artifactId>
-      <version>0.2.10</version>
+      <version>${jackson-databind-nullable.version}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
-      <version>3.1.1</version>
+      <version>${jakarta.validation-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <version>2.2.52</version>
+      <version>${swagger-annotations.version}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
-      <version>3.0.0</version>
+      <version>${jakarta.annotation-api.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -159,6 +163,12 @@
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle.version}</version>
           </dependency>
+
+          <dependency>
+            <groupId>org.folio</groupId>
+            <artifactId>folio-java-checkstyle</artifactId>
+            <version>${folio-java-checkstyle.version}</version>
+          </dependency>
         </dependencies>
         <executions>
           <execution>
@@ -175,11 +185,16 @@
             <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
           </sourceDirectories>
           <failsOnError>true</failsOnError>
+          <outputEncoding>UTF-8</outputEncoding>
+          <inputEncoding>UTF-8</inputEncoding>
           <violationSeverity>warning</violationSeverity>
           <failOnViolation>true</failOnViolation>
           <logViolationsToConsole>true</logViolationsToConsole>
-          <configLocation>checkstyle/checkstyle.xml</configLocation>
-          <cacheFile>${project.build.directory}/cachefile</cacheFile>
+          <configLocation>folio-checkstyle/checkstyle.xml</configLocation>
+          <cacheFile>${basedir}/target/cachefile</cacheFile>
+          <propertyExpansion>
+            checkstyle.method-length.max=50
+          </propertyExpansion>
         </configuration>
       </plugin>
 

@@ -175,5 +175,4 @@ class Rdf4LdServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.size()).isGreaterThan(0);
   }
-
 }

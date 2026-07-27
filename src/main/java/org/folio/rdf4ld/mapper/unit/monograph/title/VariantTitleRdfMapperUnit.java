@@ -95,5 +95,4 @@ public class VariantTitleRdfMapperUnit implements RdfMapperUnit {
       .findFirst()
       .ifPresent(bfp -> modelBuilder.build().remove(iri(resourceUrlProvider.apply(id)), iri(bfp), null));
   }
-
 }

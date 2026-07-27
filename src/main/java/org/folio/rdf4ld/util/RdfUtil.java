@@ -36,15 +36,15 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.rdf4ld.mapper.core.CoreLd2RdfMapper;
 import org.folio.rdf4ld.model.BfResourceDef;
 import org.folio.rdf4ld.model.ResourceMapping;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @UtilityClass
 public class RdfUtil {
 
   public static final String IRI = "@iri";
 
-  private static final ImmutableBiMap<@NotNull ResourceTypeDictionary, @NotNull List<String>> LD_TO_BF_EXTRA_TYPES =
-    new ImmutableBiMap.Builder<@NotNull ResourceTypeDictionary, @NotNull List<String>>()
+  private static final ImmutableBiMap<@NonNull ResourceTypeDictionary, @NonNull List<String>> LD_TO_BF_EXTRA_TYPES =
+    new ImmutableBiMap.Builder<@NonNull ResourceTypeDictionary, @NonNull List<String>>()
       .put(PERSON, List.of("http://id.loc.gov/ontologies/bibframe/Person"))
       .put(FAMILY, List.of("http://id.loc.gov/ontologies/bibframe/Family"))
       .put(ORGANIZATION, List.of("http://id.loc.gov/ontologies/bibframe/Organization"))
@@ -175,5 +175,4 @@ public class RdfUtil {
     }
     return result;
   }
-
 }

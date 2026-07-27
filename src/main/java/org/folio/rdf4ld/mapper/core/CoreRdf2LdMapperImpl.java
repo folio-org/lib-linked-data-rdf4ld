@@ -56,25 +56,6 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
     return doc.isEmpty() ? null : toJson(doc);
   }
 
-  private void getDirectProperty(org.eclipse.rdf4j.model.Resource resource,
-                                 Model model,
-                                 PropertyMapping pm,
-                                 Map<String, List<String>> doc) {
-    if (IRI.equals(pm.getBfProperty())) {
-      addProperty(pm, doc, resource.stringValue());
-    } else {
-      model.getStatements(resource, Values.iri(pm.getBfProperty()), null)
-        .forEach(st -> addProperty(pm, doc, st.getObject().stringValue()));
-    }
-  }
-
-  private void addProperty(PropertyMapping pm, Map<String, List<String>> doc, String value) {
-    var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
-    if (!props.contains(value)) {
-      props.add(value);
-    }
-  }
-
   @Override
   public JsonNode toJson(Map<String, List<String>> map) {
     var node = jsonMapper.convertValue(map, JsonNode.class);
@@ -115,6 +96,25 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .collect(toSet());
   }
 
+  private void getDirectProperty(org.eclipse.rdf4j.model.Resource resource,
+                                 Model model,
+                                 PropertyMapping pm,
+                                 Map<String, List<String>> doc) {
+    if (IRI.equals(pm.getBfProperty())) {
+      addProperty(pm, doc, resource.stringValue());
+    } else {
+      model.getStatements(resource, Values.iri(pm.getBfProperty()), null)
+        .forEach(st -> addProperty(pm, doc, st.getObject().stringValue()));
+    }
+  }
+
+  private void addProperty(PropertyMapping pm, Map<String, List<String>> doc, String value) {
+    var props = doc.computeIfAbsent(pm.getLdProperty().getValue(), str -> new ArrayList<>());
+    if (!props.contains(value)) {
+      props.add(value);
+    }
+  }
+
   private Set<Resource> mapEdgeTargets(Model model,
                                        ResourceMapping edgeMapping,
                                        Resource edgeOwner,
@@ -138,11 +138,10 @@ public class CoreRdf2LdMapperImpl implements CoreRdf2LdMapper {
       .filter(Value::isResource)
       .map(org.eclipse.rdf4j.model.Resource.class::cast)
       .filter(child -> bfResourceDef.getTypeSet().isEmpty()
-        || TRUE.equals(bfResourceDef.getIgnoreTypesMatch())
-        || (TRUE.equals(bfResourceDef.getPartialTypesMatch())
-        ? getAllTypes(model, child).containsAll(bfResourceDef.getTypeSet())
-        : getAllTypes(model, child).equals(new HashSet<>(bfResourceDef.getTypeSet())))
+                       || TRUE.equals(bfResourceDef.getIgnoreTypesMatch())
+                       || (TRUE.equals(bfResourceDef.getPartialTypesMatch())
+                           ? getAllTypes(model, child).containsAll(bfResourceDef.getTypeSet())
+                           : getAllTypes(model, child).equals(new HashSet<>(bfResourceDef.getTypeSet())))
       );
   }
-
 }

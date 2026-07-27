@@ -7,5 +7,4 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 public interface RdfMapperUnitProvider {
 
   RdfMapperUnit getMapper(Collection<ResourceTypeDictionary> typeSet, PredicateDictionary predicate);
-
 }

@@ -319,35 +319,13 @@ class InstanceWorkSubjectMappingIT {
     assertThat(unmockedInstance.getOutgoingEdges()).hasSize(1);
 
     var expectedConceptLabel = TOPIC_LABEL + " -- " + FAMILY_AGENT_LABEL + " -- " + PERSON_AGENT_LABEL;
-    var expectedConceptProperties = Map.of(
-      LABEL, List.of(expectedConceptLabel),
-      NAME, List.of(TOPIC_LABEL)
-    );
-
-    var expectedTopicProperties = Map.of(
-      LABEL, List.of(TOPIC_LABEL),
-      NAME, List.of(TOPIC_LABEL)
-    );
-
-    var expectedPersonProperties = Map.of(
-      LABEL, List.of(PERSON_AGENT_LABEL),
-      NAME, List.of(PERSON_AGENT_LABEL)
-    );
-
-    var expectedFamilyProperties = Map.of(
-      LABEL, List.of(FAMILY_AGENT_LABEL),
-      NAME, List.of(FAMILY_AGENT_LABEL)
-    );
-
-    var expectedTopicLccnProperties = Map.of(
-      NAME, List.of(TOPIC_LCCN),
-      LINK, List.of(SUBJECTS_NAMESPACE + TOPIC_LCCN)
-    );
-
-    var expectedPersonLccnProperties = Map.of(
-      NAME, List.of(PERSON_AGENT_LCCN),
-      LINK, List.of(AGENTS_NAMESPACE + PERSON_AGENT_LCCN)
-    );
+    var expectedConceptProperties = Map.of(LABEL, List.of(expectedConceptLabel), NAME, List.of(TOPIC_LABEL));
+    var expectedTopicProperties = Map.of(LABEL, List.of(TOPIC_LABEL), NAME, List.of(TOPIC_LABEL));
+    var expectedPersonProperties = Map.of(LABEL, List.of(PERSON_AGENT_LABEL), NAME, List.of(PERSON_AGENT_LABEL));
+    var expectedFamilyProperties = Map.of(LABEL, List.of(FAMILY_AGENT_LABEL), NAME, List.of(FAMILY_AGENT_LABEL));
+    var expectedTopicLccnProperties = Map.of(NAME, List.of(TOPIC_LCCN), LINK, List.of(SUBJECTS_NAMESPACE + TOPIC_LCCN));
+    var expectedPersonLccnProperties =
+      Map.of(NAME, List.of(PERSON_AGENT_LCCN), LINK, List.of(AGENTS_NAMESPACE + PERSON_AGENT_LCCN));
 
     validateOutgoingEdge(unmockedInstance,
       INSTANTIATES,
@@ -457,7 +435,6 @@ class InstanceWorkSubjectMappingIT {
       .replaceAll("TOPIC_ID", "_" + topic.getId().toString())
       .replaceAll("TEMPORAL_ID", "_" + temporal.getId().toString());
 
-
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
@@ -485,7 +462,6 @@ class InstanceWorkSubjectMappingIT {
       .replaceAll("COMPLEX_SUBJECT_ID", concept.getId().toString())
       .replaceAll("FAMILY_AGENT_ID", "_" + familyAgent.getId().toString());
 
-
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
 
@@ -511,7 +487,6 @@ class InstanceWorkSubjectMappingIT {
     var expected = new String(inputStream.readAllBytes())
       .replaceAll("INSTANCE_ID", instance.getId().toString())
       .replaceAll("WORK_ID", work.getId().toString());
-
 
     // when
     var model = rdf4LdMapper.mapLdToBibframe2Rdf(instance);
@@ -701,5 +676,4 @@ class InstanceWorkSubjectMappingIT {
       Arguments.of("instance_work_subject_concept_form_complex_no_lccn.json", FORM)
     );
   }
-
 }

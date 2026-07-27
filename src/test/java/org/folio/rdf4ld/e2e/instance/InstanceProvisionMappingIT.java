@@ -120,5 +120,4 @@ class InstanceProvisionMappingIT {
     var jsonLdString = toJsonLdString(model);
     assertThat(jsonLdString).isEqualTo(expected);
   }
-
 }
