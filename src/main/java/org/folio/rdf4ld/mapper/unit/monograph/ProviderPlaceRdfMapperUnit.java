@@ -48,30 +48,6 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
     return empty();
   }
 
-  private Optional<Resource> toProviderPlace(IRI iri,
-                                             Model model,
-                                             org.eclipse.rdf4j.model.Resource resource,
-                                             ResourceMapping mapping,
-                                             Resource parent) {
-    return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
-      .map(r -> {
-          if (isNull(r.getDoc())) {
-            r.setDoc(JsonNodeFactory.instance.objectNode());
-          }
-          PlaceDictionary.getValue(iri.getLocalName())
-            .ifPresent(name -> r
-              .setDoc(addProperty(r.getDoc(), NAME, name))
-              .setDoc(addProperty(r.getDoc(), LABEL, name))
-              .setLabel(name)
-            );
-          return r
-            .setDoc(addProperty(r.getDoc(), CODE, iri.getLocalName()))
-            .setDoc(addProperty(r.getDoc(), LINK, iri.stringValue()))
-            .setId(hashService.hash(r));
-        }
-      );
-  }
-
   @Override
   public void mapToBibframe(Resource resource,
                             ModelBuilder modelBuilder,
@@ -80,5 +56,28 @@ public class ProviderPlaceRdfMapperUnit implements RdfMapperUnit {
     var parentIri = iri(resourceUrlProvider.apply(parent.getId()));
     var link = getPropertyString(resource.getDoc(), LINK);
     linkResources(parentIri, iri(link), mapping.getBfResourceDef().getPredicate(), modelBuilder);
+  }
+
+  private Optional<Resource> toProviderPlace(IRI iri,
+                                             Model model,
+                                             org.eclipse.rdf4j.model.Resource resource,
+                                             ResourceMapping mapping,
+                                             Resource parent) {
+    return baseRdfMapperUnit.mapToLd(model, resource, mapping, parent)
+      .map(r -> {
+        if (isNull(r.getDoc())) {
+          r.setDoc(JsonNodeFactory.instance.objectNode());
+        }
+        PlaceDictionary.getValue(iri.getLocalName())
+          .ifPresent(name -> r
+            .setDoc(addProperty(r.getDoc(), NAME, name))
+            .setDoc(addProperty(r.getDoc(), LABEL, name))
+            .setLabel(name)
+          );
+        return r
+          .setDoc(addProperty(r.getDoc(), CODE, iri.getLocalName()))
+          .setDoc(addProperty(r.getDoc(), LINK, iri.stringValue()))
+          .setId(hashService.hash(r));
+      });
   }
 }

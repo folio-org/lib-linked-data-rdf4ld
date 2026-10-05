@@ -37,9 +37,9 @@
          "bad class file ... wrong version 69.0, should be 65.0" compile failures. Stay on 5.x
          until the project's target JDK is upgraded to 25. See CI run:
          https://github.com/folio-org/lib-linked-data-rdf4ld/actions/runs/30203284503 -->
-    <rdf4j.version>6.1.0</rdf4j.version>
+    <rdf4j.version>5.3.2</rdf4j.version>
 
-    <folio-spring-base.version>10.0.0</folio-spring-base.version>
+    <folio-spring-base.version>10.1.0-SNAPSHOT</folio-spring-base.version>
     <jackson-databind-nullable.version>0.2.12</jackson-databind-nullable.version>
     <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
     <swagger-annotations.version>2.2.55</swagger-annotations.version>
